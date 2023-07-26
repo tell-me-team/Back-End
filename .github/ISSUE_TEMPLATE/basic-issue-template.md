@@ -1,6 +1,6 @@
 ---
-name: Basic Issue Template
-about: Issue를 입력해주세요.
+name: Basic Issue
+about: Basic Issue Template.
 title: ''
 labels: ''
 assignees: ''
