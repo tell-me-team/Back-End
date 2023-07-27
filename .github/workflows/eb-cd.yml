@@ -35,7 +35,7 @@ jobs:
           password: ${{ secrets.DOCKER_HUB_PASSWORD }}
 
       - name: Push to Dockerhub
-        working-directory: ./
+        working-directory: ./tellme
         run: ./gradlew jib
 
       - name: Beanstalk Deploy
