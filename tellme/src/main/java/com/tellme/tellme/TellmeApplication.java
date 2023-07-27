@@ -3,6 +3,9 @@ package com.tellme.tellme;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @SpringBootApplication(exclude = SecurityAutoConfiguration.class)
 public class TellmeApplication {
@@ -11,4 +14,15 @@ public class TellmeApplication {
 		SpringApplication.run(TellmeApplication.class, args);
 	}
 
+
+	@Bean
+	public WebMvcConfigurer corsConfigurer() {
+		return new WebMvcConfigurer() {
+			public void addCorsMappings(CorsRegistry registry) {
+				registry.addMapping("/**")
+						.allowedMethods("*")
+						.allowedOrigins("*"); // s3 url
+			}
+		};
+	}
 }
