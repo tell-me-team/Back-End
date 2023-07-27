@@ -12,7 +12,6 @@ public class TellmeApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(TellmeApplication.class, args);
-		System.out.println("test");
 	}
 
 
