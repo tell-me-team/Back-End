@@ -11,7 +11,7 @@ env:
   AWS_REGION: ap-northeast-2
   EB_ENVIRONMENT_NAME: Tell-me-application-env-2
   EB_APPLICATION_NAME: tell-me-application
-  EB_DEPLOYMENT_PACKAGE: docker-compose.yml
+  EB_DEPLOYMENT_PACKAGE: ./tellme/docker-compose.yml
 
 jobs:
   build:
