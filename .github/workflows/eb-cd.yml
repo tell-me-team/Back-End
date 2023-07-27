@@ -22,6 +22,7 @@ jobs:
         uses: actions/setup-java@v3.3.0 
         with:
           java-version: 17
+          distribution: 'adopt'
 
       - name: Build Number
         id: build-number
