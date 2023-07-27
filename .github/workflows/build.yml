@@ -14,17 +14,26 @@ jobs: #jobs 는 여러개의 step들로 이루어집니다.
         with:
           java-version: '17'
           distribution: 'adopt'
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
-        shell: bash
+      - name: Gradle Build Action
+        uses: gradle/gradle-build-action@v2.7.0
+        with:
+          gradle-version: 8.2.1
+          arguments: build
+          
 
-      - name: Build with Gradle
-        run: |
-          ./gradlew —version
-          ./gradlew :api:build -x test
-        shell: bash
+#       - name: Grant execute permission for gradlew
+#         run: chmod +x gradlew
+#         shell: bash
+
+#       - name: Build with Gradle
+#         run: |
+#           ./gradlew —version
+#           ./gradlew :api:build -x test
+#         shell: bash
+
 #       - name: Build with Gradle # gradle을 이용한 java 빌드
 #         uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
 #         with:
 #           gradle-version: 8.2.1
 #           arguments: build
+      
