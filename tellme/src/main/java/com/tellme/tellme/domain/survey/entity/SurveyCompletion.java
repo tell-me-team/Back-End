@@ -3,8 +3,12 @@ package com.tellme.tellme.domain.survey.entity;
 import com.tellme.tellme.domain.BaseEntity;
 import com.tellme.tellme.domain.user.entity.User;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
 
 @Entity
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class SurveyCompletion extends BaseEntity {
 
     @Id
@@ -22,4 +26,10 @@ public class SurveyCompletion extends BaseEntity {
     @Column(name = "uuid")
     private String uuid;
 
+    @Builder
+    public SurveyCompletion(Survey survey, User user, String uuid) {
+        this.survey = survey;
+        this.user = user;
+        this.uuid = uuid;
+    }
 }

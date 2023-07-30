@@ -116,4 +116,3 @@ spring:
     properties:
       hibernate:
         format_sql: false
-
