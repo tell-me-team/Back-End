@@ -11,7 +11,7 @@ public class Survey extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     @Column(length = 100)
-    private int title;
+    private String title;
     @Column(length = 2000)
     private String content;
     @Column(length = 2000)
