@@ -2,8 +2,11 @@ package com.tellme.tellme.domain.survey.entity;
 
 import com.tellme.tellme.domain.BaseEntity;
 import jakarta.persistence.*;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
 
 @Entity
+@NoArgsConstructor
 public class SurveyAnswer extends BaseEntity {
 
     @Id
@@ -21,4 +24,10 @@ public class SurveyAnswer extends BaseEntity {
     @Column(length = 1)
     private char answer;
 
+    @Builder
+    public SurveyAnswer(SurveyCompletion surveyCompletion, Question question, char answer) {
+        this.surveyCompletion = surveyCompletion;
+        this.question = question;
+        this.answer = answer;
+    }
 }

@@ -19,8 +19,7 @@ public class SurveyService {
 
 
     public void saveAnswer(int surveyId, String userId, SurveyDto.Answer answer) {
-        Survey survey = surveyRepository.findById(surveyId).get();
-        answer.setSurvey(survey);
+        answer.setSurvey(surveyRepository.findById(surveyId).get());
 
         SurveyCompletion surveyCompletion = surveyCompletionRepository.save(answer.toSurveyCompletion());
         for (SurveyDto.AnswerContent answerContent : answer.getAnswerContentList()) {
