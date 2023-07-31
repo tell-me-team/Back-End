@@ -1,18 +1,21 @@
 package com.tellme.tellme.domain.survey.presentation;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.tellme.tellme.domain.survey.entity.Question;
 import com.tellme.tellme.domain.survey.entity.Survey;
 import com.tellme.tellme.domain.survey.entity.SurveyAnswer;
 import com.tellme.tellme.domain.survey.entity.SurveyCompletion;
 import com.tellme.tellme.domain.user.entity.User;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
+@Data
 public class SurveyDto {
 
     @Data
-    public class Answer{
+    public static class Answer{
         private Survey survey;
         private User user;
         private String uuid;
@@ -28,11 +31,11 @@ public class SurveyDto {
     }
 
     @Data
-    public class AnswerContent{
-        private Question question;
+    public static class AnswerContent{
+        private int question;
         private char answer;
 
-        public SurveyAnswer toSurveyAnswer(SurveyCompletion surveyCompletion){
+        public SurveyAnswer toSurveyAnswer(SurveyCompletion surveyCompletion, Question question){
             return SurveyAnswer.builder()
                     .surveyCompletion(surveyCompletion)
                     .question(question)
