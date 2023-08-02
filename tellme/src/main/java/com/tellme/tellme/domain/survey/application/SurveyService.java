@@ -34,20 +34,21 @@ public class SurveyService {
         return surveyCompletion;
     }
 
-    public List<SurveyAnswer> getSurveyResult(int userId, int surveyId) {
-        SurveyCompletion surveyCompletion = surveyCompletionQueryRepository.findByUserIdAndSurveyId(userId, surveyId);
+    public List<SurveyAnswer> getSurveyResult(long userId, int surveyId) {
+        User user = userRepository.findById(userId).get();
+        SurveyCompletion surveyCompletion = surveyCompletionQueryRepository.findByUserIdAndSurveyId(user, surveyId);
         List<SurveyAnswer> surveyAnswerList = surveyAnswerRepository.findBySurveyCompletion(surveyCompletion);
         // TODO 선택한 답변에따라서 키워드 출력
         return surveyAnswerList;
     }
 
-    public List<SurveyDto.SurveyCompletionWithAnswers> getSurveyResultDetail(int userId, int surveyId) {
+    public List<SurveyDto.SurveyCompletionWithAnswers> getSurveyResultDetail(long userId, int surveyId) {
         Survey survey = surveyRepository.findById(surveyId).get();
-        List<Question> questionList = surveyQuestionQueryRepository.getQuestionList(survey);
-
         User user = userRepository.findById(userId).get();
 
+        List<Question> questionList = surveyQuestionQueryRepository.getQuestionList(survey);
         List<SurveyDto.SurveyCompletionWithAnswers> surveyCompletionWithAnswersList = new ArrayList<>();
+
         for(Question question : questionList){
             Character answerToMe = surveyCompletionQueryRepository.getAnswerToMe(user, question);
             SurveyDto.SurveyCompletionWithAnswers answer = new SurveyDto.SurveyCompletionWithAnswers();

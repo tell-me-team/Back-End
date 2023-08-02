@@ -17,13 +17,13 @@ import static com.tellme.tellme.domain.survey.entity.QSurveyCompletion.surveyCom
 public class SurveyCompletionQueryRepository {
     private final JPAQueryFactory query;
 
-    public SurveyCompletion findByUserIdAndSurveyId(int userId, int surveyId) {
+    public SurveyCompletion findByUserIdAndSurveyId(User user, int surveyId) {
         return query
                 .select(
                         surveyCompletion
                 )
                 .from(surveyCompletion)
-                .where(surveyCompletion.user.id.eq(userId),
+                .where(surveyCompletion.user.eq(user),
                         surveyCompletion.survey.id.eq(surveyId)
                 )
                 .fetchOne();
