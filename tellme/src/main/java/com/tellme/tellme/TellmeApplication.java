@@ -14,15 +14,4 @@ public class TellmeApplication {
 		SpringApplication.run(TellmeApplication.class, args);
 	}
 
-
-	@Bean
-	public WebMvcConfigurer corsConfigurer() {
-		return new WebMvcConfigurer() {
-			public void addCorsMappings(CorsRegistry registry) {
-				registry.addMapping("/**")
-						.allowedMethods("*")
-						.allowedOrigins("*"); // s3 url
-			}
-		};
-	}
 }
