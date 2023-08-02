@@ -10,6 +10,7 @@ import java.util.List;
 
 @Entity
 @Getter
+@Table(name = "survey")
 public class Survey extends BaseEntity {
 
     @Id

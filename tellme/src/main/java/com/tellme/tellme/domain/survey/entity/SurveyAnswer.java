@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @NoArgsConstructor
+@Table(name = "survey_answer")
 public class SurveyAnswer extends BaseEntity {
 
     @Id
