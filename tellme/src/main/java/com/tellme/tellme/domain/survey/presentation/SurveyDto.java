@@ -5,6 +5,7 @@ import com.tellme.tellme.domain.survey.entity.Survey;
 import com.tellme.tellme.domain.survey.entity.SurveyAnswer;
 import com.tellme.tellme.domain.survey.entity.SurveyCompletion;
 import com.tellme.tellme.domain.user.entity.User;
+import lombok.Builder;
 import lombok.Data;
 import lombok.ToString;
 
@@ -14,7 +15,6 @@ import java.util.List;
 public class SurveyDto {
 
     @Data
-    @ToString
     public static class Answer {
         private int surveyId;
         private String uuid;
@@ -44,11 +44,22 @@ public class SurveyDto {
     }
 
     @Data
-    @ToString
     public static class SurveyCompletionWithAnswers {
         private String question;
         private Character answerToMe;
         private String answerToOther;
+    }
+
+    @Data
+    public static class SurveyInfo{
+        private long userId;
+        private int surveyId;
+
+        @Builder
+        public SurveyInfo(long userId, int surveyId) {
+            this.userId = userId;
+            this.surveyId = surveyId;
+        }
     }
 }
 

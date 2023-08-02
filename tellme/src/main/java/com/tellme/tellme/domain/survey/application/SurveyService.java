@@ -26,16 +26,15 @@ public class SurveyService {
     private final UserRepository userRepository;
     private final SurveyShortUrlRepository surveyShortUrlRepository;
 
-    public SurveyCompletion saveAnswer(String shortUrl, SurveyDto.Answer answer, Authentication authentication) {
+    public SurveyCompletion saveAnswer(int surveyId, long userId, SurveyDto.Answer answer, Authentication authentication) {
 
         if (authentication != null) {
             User userDetails = (User) authentication.getPrincipal();
             answer.setUuid(String.valueOf(userDetails.getId()));
         }
 
-        SurveyShortUrl surveyShortUrl = surveyShortUrlRepository.findByUrl(shortUrl);
-        Survey survey = surveyRepository.findById(surveyShortUrl.getSurveyId()).get();
-        User user = userRepository.findById(surveyShortUrl.getUserId()).get();
+        Survey survey = surveyRepository.findById(surveyId).get();
+        User user = userRepository.findById(userId).get();
 
         SurveyCompletion surveyCompletion = surveyCompletionRepository.save(answer.toSurveyCompletion(survey, user));
         for (SurveyDto.AnswerContent answerContent : answer.getAnswerContentList()) {
@@ -92,5 +91,17 @@ public class SurveyService {
         surveyShortUrlRepository.save(shortUrl);
 
         return shortUrl.getUrl();
+    }
+
+    public SurveyDto.SurveyInfo shortUrlDecoding(String shortUrl) {
+        SurveyShortUrl surveyShortUrl = surveyShortUrlRepository.findByUrl(shortUrl);
+        int surveyId = surveyShortUrl.getSurveyId();
+        long userId = surveyShortUrl.getUserId();
+
+        SurveyDto.SurveyInfo surveyInfo = SurveyDto.SurveyInfo.builder()
+                .surveyId(surveyId)
+                .userId(userId)
+                .build();
+        return surveyInfo;
     }
 }
