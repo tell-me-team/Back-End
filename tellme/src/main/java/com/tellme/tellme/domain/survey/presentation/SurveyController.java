@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/survey")
+@RequestMapping("v1/survey")
 @RequiredArgsConstructor
 public class SurveyController {
 
