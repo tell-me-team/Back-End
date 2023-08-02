@@ -32,7 +32,7 @@ public class SpringSecurityConfig {
                 .authorizeHttpRequests((authorizeRequests) -> {
                     authorizeRequests
                             .requestMatchers("/users/profiles/**").hasRole("USER")
-                            .requestMatchers("/auth/**", "/users/survey-results/**", "/survey/**", "/actuator/**").permitAll()
+                            .requestMatchers("/auth/**", "v1/users/survey-results/**", "v1/survey/**", "/actuator/**").permitAll()
                             .anyRequest().authenticated();
                 })
                 .sessionManagement((sessionManagement) ->
