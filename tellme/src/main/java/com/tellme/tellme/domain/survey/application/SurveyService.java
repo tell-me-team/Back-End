@@ -6,6 +6,7 @@ import com.tellme.tellme.domain.survey.presentation.SurveyDto;
 import com.tellme.tellme.domain.user.entity.User;
 import com.tellme.tellme.domain.user.persistence.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -23,13 +24,19 @@ public class SurveyService {
     private final SurveyQuestionQueryRepository surveyQuestionQueryRepository;
     private final UserRepository userRepository;
 
-    public SurveyCompletion saveAnswer(int surveyId, String userId, SurveyDto.Answer answer) {
+    public SurveyCompletion saveAnswer(int surveyId, String uuid, SurveyDto.Answer answer, Authentication authentication) {
+
+
+        if (authentication != null) {
+            User userDetails = (User) authentication.getPrincipal();
+            uuid = String.valueOf(userDetails.getId());
+        }
         answer.setSurvey(surveyRepository.findById(surveyId).get());
 
-        SurveyCompletion surveyCompletion = surveyCompletionRepository.save(answer.toSurveyCompletion());
+        SurveyCompletion surveyCompletion = surveyCompletionRepository.save(answer.toSurveyCompletion(uuid));
         for (SurveyDto.AnswerContent answerContent : answer.getAnswerContentList()) {
             Question question = questionRepository.findById(answerContent.getQuestion()).get();
-            surveyAnswerRepository.save(answerContent.toSurveyAnswer(surveyCompletion,question));
+            surveyAnswerRepository.save(answerContent.toSurveyAnswer(surveyCompletion, question));
         }
         return surveyCompletion;
     }
@@ -49,7 +56,7 @@ public class SurveyService {
         List<Question> questionList = surveyQuestionQueryRepository.getQuestionList(survey);
         List<SurveyDto.SurveyCompletionWithAnswers> surveyCompletionWithAnswersList = new ArrayList<>();
 
-        for(Question question : questionList){
+        for (Question question : questionList) {
             Character answerToMe = surveyCompletionQueryRepository.getAnswerToMe(user, question);
             SurveyDto.SurveyCompletionWithAnswers answer = new SurveyDto.SurveyCompletionWithAnswers();
             answer.setQuestion(question.getQuestion());
