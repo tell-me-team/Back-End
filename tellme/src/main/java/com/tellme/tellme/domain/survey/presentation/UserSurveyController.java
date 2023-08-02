@@ -14,17 +14,17 @@ import java.util.List;
 @RestController
 @RequestMapping("v1/user")
 @RequiredArgsConstructor
-public class UserController {
+public class UserSurveyController {
 
     private final SurveyService surveyService;
 
     @GetMapping("survey-results/{userId}/{surveyId}")
-    public BaseResponse<List<SurveyAnswer>> getSurveyResult(@PathVariable int userId, @PathVariable int surveyId){
+    public BaseResponse<List<SurveyAnswer>> getSurveyResult(@PathVariable long userId, @PathVariable int surveyId){
         return BaseResponse.ok(surveyService.getSurveyResult(userId, surveyId));
     }
 
     @GetMapping("survey-results/{userId}/{surveyId}/details")
-    public BaseResponse<List<SurveyDto.SurveyCompletionWithAnswers>> getSurveyResultDetail(@PathVariable int userId, @PathVariable int surveyId){
+    public BaseResponse<List<SurveyDto.SurveyCompletionWithAnswers>> getSurveyResultDetail(@PathVariable long userId, @PathVariable int surveyId){
         return BaseResponse.ok(surveyService.getSurveyResultDetail(userId, surveyId));
     }
 }
