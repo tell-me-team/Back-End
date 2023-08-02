@@ -61,5 +61,12 @@ public class SurveyDto {
             this.surveyId = surveyId;
         }
     }
+
+    @Data
+    public static class QuestionInfo{
+        private String question;
+        private String answerA;
+        private String answerB;
+    }
 }
 

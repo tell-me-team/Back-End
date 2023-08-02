@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("v1/survey")
 @RequiredArgsConstructor
@@ -35,5 +37,11 @@ public class SurveyController {
     @ResponseBody
     public BaseResponse<SurveyDto.SurveyInfo> shortUrlDecoding(@PathVariable("short_url") String shortUrl){
         return BaseResponse.ok(surveyService.shortUrlDecoding(shortUrl));
+    }
+
+    @GetMapping("/question/{survey_id}")
+    @ResponseBody
+    public BaseResponse<List<SurveyDto.QuestionInfo>> getQuestionInfo(@PathVariable("survey_id") int surveyId){
+        return BaseResponse.ok(surveyService.getQuestionInfo(surveyId));
     }
 }
