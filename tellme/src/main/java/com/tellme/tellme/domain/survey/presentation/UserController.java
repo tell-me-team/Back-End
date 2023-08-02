@@ -18,4 +18,9 @@ public class UserController {
     public void getSurveyResult(@PathVariable int userId, @PathVariable int surveyId){
         surveyService.getSurveyResult(userId, surveyId);
     }
+
+    @GetMapping("survey-results/{userId}/{surveyId}/details")
+    public void getSurveyResultDetail(@PathVariable int userId, @PathVariable int surveyId){
+        surveyService.getSurveyResultDetail(userId, surveyId);
+    }
 }

@@ -8,6 +8,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class SurveyCompletion extends BaseEntity {
@@ -26,6 +29,9 @@ public class SurveyCompletion extends BaseEntity {
 
     @Column(name = "uuid")
     private String uuid;
+
+    @OneToMany(mappedBy = "surveyCompletion")
+    private List<SurveyAnswer> surveyAnswers = new ArrayList<>();
 
     @Builder
     public SurveyCompletion(Survey survey, User user, String uuid) {
