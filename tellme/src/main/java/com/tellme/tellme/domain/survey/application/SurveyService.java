@@ -12,6 +12,9 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import static com.tellme.tellme.domain.survey.presentation.SurveyDto.*;
 
 @Service
 @RequiredArgsConstructor
@@ -26,7 +29,7 @@ public class SurveyService {
     private final UserRepository userRepository;
     private final SurveyShortUrlRepository surveyShortUrlRepository;
 
-    public SurveyCompletion saveAnswer(int surveyId, long userId, SurveyDto.Answer answer, Authentication authentication) {
+    public SurveyCompletion saveAnswer(int surveyId, long userId, Answer answer, Authentication authentication) {
 
         if (authentication != null) {
             User userDetails = (User) authentication.getPrincipal();
@@ -37,7 +40,7 @@ public class SurveyService {
         User user = userRepository.findById(userId).get();
 
         SurveyCompletion surveyCompletion = surveyCompletionRepository.save(answer.toSurveyCompletion(survey, user));
-        for (SurveyDto.AnswerContent answerContent : answer.getAnswerContentList()) {
+        for (AnswerContent answerContent : answer.getAnswerContentList()) {
             Question question = questionRepository.findById(answerContent.getQuestion()).get();
             surveyAnswerRepository.save(answerContent.toSurveyAnswer(surveyCompletion, question));
         }
@@ -52,16 +55,16 @@ public class SurveyService {
         return surveyAnswerList;
     }
 
-    public List<SurveyDto.SurveyCompletionWithAnswers> getSurveyResultDetail(long userId, int surveyId) {
+    public List<SurveyCompletionWithAnswers> getSurveyResultDetail(long userId, int surveyId) {
         Survey survey = surveyRepository.findById(surveyId).get();
         User user = userRepository.findById(userId).get();
 
         List<Question> questionList = surveyQuestionQueryRepository.getQuestionList(survey);
-        List<SurveyDto.SurveyCompletionWithAnswers> surveyCompletionWithAnswersList = new ArrayList<>();
+        List<SurveyCompletionWithAnswers> surveyCompletionWithAnswersList = new ArrayList<>();
 
         for (Question question : questionList) {
             Character answerToMe = surveyCompletionQueryRepository.getAnswerToMe(user, question);
-            SurveyDto.SurveyCompletionWithAnswers answer = new SurveyDto.SurveyCompletionWithAnswers();
+            SurveyCompletionWithAnswers answer = new SurveyCompletionWithAnswers();
             answer.setQuestion(question.getQuestion());
             answer.setAnswerToMe(answerToMe);
 
@@ -93,15 +96,30 @@ public class SurveyService {
         return shortUrl.getUrl();
     }
 
-    public SurveyDto.SurveyInfo shortUrlDecoding(String shortUrl) {
+    public SurveyInfo shortUrlDecoding(String shortUrl) {
         SurveyShortUrl surveyShortUrl = surveyShortUrlRepository.findByUrl(shortUrl);
         int surveyId = surveyShortUrl.getSurveyId();
         long userId = surveyShortUrl.getUserId();
 
-        SurveyDto.SurveyInfo surveyInfo = SurveyDto.SurveyInfo.builder()
+        SurveyInfo surveyInfo = SurveyInfo.builder()
                 .surveyId(surveyId)
                 .userId(userId)
                 .build();
         return surveyInfo;
+    }
+
+    public List<QuestionInfo> getQuestionInfo(int surveyId) {
+        Survey survey = surveyRepository.findById(surveyId).get();
+        List<Question> questionList = surveyQuestionQueryRepository.getQuestionList(survey);
+
+        List<QuestionInfo> questionInfoList = questionList.stream()
+                .map(question -> {
+                    QuestionInfo questionInfo = new QuestionInfo();
+                    questionInfo.setQuestion(question.getQuestion());
+                    questionInfo.setAnswerA(question.getAnswerA());
+                    questionInfo.setAnswerB(question.getAnswerB());
+                    return questionInfo;
+                }).collect(Collectors.toList());
+        return questionInfoList;
     }
 }
