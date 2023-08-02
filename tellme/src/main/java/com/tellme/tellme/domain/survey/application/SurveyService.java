@@ -23,7 +23,7 @@ public class SurveyService {
     private final SurveyQuestionQueryRepository surveyQuestionQueryRepository;
     private final UserRepository userRepository;
 
-    public void saveAnswer(int surveyId, String userId, SurveyDto.Answer answer) {
+    public SurveyCompletion saveAnswer(int surveyId, String userId, SurveyDto.Answer answer) {
         answer.setSurvey(surveyRepository.findById(surveyId).get());
 
         SurveyCompletion surveyCompletion = surveyCompletionRepository.save(answer.toSurveyCompletion());
@@ -31,15 +31,17 @@ public class SurveyService {
             Question question = questionRepository.findById(answerContent.getQuestion()).get();
             surveyAnswerRepository.save(answerContent.toSurveyAnswer(surveyCompletion,question));
         }
+        return surveyCompletion;
     }
 
-    public void getSurveyResult(int userId, int surveyId) {
+    public List<SurveyAnswer> getSurveyResult(int userId, int surveyId) {
         SurveyCompletion surveyCompletion = surveyCompletionQueryRepository.findByUserIdAndSurveyId(userId, surveyId);
         List<SurveyAnswer> surveyAnswerList = surveyAnswerRepository.findBySurveyCompletion(surveyCompletion);
-
+        // TODO 선택한 답변에따라서 키워드 출력
+        return surveyAnswerList;
     }
 
-    public void getSurveyResultDetail(int userId, int surveyId) {
+    public List<SurveyDto.SurveyCompletionWithAnswers> getSurveyResultDetail(int userId, int surveyId) {
         Survey survey = surveyRepository.findById(surveyId).get();
         List<Question> questionList = surveyQuestionQueryRepository.getQuestionList(survey);
 
@@ -56,7 +58,7 @@ public class SurveyService {
 
             surveyCompletionWithAnswersList.add(answer);
         }
-        System.out.println(surveyCompletionWithAnswersList);
+        return surveyCompletionWithAnswersList;
 
     }
 }
