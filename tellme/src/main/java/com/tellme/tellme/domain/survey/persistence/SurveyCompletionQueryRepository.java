@@ -1,11 +1,15 @@
 package com.tellme.tellme.domain.survey.persistence;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.tellme.tellme.domain.survey.entity.QSurveyCompletion;
+import com.tellme.tellme.domain.survey.entity.Question;
 import com.tellme.tellme.domain.survey.entity.SurveyCompletion;
+import com.tellme.tellme.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
+import static com.tellme.tellme.domain.survey.entity.QSurveyAnswer.*;
 import static com.tellme.tellme.domain.survey.entity.QSurveyCompletion.surveyCompletion;
 
 @Repository
@@ -21,6 +25,22 @@ public class SurveyCompletionQueryRepository {
                 .from(surveyCompletion)
                 .where(surveyCompletion.user.id.eq(userId),
                         surveyCompletion.survey.id.eq(surveyId)
+                )
+                .fetchOne();
+    }
+
+    public Character getAnswerToMe(User user, Question question) {
+        String userIdAsString = String.valueOf(user.getId());
+        return query
+                .select(
+                        surveyAnswer.answer
+                )
+                .from(surveyCompletion)
+                .join(surveyCompletion.surveyAnswers, surveyAnswer)
+                .where(
+                        surveyCompletion.user.eq(user),
+                        surveyCompletion.uuid.eq(userIdAsString),
+                        surveyAnswer.question.eq(question)
                 )
                 .fetchOne();
     }
