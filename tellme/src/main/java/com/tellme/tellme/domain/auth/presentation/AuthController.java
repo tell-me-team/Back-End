@@ -3,6 +3,7 @@ package com.tellme.tellme.domain.auth.presentation;
 import com.tellme.tellme.common.enums.SocialLoginType;
 import com.tellme.tellme.common.response.BaseResponse;
 import com.tellme.tellme.domain.auth.application.OAuthService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +21,7 @@ public class AuthController {
 
     @ResponseBody
     @GetMapping(value = "/auth/{socialLoginType}/login")
+    @Operation(summary = "소셜 로그인")
     public BaseResponse<GetSocialOAuthRes> socialLoginCallback(
             @PathVariable(name = "socialLoginType") String socialLoginPath,
             @RequestParam(name = "code") String code) throws IOException {

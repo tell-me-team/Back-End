@@ -1,5 +1,6 @@
 package com.tellme.tellme.domain.user.presentation;
 
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
@@ -12,6 +13,7 @@ public class UserController {
 
 
     @GetMapping("/test")
+    @Operation(summary = "authentication 테스트")
     public String test(Authentication authentication) {
         log.info("authentication : {}", authentication);
         log.info("principal : {}", authentication.getPrincipal());
