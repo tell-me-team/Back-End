@@ -14,13 +14,13 @@ import java.util.List;
 public class SurveyDto {
 
     @Data
+    @ToString
     public static class Answer {
-        private Survey survey;
-        private User user;
+        private int surveyId;
         private String uuid;
         private List<AnswerContent> answerContentList;
 
-        public SurveyCompletion toSurveyCompletion() {
+        public SurveyCompletion toSurveyCompletion(Survey survey, User user) {
             return SurveyCompletion.builder()
                     .survey(survey)
                     .user(user)

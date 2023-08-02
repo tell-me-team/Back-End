@@ -28,15 +28,16 @@ public class SurveyService {
 
     public SurveyCompletion saveAnswer(String shortUrl, SurveyDto.Answer answer, Authentication authentication) {
 
-        SurveyShortUrl surveyShortUrl = surveyShortUrlRepository.findByUrl(shortUrl);
-
         if (authentication != null) {
             User userDetails = (User) authentication.getPrincipal();
             answer.setUuid(String.valueOf(userDetails.getId()));
         }
-        answer.setSurvey(surveyRepository.findById(surveyShortUrl.getSurveyId()).get());
 
-        SurveyCompletion surveyCompletion = surveyCompletionRepository.save(answer.toSurveyCompletion());
+        SurveyShortUrl surveyShortUrl = surveyShortUrlRepository.findByUrl(shortUrl);
+        Survey survey = surveyRepository.findById(surveyShortUrl.getSurveyId()).get();
+        User user = userRepository.findById(surveyShortUrl.getUserId()).get();
+
+        SurveyCompletion surveyCompletion = surveyCompletionRepository.save(answer.toSurveyCompletion(survey, user));
         for (SurveyDto.AnswerContent answerContent : answer.getAnswerContentList()) {
             Question question = questionRepository.findById(answerContent.getQuestion()).get();
             surveyAnswerRepository.save(answerContent.toSurveyAnswer(surveyCompletion, question));
