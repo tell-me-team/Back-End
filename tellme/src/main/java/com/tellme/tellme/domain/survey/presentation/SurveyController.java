@@ -19,7 +19,15 @@ public class SurveyController {
     private BaseResponse<SurveyCompletion> saveAnswer(@PathVariable("surveyId") int surveyId,
                                                       @PathVariable("userId") String uuid,
                                                       @RequestBody SurveyDto.Answer answer,
-                                                      Authentication authentication){
+                                                      Authentication authentication) {
         return BaseResponse.ok(surveyService.saveAnswer(surveyId, uuid, answer, authentication));
+    }
+
+    @GetMapping("/share/{surveyId}")
+    @ResponseBody
+    private BaseResponse<String> share(@PathVariable("surveyId") int surveyId,
+                                       Authentication authentication){
+
+        return BaseResponse.ok(surveyService.share(surveyId, authentication));
     }
 }

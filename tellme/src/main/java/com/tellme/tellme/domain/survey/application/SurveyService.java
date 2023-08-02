@@ -10,6 +10,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 
 @Service
@@ -23,6 +24,7 @@ public class SurveyService {
     private final QuestionRepository questionRepository;
     private final SurveyQuestionQueryRepository surveyQuestionQueryRepository;
     private final UserRepository userRepository;
+    private final SurveyShortUrlRepository surveyShortUrlRepository;
 
     public SurveyCompletion saveAnswer(int surveyId, String uuid, SurveyDto.Answer answer, Authentication authentication) {
 
@@ -68,5 +70,25 @@ public class SurveyService {
         }
         return surveyCompletionWithAnswersList;
 
+    }
+
+    public String share(int surveyId, Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+
+        SurveyShortUrl findShortUrl = surveyShortUrlRepository.findBySurveyIdAndUserId(surveyId, user.getId());
+        if(findShortUrl != null) {
+            return findShortUrl.getUrl();
+        }
+
+        long maxCount = surveyShortUrlRepository.count() + 1;
+        String url = Base64.getUrlEncoder().encodeToString(String.valueOf(maxCount).getBytes());
+        SurveyShortUrl shortUrl = SurveyShortUrl.builder()
+                .surveyId(surveyId)
+                .userId(user.getId())
+                .url(url)
+                .build();
+        surveyShortUrlRepository.save(shortUrl);
+
+        return shortUrl.getUrl();
     }
 }
