@@ -46,21 +46,21 @@ public class OAuthService {
                 // 로그인
                 if(userService.checkUserByEmail(kakaoUser.getKakao_account().getEmail())) {
 
-                    GetUserRes getUserRes = userService.getUserByEmail(kakaoUser.getKakao_account().getEmail());
-                    String accessToken = jwtTokenProvider.createAccessToken(getUserRes.getEmail(), List.of("ROLE_USER"));
-                    String refreshToken = jwtTokenProvider.createRefreshToken(getUserRes.getEmail(), List.of("ROLE_USER"));
+                    User user = userService.getUserByEmail(kakaoUser.getKakao_account().getEmail());
+                    String accessToken = jwtTokenProvider.createAccessToken(user.getEmail(), List.of("ROLE_USER"));
+                    String refreshToken = jwtTokenProvider.createRefreshToken(user.getEmail(), List.of("ROLE_USER"));
 
-                    GetSocialOAuthRes getSocialOAuthRes = new GetSocialOAuthRes(getUserRes.getId(), accessToken, refreshToken);
+                    GetSocialOAuthRes getSocialOAuthRes = new GetSocialOAuthRes(user.getId(), accessToken, refreshToken);
                     return getSocialOAuthRes;
 
                 // 회원가입
                 }else {
 
-                    User saveUser = userRepository.save(kakaoUser.toEntity());
-                    String accessToken = jwtTokenProvider.createAccessToken(saveUser.getEmail(), List.of("ROLE_USER"));
-                    String refreshToken = jwtTokenProvider.createRefreshToken(saveUser.getEmail(), List.of("ROLE_USER"));
+                    User user = userRepository.save(kakaoUser.toEntity());
+                    String accessToken = jwtTokenProvider.createAccessToken(user.getEmail(), List.of("ROLE_USER"));
+                    String refreshToken = jwtTokenProvider.createRefreshToken(user.getEmail(), List.of("ROLE_USER"));
 
-                    GetSocialOAuthRes getSocialOAuthRes = new GetSocialOAuthRes(saveUser.getId(), accessToken, refreshToken);
+                    GetSocialOAuthRes getSocialOAuthRes = new GetSocialOAuthRes(user.getId(), accessToken, refreshToken);
                     return getSocialOAuthRes;
                 }
 
