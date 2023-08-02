@@ -20,7 +20,7 @@ public class SurveyDto {
         private String uuid;
         private List<AnswerContent> answerContentList;
 
-        public SurveyCompletion toSurveyCompletion() {
+        public SurveyCompletion toSurveyCompletion(String uuid) {
             return SurveyCompletion.builder()
                     .survey(survey)
                     .user(user)
