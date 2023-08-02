@@ -14,19 +14,26 @@ public class SurveyController {
 
     private final SurveyService surveyService;
 
-    @PostMapping("/{short_url}")
+    @PostMapping("/{surveyId}/{userId}/answer")
     @ResponseBody
-    private BaseResponse<SurveyCompletion> saveAnswer(@PathVariable("short_url") String shortUrl,
+    public BaseResponse<SurveyCompletion> saveAnswer(@PathVariable("surveyId") int surveyId,
+                                                     @PathVariable("userId") int userId,
                                                       @RequestBody SurveyDto.Answer answer,
                                                       Authentication authentication) {
-        return BaseResponse.ok(surveyService.saveAnswer(shortUrl, answer, authentication));
+        return BaseResponse.ok(surveyService.saveAnswer(surveyId, userId, answer, authentication));
     }
 
     @GetMapping("/share/{surveyId}")
     @ResponseBody
-    private BaseResponse<String> share(@PathVariable("surveyId") int surveyId,
+    public BaseResponse<String> share(@PathVariable("surveyId") int surveyId,
                                        Authentication authentication){
 
         return BaseResponse.ok(surveyService.share(surveyId, authentication));
+    }
+
+    @GetMapping("/{short_url}")
+    @ResponseBody
+    public BaseResponse<SurveyDto.SurveyInfo> shortUrlDecoding(@PathVariable("short_url") String shortUrl){
+        return BaseResponse.ok(surveyService.shortUrlDecoding(shortUrl));
     }
 }
