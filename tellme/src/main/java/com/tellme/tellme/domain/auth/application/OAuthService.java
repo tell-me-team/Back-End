@@ -1,6 +1,6 @@
 package com.tellme.tellme.domain.auth.application;
 
-import com.tellme.tellme.common.config.JwtTokenProvider;
+import com.tellme.tellme.common.auth.JwtTokenProvider;
 import com.tellme.tellme.common.enums.SocialLoginType;
 import com.tellme.tellme.domain.user.application.UserService;
 import com.tellme.tellme.domain.user.entity.*;
@@ -14,7 +14,6 @@ import java.io.IOException;
 import java.util.List;
 
 import static com.tellme.tellme.domain.auth.presentation.AuthDto.*;
-import static com.tellme.tellme.domain.user.presentation.UserDto.*;
 
 @Slf4j
 @Service

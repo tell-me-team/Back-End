@@ -1,6 +1,6 @@
 package com.tellme.tellme.domain.user.application;
 
-//import com.tellme.tellme.common.config.JwtTokenProvider;
+//import com.tellme.tellme.common.auth.JwtTokenProvider;
 import com.tellme.tellme.common.exception.BaseException;
 import com.tellme.tellme.common.exception.ErrorStatus;
 import com.tellme.tellme.domain.user.entity.User;
