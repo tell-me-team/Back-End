@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("v1/user")
+@RequestMapping("v1/users")
 @RequiredArgsConstructor
 public class UserSurveyController {
 
