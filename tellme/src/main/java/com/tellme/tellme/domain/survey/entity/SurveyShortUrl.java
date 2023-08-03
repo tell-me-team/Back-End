@@ -8,7 +8,6 @@ import lombok.*;
 @Getter
 @Table(name = "survey_shrot_url")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@ToString
 public class SurveyShortUrl extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
