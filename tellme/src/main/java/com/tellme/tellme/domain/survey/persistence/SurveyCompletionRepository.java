@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface SurveyCompletionRepository extends JpaRepository<SurveyCompletion, Integer> {
+    SurveyCompletion findByUniqueId(String uniqueId);
 }

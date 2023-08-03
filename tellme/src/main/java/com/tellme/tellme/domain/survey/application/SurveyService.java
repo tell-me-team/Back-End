@@ -1,11 +1,12 @@
 package com.tellme.tellme.domain.survey.application;
 
+import com.tellme.tellme.common.response.BaseResponse;
 import com.tellme.tellme.domain.survey.entity.*;
 import com.tellme.tellme.domain.survey.persistence.*;
-import com.tellme.tellme.domain.survey.presentation.SurveyDto;
 import com.tellme.tellme.domain.user.entity.User;
 import com.tellme.tellme.domain.user.persistence.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
@@ -29,11 +30,12 @@ public class SurveyService {
     private final UserRepository userRepository;
     private final SurveyShortUrlRepository surveyShortUrlRepository;
 
-    public SurveyCompletion saveAnswer(int surveyId, long userId, Answer answer, Authentication authentication) {
+    public BaseResponse saveAnswer(int surveyId, long userId, Answer answer, Authentication authentication) {
 
-        if (authentication != null) {
-            User userDetails = (User) authentication.getPrincipal();
-            answer.setUuid(String.valueOf(userDetails.getId()));
+        answer = checkAuthentication(authentication, answer);
+
+        if(isSurveyAlreadyCompleted(answer.getUniqueId())){
+            return BaseResponse.of(HttpStatus.OK, "이미 설문조사에 참여했습니다.", surveyCompletionRepository.findByUniqueId(answer.getUniqueId()));
         }
 
         Survey survey = surveyRepository.findById(surveyId).get();
@@ -44,7 +46,7 @@ public class SurveyService {
             Question question = questionRepository.findById(answerContent.getQuestion()).get();
             surveyAnswerRepository.save(answerContent.toSurveyAnswer(surveyCompletion, question));
         }
-        return surveyCompletion;
+        return BaseResponse.ok(surveyCompletion);
     }
 
     public List<SurveyAnswer> getSurveyResult(long userId, int surveyId) {
@@ -118,5 +120,17 @@ public class SurveyService {
                 .answerA(question.getAnswerA())
                 .answerB(question.getAnswerB())
                         .build()).collect(Collectors.toList());
+    }
+
+    private Answer checkAuthentication(Authentication authentication, Answer answer){
+        if (authentication != null) {
+            User userDetails = (User) authentication.getPrincipal();
+            answer.setUniqueId(String.valueOf(userDetails.getId()));
+        }
+        return answer;
+    }
+
+    private boolean isSurveyAlreadyCompleted(String uniqueId) {
+        return surveyCompletionRepository.findByUniqueId(uniqueId) != null;
     }
 }

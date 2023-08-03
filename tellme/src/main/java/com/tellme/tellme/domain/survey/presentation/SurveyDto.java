@@ -16,20 +16,19 @@ public class SurveyDto {
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
     @Builder
     public static class Answer {
-        private int surveyId;
-        private String uuid;
+        private String uniqueId;
         private List<AnswerContent> answerContentList;
 
         public SurveyCompletion toSurveyCompletion(Survey survey, User user) {
             return SurveyCompletion.builder()
                     .survey(survey)
                     .user(user)
-                    .uuid(uuid)
+                    .uniqueId(uniqueId)
                     .build();
         }
 
-        public void setUuid(String uuid) {
-            this.uuid = uuid;
+        public void setUniqueId(String uniqueId) {
+            this.uniqueId = uniqueId;
         }
 
     }
