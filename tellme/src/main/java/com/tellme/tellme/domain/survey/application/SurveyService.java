@@ -51,32 +51,34 @@ public class SurveyService {
     }
 
     public List<SurveyAnswer> getSurveyResult(int userId, int surveyId) {
-        User user = userRepository.findById(userId).get();
-        SurveyCompletion surveyCompletion = surveyCompletionQueryRepository.findByUserIdAndSurveyId(user, surveyId);
-        List<SurveyAnswer> surveyAnswerList = surveyAnswerRepository.findBySurveyCompletion(surveyCompletion);
+//        User user = userRepository.findById(userId).get();
+//        SurveyCompletion surveyCompletion = surveyCompletionQueryRepository.findByUserIdAndSurveyId(user, surveyId);
+//        List<SurveyAnswer> surveyAnswerList = surveyAnswerRepository.findBySurveyCompletion(surveyCompletion);
         // TODO 선택한 답변에따라서 키워드 출력
-        return surveyAnswerList;
+//        return surveyAnswerList;
+        return null;
     }
 
     public List<SurveyCompletionWithAnswers> getSurveyResultDetail(int userId, int surveyId) {
-        Survey survey = surveyRepository.findById(surveyId).get();
-        User user = userRepository.findById(userId).get();
-
-        List<Question> questionList = surveyQuestionQueryRepository.getQuestionList(survey);
-        List<SurveyCompletionWithAnswers> surveyCompletionWithAnswersList = new ArrayList<>();
-
-        for (Question question : questionList) {
-            Character answerToMe = surveyCompletionQueryRepository.getAnswerToMe(user, question);
-
-            SurveyCompletionWithAnswers answer = SurveyCompletionWithAnswers.builder()
-                    .question(question.getQuestion())
-                    .answerToMe(answerToMe)
-                    .answerToOther("")
-                    .build(); //  TODO 최빈값
-
-            surveyCompletionWithAnswersList.add(answer);
-        }
-        return surveyCompletionWithAnswersList;
+//        Survey survey = surveyRepository.findById(surveyId).get();
+//        User user = userRepository.findById(userId).get();
+//
+//        List<Question> questionList = surveyQuestionQueryRepository.getQuestionList(survey);
+//        List<SurveyCompletionWithAnswers> surveyCompletionWithAnswersList = new ArrayList<>();
+//
+//        for (Question question : questionList) {
+//            Character answerToMe = surveyCompletionQueryRepository.getAnswerToMe(user, question);
+//
+//            SurveyCompletionWithAnswers answer = SurveyCompletionWithAnswers.builder()
+//                    .question(question.getQuestion())
+//                    .answerToMe(answerToMe)
+//                    .answerToOther("")
+//                    .build(); //  TODO 최빈값
+//
+//            surveyCompletionWithAnswersList.add(answer);
+//        }
+//        return surveyCompletionWithAnswersList;
+        return null;
 
     }
 
