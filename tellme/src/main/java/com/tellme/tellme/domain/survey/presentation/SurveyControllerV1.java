@@ -21,7 +21,7 @@ public class SurveyControllerV1 {
     @Operation(summary = "설문 답변")
     @ResponseBody
     public BaseResponse saveAnswer(@PathVariable("surveyId") int surveyId,
-                                   @PathVariable("userId") long userId,
+                                   @PathVariable("userId") int userId,
                                    @RequestBody Answer answer,
                                    Authentication authentication) {
         return surveyService.saveAnswer(surveyId, userId, answer, authentication);

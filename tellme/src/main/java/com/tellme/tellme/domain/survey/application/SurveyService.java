@@ -31,7 +31,7 @@ public class SurveyService {
     private final UserRepository userRepository;
     private final SurveyShortUrlRepository surveyShortUrlRepository;
 
-    public BaseResponse saveAnswer(int surveyId, long userId, Answer answer, Authentication authentication) {
+    public BaseResponse saveAnswer(int surveyId, int userId, Answer answer, Authentication authentication) {
 
         answer = checkAuthentication(authentication, answer);
 
@@ -50,7 +50,7 @@ public class SurveyService {
         return BaseResponse.ok(surveyCompletion);
     }
 
-    public List<SurveyAnswer> getSurveyResult(long userId, int surveyId) {
+    public List<SurveyAnswer> getSurveyResult(int userId, int surveyId) {
         User user = userRepository.findById(userId).get();
         SurveyCompletion surveyCompletion = surveyCompletionQueryRepository.findByUserIdAndSurveyId(user, surveyId);
         List<SurveyAnswer> surveyAnswerList = surveyAnswerRepository.findBySurveyCompletion(surveyCompletion);
@@ -58,7 +58,7 @@ public class SurveyService {
         return surveyAnswerList;
     }
 
-    public List<SurveyCompletionWithAnswers> getSurveyResultDetail(long userId, int surveyId) {
+    public List<SurveyCompletionWithAnswers> getSurveyResultDetail(int userId, int surveyId) {
         Survey survey = surveyRepository.findById(surveyId).get();
         User user = userRepository.findById(userId).get();
 
@@ -103,7 +103,7 @@ public class SurveyService {
     public SurveyInfo shortUrlDecoding(String shortUrl) {
         SurveyShortUrl surveyShortUrl = surveyShortUrlRepository.findByUrl(shortUrl);
         int surveyId = surveyShortUrl.getSurveyId();
-        long userId = surveyShortUrl.getUserId();
+        int userId = surveyShortUrl.getUserId();
 
         return SurveyInfo.builder()
                 .surveyId(surveyId)
