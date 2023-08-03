@@ -8,8 +8,9 @@ import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RequiredArgsConstructor
+@RequestMapping("v1/users")
 @RestController
-public class UserController {
+public class UserControllerV1 {
 
 
     @GetMapping("/test")
