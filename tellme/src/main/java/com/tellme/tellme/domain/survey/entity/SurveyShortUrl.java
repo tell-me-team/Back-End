@@ -6,7 +6,7 @@ import lombok.*;
 
 @Entity
 @Getter
-@Table(name = "survey_shrot_url")
+@Table(name = "survey_short_url")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class SurveyShortUrl extends BaseEntity {
     @Id

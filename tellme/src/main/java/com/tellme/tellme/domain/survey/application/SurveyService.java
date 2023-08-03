@@ -64,11 +64,12 @@ public class SurveyService {
 
         for (Question question : questionList) {
             Character answerToMe = surveyCompletionQueryRepository.getAnswerToMe(user, question);
-            SurveyCompletionWithAnswers answer = new SurveyCompletionWithAnswers();
-            answer.setQuestion(question.getQuestion());
-            answer.setAnswerToMe(answerToMe);
 
-            //  Todo 최빈값
+            SurveyCompletionWithAnswers answer = SurveyCompletionWithAnswers.builder()
+                    .question(question.getQuestion())
+                    .answerToMe(answerToMe)
+                    .answerToOther("")
+                    .build(); //  TODO 최빈값
 
             surveyCompletionWithAnswersList.add(answer);
         }
@@ -101,25 +102,21 @@ public class SurveyService {
         int surveyId = surveyShortUrl.getSurveyId();
         long userId = surveyShortUrl.getUserId();
 
-        SurveyInfo surveyInfo = SurveyInfo.builder()
+        return SurveyInfo.builder()
                 .surveyId(surveyId)
                 .userId(userId)
                 .build();
-        return surveyInfo;
     }
 
     public List<QuestionInfo> getQuestionInfo(int surveyId) {
         Survey survey = surveyRepository.findById(surveyId).get();
         List<Question> questionList = surveyQuestionQueryRepository.getQuestionList(survey);
 
-        List<QuestionInfo> questionInfoList = questionList.stream()
-                .map(question -> {
-                    QuestionInfo questionInfo = new QuestionInfo();
-                    questionInfo.setQuestion(question.getQuestion());
-                    questionInfo.setAnswerA(question.getAnswerA());
-                    questionInfo.setAnswerB(question.getAnswerB());
-                    return questionInfo;
-                }).collect(Collectors.toList());
-        return questionInfoList;
+        return questionList.stream()
+                .map(question -> QuestionInfo.builder()
+                .question(question.getQuestion())
+                .answerA(question.getAnswerA())
+                .answerB(question.getAnswerB())
+                        .build()).collect(Collectors.toList());
     }
 }

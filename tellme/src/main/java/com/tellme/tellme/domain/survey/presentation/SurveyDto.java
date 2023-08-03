@@ -27,6 +27,11 @@ public class SurveyDto {
                     .uuid(uuid)
                     .build();
         }
+
+        public void setUuid(String uuid) {
+            this.uuid = uuid;
+        }
+
     }
 
     @Getter
@@ -54,6 +59,7 @@ public class SurveyDto {
         private String question;
         private Character answerToMe;
         private String answerToOther;
+
     }
 
     @Getter
