@@ -28,10 +28,18 @@ jobs:
         id: build-number
         run: echo "::set-output name=BUILD_NUMBER::$(date '+%-d.%-m.%Y.%-H.%-M.%-S')"
 
-      - name: Build Project with Gradle
+
+      - name: Build Project with Gradle and QueryDSL
         working-directory: ./tellme
-        run: ./gradlew build --info
-        
+        run: |
+          ./gradlew clean build querydslCompile
+
+      - name: Install Docker Buildx
+        run: |
+          docker run --privileged --rm tonistiigi/binfmt --install all
+          docker buildx create --use
+          docker buildx inspect --bootstrap
+
       - name: Docker Login
         uses: docker/login-action@f3364599c6aa293cdc2b8391b1b56d0c30e45c8a
         with:
