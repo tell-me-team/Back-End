@@ -66,7 +66,7 @@ public class SurveyDto {
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
     @Builder
     public static class SurveyInfo{
-        private long userId;
+        private int userId;
         private int surveyId;
 
     }

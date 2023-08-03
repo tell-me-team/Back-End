@@ -8,5 +8,5 @@ import org.springframework.stereotype.Repository;
 public interface SurveyShortUrlRepository extends JpaRepository<SurveyShortUrl, Integer> {
     SurveyShortUrl findByUrl(String url);
 
-    SurveyShortUrl findBySurveyIdAndUserId(int surveyId, long userId);
+    SurveyShortUrl findBySurveyIdAndUserId(int surveyId, int userId);
 }

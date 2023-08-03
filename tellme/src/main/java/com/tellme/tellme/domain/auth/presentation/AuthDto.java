@@ -15,7 +15,7 @@ public class AuthDto {
     @Builder
     public static class GetSocialOAuthRes {
 
-        private Long userId;
+        private int userId;
         private String accessToken;
         private String refreshToken;
 
