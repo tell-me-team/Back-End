@@ -13,7 +13,7 @@ public enum ErrorStatus {
     CLIENT_REQUEST_ERROR(HttpStatus.BAD_REQUEST, "잘못된 요청입니다. 요청을 확인해주세요."),
 
     // SURVEY
-    SURVEY_ALREADY_COMPLETED(HttpStatus.CONFLICT, "이미 설문조사에 참여했습니다.");
+    SURVEY_ALREADY_COMPLETED(HttpStatus.CONFLICT, "이미 설문조사에 참여했습니다."),
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버에 문제가 생겼습니다. 잠시 후 다시 시도해주세요."),
 
     // AUTH
