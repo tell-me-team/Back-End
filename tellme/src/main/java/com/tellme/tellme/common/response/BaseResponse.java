@@ -1,13 +1,19 @@
 package com.tellme.tellme.common.response;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
 @Getter
 public class BaseResponse<T> {
+
+    @JsonProperty
     private int code;
+    @JsonProperty
     private HttpStatus status;
+    @JsonProperty
     private String message;
+    @JsonProperty
     private T data;
 
     public BaseResponse(HttpStatus status, String message, T data) {

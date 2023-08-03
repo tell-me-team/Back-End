@@ -1,12 +1,16 @@
 package com.tellme.tellme.common.response;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.tellme.tellme.common.exception.ErrorStatus;
 import org.springframework.http.HttpStatus;
 
 public class BaseExceptionResponse {
 
+    @JsonProperty
     private int code;
+    @JsonProperty
     private HttpStatus status;
+    @JsonProperty
     private String message;
 
     public BaseExceptionResponse() {
