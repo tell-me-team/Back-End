@@ -36,6 +36,9 @@ constant:
     access-token-expiration-time: 43200000    # 12시간
     refresh-token-expiration-time: 604800000   # 7일
 
+server:
+  forward-headers-strategy: FRAMEWORK
+
 ---
 spring:
   config:

@@ -2,8 +2,11 @@ package com.tellme.tellme.domain.survey.entity;
 
 import com.tellme.tellme.domain.BaseEntity;
 import jakarta.persistence.*;
+import lombok.Getter;
 
 @Entity
+@Getter
+@Table(name = "survey_question")
 public class SurveyQuestion extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
