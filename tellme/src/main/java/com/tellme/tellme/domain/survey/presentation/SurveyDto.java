@@ -5,16 +5,16 @@ import com.tellme.tellme.domain.survey.entity.Survey;
 import com.tellme.tellme.domain.survey.entity.SurveyAnswer;
 import com.tellme.tellme.domain.survey.entity.SurveyCompletion;
 import com.tellme.tellme.domain.user.entity.User;
-import lombok.Builder;
-import lombok.Data;
-import lombok.ToString;
+import lombok.*;
 
 import java.util.List;
 
-@Data
 public class SurveyDto {
 
-    @Data
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor(access = AccessLevel.PROTECTED)
+    @Builder
     public static class Answer {
         private int surveyId;
         private String uuid;
@@ -29,7 +29,10 @@ public class SurveyDto {
         }
     }
 
-    @Data
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor(access = AccessLevel.PROTECTED)
+    @Builder
     public static class AnswerContent {
         private int question;
         private char answer;
@@ -43,26 +46,30 @@ public class SurveyDto {
         }
     }
 
-    @Data
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor(access = AccessLevel.PROTECTED)
+    @Builder
     public static class SurveyCompletionWithAnswers {
         private String question;
         private Character answerToMe;
         private String answerToOther;
     }
 
-    @Data
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor(access = AccessLevel.PROTECTED)
+    @Builder
     public static class SurveyInfo{
         private long userId;
         private int surveyId;
 
-        @Builder
-        public SurveyInfo(long userId, int surveyId) {
-            this.userId = userId;
-            this.surveyId = surveyId;
-        }
     }
 
-    @Data
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor(access = AccessLevel.PROTECTED)
+    @Builder
     public static class QuestionInfo{
         private String question;
         private String answerA;
