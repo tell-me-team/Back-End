@@ -39,7 +39,7 @@ public class SurveyCompletionQueryRepository {
                 .join(surveyCompletion.surveyAnswers, surveyAnswer)
                 .where(
                         surveyCompletion.user.eq(user),
-                        surveyCompletion.uuid.eq(userIdAsString),
+                        surveyCompletion.uniqueId.eq(userIdAsString),
                         surveyAnswer.question.eq(question)
                 )
                 .fetchOne();
