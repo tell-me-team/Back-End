@@ -15,11 +15,11 @@ public class SurveyShortUrl extends BaseEntity {
     @Column(name = "survey_id")
     private int surveyId;
     @Column(name = "user_id")
-    private long userId;
+    private int userId;
     private String url;
 
     @Builder
-    public SurveyShortUrl(int surveyId, long userId, String url) {
+    public SurveyShortUrl(int surveyId, int userId, String url) {
         this.surveyId = surveyId;
         this.userId = userId;
         this.url = url;

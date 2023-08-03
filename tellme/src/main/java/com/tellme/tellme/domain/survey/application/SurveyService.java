@@ -1,8 +1,10 @@
 package com.tellme.tellme.domain.survey.application;
 
+import com.tellme.tellme.common.exception.BaseException;
+import com.tellme.tellme.common.exception.ErrorStatus;
+import com.tellme.tellme.common.response.BaseResponse;
 import com.tellme.tellme.domain.survey.entity.*;
 import com.tellme.tellme.domain.survey.persistence.*;
-import com.tellme.tellme.domain.survey.presentation.SurveyDto;
 import com.tellme.tellme.domain.user.entity.User;
 import com.tellme.tellme.domain.user.persistence.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -29,11 +31,12 @@ public class SurveyService {
     private final UserRepository userRepository;
     private final SurveyShortUrlRepository surveyShortUrlRepository;
 
-    public SurveyCompletion saveAnswer(int surveyId, long userId, Answer answer, Authentication authentication) {
+    public BaseResponse saveAnswer(int surveyId, int userId, Answer answer, Authentication authentication) {
 
-        if (authentication != null) {
-            User userDetails = (User) authentication.getPrincipal();
-            answer.setUuid(String.valueOf(userDetails.getId()));
+        answer = checkAuthentication(authentication, answer);
+
+        if(isSurveyAlreadyCompleted(answer.getUniqueId())){
+            throw new BaseException(ErrorStatus.SURVEY_ALREADY_COMPLETED);
         }
 
         Survey survey = surveyRepository.findById(surveyId).get();
@@ -44,10 +47,10 @@ public class SurveyService {
             Question question = questionRepository.findById(answerContent.getQuestion()).get();
             surveyAnswerRepository.save(answerContent.toSurveyAnswer(surveyCompletion, question));
         }
-        return surveyCompletion;
+        return BaseResponse.ok(surveyCompletion);
     }
 
-    public List<SurveyAnswer> getSurveyResult(long userId, int surveyId) {
+    public List<SurveyAnswer> getSurveyResult(int userId, int surveyId) {
         User user = userRepository.findById(userId).get();
         SurveyCompletion surveyCompletion = surveyCompletionQueryRepository.findByUserIdAndSurveyId(user, surveyId);
         List<SurveyAnswer> surveyAnswerList = surveyAnswerRepository.findBySurveyCompletion(surveyCompletion);
@@ -55,7 +58,7 @@ public class SurveyService {
         return surveyAnswerList;
     }
 
-    public List<SurveyCompletionWithAnswers> getSurveyResultDetail(long userId, int surveyId) {
+    public List<SurveyCompletionWithAnswers> getSurveyResultDetail(int userId, int surveyId) {
         Survey survey = surveyRepository.findById(surveyId).get();
         User user = userRepository.findById(userId).get();
 
@@ -100,7 +103,7 @@ public class SurveyService {
     public SurveyInfo shortUrlDecoding(String shortUrl) {
         SurveyShortUrl surveyShortUrl = surveyShortUrlRepository.findByUrl(shortUrl);
         int surveyId = surveyShortUrl.getSurveyId();
-        long userId = surveyShortUrl.getUserId();
+        int userId = surveyShortUrl.getUserId();
 
         return SurveyInfo.builder()
                 .surveyId(surveyId)
@@ -118,5 +121,17 @@ public class SurveyService {
                 .answerA(question.getAnswerA())
                 .answerB(question.getAnswerB())
                         .build()).collect(Collectors.toList());
+    }
+
+    private Answer checkAuthentication(Authentication authentication, Answer answer){
+        if (authentication != null) {
+            User userDetails = (User) authentication.getPrincipal();
+            answer.setUniqueId(String.valueOf(userDetails.getId()));
+        }
+        return answer;
+    }
+
+    private boolean isSurveyAlreadyCompleted(String uniqueId) {
+        return surveyCompletionRepository.findByUniqueId(uniqueId) != null;
     }
 }

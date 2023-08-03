@@ -21,13 +21,13 @@ public class UserSurveyControllerV1 {
 
     @GetMapping("survey-results/{userId}/{surveyId}")
     @Operation(summary = "설문 결과")
-    public BaseResponse<List<SurveyAnswer>> getSurveyResult(@PathVariable long userId, @PathVariable int surveyId){
+    public BaseResponse<List<SurveyAnswer>> getSurveyResult(@PathVariable int userId, @PathVariable int surveyId){
         return BaseResponse.ok(surveyService.getSurveyResult(userId, surveyId));
     }
 
     @GetMapping("survey-results/{userId}/{surveyId}/details")
     @Operation(summary = "설문 결과 상세보기")
-    public BaseResponse<List<SurveyDto.SurveyCompletionWithAnswers>> getSurveyResultDetail(@PathVariable long userId, @PathVariable int surveyId){
+    public BaseResponse<List<SurveyDto.SurveyCompletionWithAnswers>> getSurveyResultDetail(@PathVariable int userId, @PathVariable int surveyId){
         return BaseResponse.ok(surveyService.getSurveyResultDetail(userId, surveyId));
     }
 }

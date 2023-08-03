@@ -5,7 +5,6 @@ import com.tellme.tellme.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
@@ -28,16 +27,16 @@ public class SurveyCompletion extends BaseEntity {
     @JoinColumn(name = "create_user_id")
     private User user;
 
-    @Column(name = "uuid")
-    private String uuid;
+    @Column(name = "unique_id")
+    private String uniqueId;
 
     @OneToMany(mappedBy = "surveyCompletion")
     private List<SurveyAnswer> surveyAnswers = new ArrayList<>();
 
     @Builder
-    public SurveyCompletion(Survey survey, User user, String uuid) {
+    public SurveyCompletion(Survey survey, User user, String uniqueId) {
         this.survey = survey;
         this.user = user;
-        this.uuid = uuid;
+        this.uniqueId = uniqueId;
     }
 }
