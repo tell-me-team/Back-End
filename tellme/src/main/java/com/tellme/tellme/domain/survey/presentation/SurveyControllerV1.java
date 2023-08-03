@@ -3,6 +3,7 @@ package com.tellme.tellme.domain.survey.presentation;
 import com.tellme.tellme.common.response.BaseResponse;
 import com.tellme.tellme.domain.survey.application.SurveyService;
 import com.tellme.tellme.domain.survey.entity.SurveyCompletion;
+import com.tellme.tellme.domain.survey.presentation.SurveyDto.Answer;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -13,16 +14,16 @@ import java.util.List;
 @RestController
 @RequestMapping("v1/survey")
 @RequiredArgsConstructor
-public class SurveyController {
+public class SurveyControllerV1 {
 
     private final SurveyService surveyService;
 
-    @PostMapping("/{surveyId}/{userId}/answer")
+    @PostMapping("/{surveyId}/{userId}/answers")
     @Operation(summary = "설문 답변")
     @ResponseBody
     public BaseResponse<SurveyCompletion> saveAnswer(@PathVariable("surveyId") int surveyId,
                                                      @PathVariable("userId") int userId,
-                                                      @RequestBody SurveyDto.Answer answer,
+                                                      @RequestBody Answer answer,
                                                       Authentication authentication) {
         return BaseResponse.ok(surveyService.saveAnswer(surveyId, userId, answer, authentication));
     }
@@ -36,17 +37,17 @@ public class SurveyController {
         return BaseResponse.ok(surveyService.share(surveyId, authentication));
     }
 
-    @GetMapping("/{short_url}")
+    @GetMapping("/{shortUrl}")
     @Operation(summary = "설문 링크 url 디코드")
     @ResponseBody
-    public BaseResponse<SurveyDto.SurveyInfo> shortUrlDecoding(@PathVariable("short_url") String shortUrl){
+    public BaseResponse<SurveyDto.SurveyInfo> shortUrlDecoding(@PathVariable String shortUrl){
         return BaseResponse.ok(surveyService.shortUrlDecoding(shortUrl));
     }
 
-    @GetMapping("/question/{survey_id}")
+    @GetMapping("/questions/{surveyId}")
     @Operation(summary = "설문 질문 리스트")
     @ResponseBody
-    public BaseResponse<List<SurveyDto.QuestionInfo>> getQuestionInfo(@PathVariable("survey_id") int surveyId){
+    public BaseResponse<List<SurveyDto.QuestionInfo>> getQuestionInfo(@PathVariable int surveyId){
         return BaseResponse.ok(surveyService.getQuestionInfo(surveyId));
     }
 }
