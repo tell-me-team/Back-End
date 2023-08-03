@@ -1,6 +1,8 @@
 package com.tellme.tellme.domain.user.application;
 
 //import com.tellme.tellme.common.config.JwtTokenProvider;
+import com.tellme.tellme.common.exception.BaseException;
+import com.tellme.tellme.common.exception.ErrorStatus;
 import com.tellme.tellme.domain.user.entity.User;
 import com.tellme.tellme.domain.user.persistence.UserRepository;
 import com.tellme.tellme.domain.user.presentation.UserDto;
@@ -27,9 +29,8 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public GetUserRes getUserByEmail(String email) {
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("user null"));
-        return new GetUserRes(user);
+    public User getUserByEmail(String email) {
+        return userRepository.findByEmail(email).orElseThrow(() -> new BaseException(ErrorStatus.RESOURCE_NOT_VALID));
     }
 
 
