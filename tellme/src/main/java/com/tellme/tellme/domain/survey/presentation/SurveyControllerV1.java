@@ -13,7 +13,7 @@ import java.util.List;
 @RestController
 @RequestMapping("v1/survey")
 @RequiredArgsConstructor
-public class SurveyController {
+public class SurveyControllerV1 {
 
     private final SurveyService surveyService;
 

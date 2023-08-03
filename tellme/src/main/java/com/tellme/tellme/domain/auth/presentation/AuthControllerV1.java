@@ -15,13 +15,14 @@ import static com.tellme.tellme.domain.auth.presentation.AuthDto.*;
 
 @Slf4j
 @RequiredArgsConstructor
+@RequestMapping("v1/auth")
 @RestController
-public class AuthController {
+public class AuthControllerV1 {
 
     private final OAuthService oAuthService;
 
     @ResponseBody
-    @GetMapping(value = "/auth/{socialLoginType}/login")
+    @GetMapping(value = "{socialLoginType}/login")
     @Operation(summary = "소셜 로그인")
     public BaseResponse<GetSocialOAuthRes> socialLoginCallback(
             @PathVariable(name = "socialLoginType") String socialLoginPath,

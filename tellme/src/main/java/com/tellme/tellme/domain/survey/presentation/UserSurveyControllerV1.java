@@ -15,7 +15,7 @@ import java.util.List;
 @RestController
 @RequestMapping("v1/users")
 @RequiredArgsConstructor
-public class UserSurveyController {
+public class UserSurveyControllerV1 {
 
     private final SurveyService surveyService;
 
