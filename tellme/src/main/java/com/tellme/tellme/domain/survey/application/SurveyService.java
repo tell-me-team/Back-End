@@ -1,12 +1,13 @@
 package com.tellme.tellme.domain.survey.application;
 
+import com.tellme.tellme.common.exception.BaseException;
+import com.tellme.tellme.common.exception.ErrorStatus;
 import com.tellme.tellme.common.response.BaseResponse;
 import com.tellme.tellme.domain.survey.entity.*;
 import com.tellme.tellme.domain.survey.persistence.*;
 import com.tellme.tellme.domain.user.entity.User;
 import com.tellme.tellme.domain.user.persistence.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
@@ -35,7 +36,7 @@ public class SurveyService {
         answer = checkAuthentication(authentication, answer);
 
         if(isSurveyAlreadyCompleted(answer.getUniqueId())){
-            return BaseResponse.of(HttpStatus.OK, "이미 설문조사에 참여했습니다.", surveyCompletionRepository.findByUniqueId(answer.getUniqueId()));
+            throw new BaseException(ErrorStatus.SURVEY_ALREADY_COMPLETED);
         }
 
         Survey survey = surveyRepository.findById(surveyId).get();

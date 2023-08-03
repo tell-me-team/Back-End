@@ -1,8 +1,10 @@
 package com.tellme.tellme.common.response;
 
 import com.tellme.tellme.common.exception.ErrorStatus;
+import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
+@Getter
 public class BaseExceptionResponse {
 
     private int code;
