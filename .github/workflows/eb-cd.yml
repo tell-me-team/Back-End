@@ -32,7 +32,7 @@ jobs:
       - name: Build Project with Gradle and QueryDSL
         working-directory: ./tellme
         run: |
-          ./gradlew clean build querydslCompile
+          ./gradlew clean
 
       - name: Install Docker Buildx
         run: |
