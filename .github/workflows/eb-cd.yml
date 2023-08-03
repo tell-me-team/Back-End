@@ -37,10 +37,6 @@ jobs:
       - name: Push to Dockerhub
         working-directory: ./tellme
         run: ./gradlew jib
-        
-      - name: Build with Gradle
-        run: ./gradlew compileQuerydsl
-        working-directory: ./tellme
 
       - name: Beanstalk Deploy
         uses: einaregilsson/beanstalk-deploy@ebe3476a4ce991d54336935e75e78dd9d86f9408
