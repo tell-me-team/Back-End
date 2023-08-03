@@ -1,10 +1,7 @@
-package com.tellme.tellme.common.config;
+package com.tellme.tellme.common.auth;
 
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -124,17 +121,11 @@ public class JwtTokenProvider {
     public boolean validateToken(String token) {
 
         LOGGER.info("[validateToken] 토큰 유효 체크 시작");
-        try {
-            Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
-            LOGGER.info("[validateToken] 토큰 유효 체크 완료");
-            return !claims.getBody().getExpiration().before(new Date());
-        } catch (Exception e) {
-            LOGGER.info("[validateToken] 토큰 유효 체크 예외 발생");
-            return false;
-        }
+
+        Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
+        LOGGER.info("[validateToken] 토큰 유효 체크 완료");
+        return !claims.getBody().getExpiration().before(new Date());
 
     }
-
-
 
 }

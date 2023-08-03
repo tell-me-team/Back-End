@@ -1,4 +1,4 @@
-package com.tellme.tellme.common.config;
+package com.tellme.tellme.common.auth;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jose.JOSEException;
