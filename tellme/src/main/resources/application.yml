@@ -1,7 +1,7 @@
 
 spring:
   profiles:
-    group: # Run - Edit Configurations - Active Profiles에서 설정
+    group:
       local: common, local
       dev: common, dev
       prod: common, prod
@@ -35,8 +35,8 @@ spring:
 constant:
   jwt:
     secret-key: ${jwt.secret.key}
-    access-token-expiration-time: 43200000    # 12시간
-    refresh-token-expiration-time: 604800000   # 7일
+    access-token-expiration-time: 43200000
+    refresh-token-expiration-time: 604800000
 
 server:
   forward-headers-strategy: FRAMEWORK
