@@ -24,6 +24,19 @@ jobs:
           java-version: 17
           distribution: 'adopt'
 
+      - name: Set Yaml
+        uses: microsoft/variable-substitution@v1
+        with:
+          files: .tellme/src/main/resources/application.yml 
+        env:
+          spring.datasource.url: ${{ secrets.PROD_DATABASE_URL }} 
+          spring.datasource.username: ${{ secrets.PROD_DATABASE_USERNAME }} 
+          spring.datasource.password: ${{ secrets.PROD_DATABASE_PASSWORD }} 
+          constant.jwt.secret-key : ${{ secrets.JWT_SECRET_KEY }}
+          spring.security.oauth2.client.registration.kakao.client-id : ${{ secrets.KAKAO_CLINET_ID }}
+          spring.security.oauth2.client.registration.kakao.client-secret : ${{ secrets.KAKAO_CLIENT_PW }}
+          spring.security.oauth2.client.registration.kakao.redirect-uri : ${{ secrets.KAKAO_REDIRECT_URI }}
+        
       - name: Build Number
         id: build-number
         run: echo "::set-output name=BUILD_NUMBER::$(date '+%-d.%-m.%Y.%-H.%-M.%-S')"
