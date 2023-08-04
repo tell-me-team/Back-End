@@ -12,7 +12,7 @@ env:
   EB_ENVIRONMENT_NAME: Tell-me-application-env-2
   EB_APPLICATION_NAME: tell-me-application
   EB_DEPLOYMENT_PACKAGE: ./tellme/docker-compose.yml
-  RESOURCE_PATH: ./tellme/src/main/resources/application.yaml
+  RESOURCE_PATH: ./tellme/src/main/resources/application.yml
 
 jobs:
   build:
