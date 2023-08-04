@@ -34,13 +34,6 @@ jobs:
         with:
           files: ${{ env.RESOURCE_PATH }} 
         env:
-          KAKAO_CLINET_ID: ${{ secrets.KAKAO_CLINET_ID }} 
-          KAKAO_CLIENT_PW: ${{ secrets.KAKAO_CLIENT_PW }} 
-          KAKAO_REDIRECT_URI: ${{ secrets.KAKAO_REDIRECT_URI }} 
-          PROD_DATABASE_URL: ${{ secrets.PROD_DATABASE_URL }} 
-          PROD_DATABASE_USERNAME: ${{ secrets.PROD_DATABASE_USERNAME }} 
-          PROD_DATABASE_PASSWORD: ${{ secrets.PROD_DATABASE_PASSWORD }} 
-          JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
           SPRING_PROFILES_ACTIVE: ${{ secrets.SPRING_PROFILES_ACTIVE }}
 
       - name: Docker Login
