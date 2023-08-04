@@ -30,18 +30,18 @@ jobs:
         run: echo "::set-output name=BUILD_NUMBER::$(date '+%-d.%-m.%Y.%-H.%-M.%-S')"
 
       - name: Set Yaml
-        uses: microsoft/variable-substitution@v2
+        uses: microsoft/variable-substitution@v1
         with:
           files: ${{ env.RESOURCE_PATH }} 
         env:
-          spring.security.oauth2.client.registration.kakao.client-id: ${{ secrets.KAKAO_CLINET_ID }} 
-          spring.security.oauth2.client.registration.kakao.client-secret: ${{ secrets.KAKAO_CLIENT_PW }} 
-          spring.security.oauth2.client.registration.kakao.redirect-uri: ${{ secrets.KAKAO_REDIRECT_URI }} 
-          spring.datasource.url: ${{ secrets.PROD_DATABASE_URL }} 
-          spring.datasource.username: ${{ secrets.PROD_DATABASE_USERNAME }} 
-          spring.datasource.password: ${{ secrets.PROD_DATABASE_PASSWORD }} 
-          jwt.secret: ${{ secrets.JWT_SECRET_KEY }}
-          spring.profiles.active: ${{ secrets.SPRING_PROFILES_ACTIVE }}
+          KAKAO_CLINET_ID: ${{ secrets.KAKAO_CLINET_ID }} 
+          KAKAO_CLIENT_PW: ${{ secrets.KAKAO_CLIENT_PW }} 
+          KAKAO_REDIRECT_URI: ${{ secrets.KAKAO_REDIRECT_URI }} 
+          PROD_DATABASE_URL: ${{ secrets.PROD_DATABASE_URL }} 
+          PROD_DATABASE_USERNAME: ${{ secrets.PROD_DATABASE_USERNAME }} 
+          PROD_DATABASE_PASSWORD: ${{ secrets.PROD_DATABASE_PASSWORD }} 
+          JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+          SPRING_PROFILES_ACTIVE: ${{ secrets.SPRING_PROFILES_ACTIVE }}
 
       - name: Docker Login
         uses: docker/login-action@f3364599c6aa293cdc2b8391b1b56d0c30e45c8a
