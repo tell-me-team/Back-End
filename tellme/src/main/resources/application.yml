@@ -104,9 +104,9 @@ spring:
     init:
       platform: mysql
   datasource:
-    url: ${{ secrets.PROD_DATABASE_URL }}
-    username: ${{ secrets.PROD_DATABASE_USERNAME }}
-    password: ${{ secrets.PROD_DATABASE_PASSWORD }}
+    url: ${PROD_DATABASE_URL}
+    username: ${secrets.PROD_DATABASE_USERNAME}
+    password: ${secrets.PROD_DATABASE_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
