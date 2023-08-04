@@ -24,11 +24,6 @@ jobs:
           java-version: 17
           distribution: 'adopt'
 
-      - uses: actions/checkout@v3
-      - run: touch ./tellme/src/main/resources/application.yml
-      - run: echo "${{ secrets.APPLICATION_PROD }}" > ./tellme/src/main/resources/application.yml
-      - run: cat ./tellme/src/main/resources/application.yml
-         
       - name: Build Number
         id: build-number
         run: echo "::set-output name=BUILD_NUMBER::$(date '+%-d.%-m.%Y.%-H.%-M.%-S')"
