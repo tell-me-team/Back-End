@@ -28,30 +28,15 @@ jobs:
         id: build-number
         run: echo "::set-output name=BUILD_NUMBER::$(date '+%-d.%-m.%Y.%-H.%-M.%-S')"
 
-
-      - name: Build Project with Gradle and QueryDSL
-        working-directory: ./tellme
-        run: |
-          ./gradlew clean
-
-      - name: Install Docker Buildx
-        run: |
-          docker run --privileged --rm tonistiigi/binfmt --install all
-          docker buildx create --use
-          docker buildx inspect --bootstrap
-
       - name: Docker Login
         uses: docker/login-action@f3364599c6aa293cdc2b8391b1b56d0c30e45c8a
         with:
           username: ${{ env.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_PASSWORD }}
 
-      - name: Build and Push Docker Image
+      - name: Push to Dockerhub
         working-directory: ./tellme
-        run: |
-          export DOCKER_CLI_AKIOTTY=1
-          docker buildx build --file Dockerfile --tag $DOCKER_HUB_USERNAME/tellme:${{ steps.build-number.outputs.BUILD_NUMBER }} .
-          docker buildx build --file Dockerfile --tag $DOCKER_HUB_USERNAME/tellme:latest --push .
+        run: ./gradlew jib
 
       - name: Beanstalk Deploy
         uses: einaregilsson/beanstalk-deploy@ebe3476a4ce991d54336935e75e78dd9d86f9408
