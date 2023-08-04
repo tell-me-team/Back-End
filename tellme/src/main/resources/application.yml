@@ -5,7 +5,7 @@ spring:
       local: common, local
       dev: common, dev
       prod: common, prod
-    active: ${spring.profiles.active}
+    active: ${SPRING_PROFILES_ACTIVE}
 
 ---
 spring:
@@ -18,9 +18,9 @@ spring:
       client:
         registration:
           kakao:
-            client-id: ${kakao.client.id}
-            client-secret: ${kakao.client.pw}
-            redirect-uri: ${kakao.redirect.uri}
+            client-id: ${KAKAO_CLINET_ID}
+            client-secret: ${KAKAO_CLIENT_PW}
+            redirect-uri: ${KAKAO_REDIRECT_URI}
             client-authentication-method: POST
             authorization-grant-type: authorization_code
             scope: profile_nickname, profile_image, account_email
@@ -34,7 +34,7 @@ spring:
 
 constant:
   jwt:
-    secret-key: ${jwt.secret.key}
+    secret-key: ${JWT_SECRET_KEY}
     access-token-expiration-time: 43200000
     refresh-token-expiration-time: 604800000
 
@@ -105,9 +105,9 @@ spring:
     init:
       platform: mysql
   datasource:
-    url: ${prod.database.url}
-    username: ${prod.database.username}
-    password: ${prod.database.password}
+    url: ${PROD_DATABASE_URL}
+    username: ${PROD_DATABASE_USERNAME}
+    password: ${PROD_DATABASE_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
