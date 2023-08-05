@@ -28,15 +28,6 @@ public class SurveyControllerV1 {
         return BaseResponse.ok(surveyService.saveAnswer(surveyId, userId, answer, authentication));
     }
 
-    @GetMapping("/share/{surveyId}")
-    @Operation(summary = "설문 링크 공유 url 생성")
-    @ResponseBody
-    public BaseResponse<String> share(@PathVariable("surveyId") int surveyId,
-                                       Authentication authentication){
-
-        return BaseResponse.ok(surveyService.share(surveyId, authentication));
-    }
-
     @GetMapping("/{shortUrl}")
     @Operation(summary = "설문 링크 url 디코드")
     @ResponseBody
