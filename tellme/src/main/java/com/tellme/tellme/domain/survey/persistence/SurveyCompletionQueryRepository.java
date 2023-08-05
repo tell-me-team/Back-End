@@ -7,8 +7,6 @@ import com.tellme.tellme.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-
 import static com.tellme.tellme.domain.survey.entity.QSurveyAnswer.*;
 import static com.tellme.tellme.domain.survey.entity.QSurveyCompletion.surveyCompletion;
 

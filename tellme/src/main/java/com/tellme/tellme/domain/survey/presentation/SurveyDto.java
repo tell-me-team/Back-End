@@ -68,6 +68,7 @@ public class SurveyDto {
     public static class SurveyInfo{
         private int userId;
         private int surveyId;
+        private int userCount;
 
     }
 

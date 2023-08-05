@@ -11,7 +11,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -107,9 +106,14 @@ public class SurveyService {
         int surveyId = surveyShortUrl.getSurveyId();
         int userId = surveyShortUrl.getUserId();
 
+        // 참여자수
+        User user = userRepository.findById(userId).get();
+        int userCount = surveyCompletionRepository.findByUser(user).size();
+
         return SurveyInfo.builder()
                 .surveyId(surveyId)
                 .userId(userId)
+                .userCount(userCount)
                 .build();
     }
 
