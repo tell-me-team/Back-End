@@ -6,8 +6,8 @@ import lombok.Getter;
 
 @Entity
 @Getter
-@Table(name = "survey_keyword")
-public class SurveyKeyword extends BaseEntity {
+@Table(name = "survey_result_keyword")
+public class SurveyResultKeyword extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
