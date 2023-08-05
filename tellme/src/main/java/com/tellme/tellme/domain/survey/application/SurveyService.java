@@ -124,26 +124,6 @@ public class SurveyService {
         return shortUrl.getUrl();
     }
 
-    public String share(int surveyId, Authentication authentication) {
-        User user = (User) authentication.getPrincipal();
-
-        SurveyShortUrl findShortUrl = surveyShortUrlRepository.findBySurveyIdAndUserId(surveyId, user.getId());
-        if (findShortUrl != null) {
-            return findShortUrl.getUrl();
-        }
-
-        long maxCount = surveyShortUrlRepository.count() + 1;
-        String url = Base64.getUrlEncoder().encodeToString(String.valueOf(maxCount).getBytes());
-        SurveyShortUrl shortUrl = SurveyShortUrl.builder()
-                .surveyId(surveyId)
-                .userId(user.getId())
-                .url(url)
-                .build();
-        surveyShortUrlRepository.save(shortUrl);
-
-        return shortUrl.getUrl();
-    }
-
     public SurveyInfo shortUrlDecoding(String shortUrl) {
         SurveyShortUrl surveyShortUrl = surveyShortUrlRepository.findByUrl(shortUrl);
         int surveyId = surveyShortUrl.getSurveyId();
