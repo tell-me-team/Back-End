@@ -33,19 +33,24 @@ public class SurveyService {
     private final SurveyResultRepository surveyResultRepository;
 
     public SurveyResultInfo saveAnswer(int surveyId, int userId, Answer answer, Authentication authentication) {
-
-        answer = checkAuthentication(authentication, answer);
+        String shortUrl = null;
+        Survey survey = surveyRepository.findById(surveyId).get();
+        if (authentication != null) {
+            User userDetails = (User) authentication.getPrincipal();
+            answer.setUniqueId(String.valueOf(userDetails.getId()));
+            shortUrl = getShareUrl(survey, userDetails);
+        }
 
         if (isSurveyAlreadyCompleted(answer.getUniqueId())) {
             throw new BaseException(ErrorStatus.SURVEY_ALREADY_COMPLETED);
         }
 
-        Survey survey = surveyRepository.findById(surveyId).get();
-        User user = userRepository.findById(userId).get();
-
-        saveSurveyAnswer(survey, user, answer);
+        User createUser = userRepository.findById(userId).get();
+        saveSurveyAnswer(survey, createUser, answer);
         String answerResult = generateCombinedAnswerResult(answer.getAnswerContentList(), survey);
         SurveyResult surveyResult = calculateMode(answerResult);
+
+
 
         return SurveyResultInfo.builder()
                 .type(surveyResult.getType())
@@ -56,6 +61,7 @@ public class SurveyService {
                                 .title(keyword.getTitle())
                                 .build())
                         .collect(Collectors.toList()))
+                .shortUrl(shortUrl)
                 .build();
     }
 
@@ -98,6 +104,24 @@ public class SurveyService {
 //        return surveyCompletionWithAnswersList;
         return null;
 
+    }
+
+    private String getShareUrl(Survey survey, User user){
+        SurveyShortUrl findShortUrl = surveyShortUrlRepository.findBySurveyIdAndUserId(survey.getId(), user.getId());
+        if (findShortUrl != null) {
+            return findShortUrl.getUrl();
+        }
+
+        long maxCount = surveyShortUrlRepository.count() + 1;
+        String url = Base64.getUrlEncoder().encodeToString(String.valueOf(maxCount).getBytes());
+        SurveyShortUrl shortUrl = SurveyShortUrl.builder()
+                .surveyId(survey.getId())
+                .userId(user.getId())
+                .url(url)
+                .build();
+        surveyShortUrlRepository.save(shortUrl);
+
+        return shortUrl.getUrl();
     }
 
     public String share(int surveyId, Authentication authentication) {
@@ -145,14 +169,6 @@ public class SurveyService {
                         .answerA(question.getAnswerA())
                         .answerB(question.getAnswerB())
                         .build()).collect(Collectors.toList());
-    }
-
-    private Answer checkAuthentication(Authentication authentication, Answer answer) {
-        if (authentication != null) {
-            User userDetails = (User) authentication.getPrincipal();
-            answer.setUniqueId(String.valueOf(userDetails.getId()));
-        }
-        return answer;
     }
 
     private boolean isSurveyAlreadyCompleted(String uniqueId) {

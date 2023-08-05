@@ -88,6 +88,7 @@ public class SurveyDto {
         private String content;
         private int typeNumber;
         private List<SurveyResultKeywordInfo> keywordInfo;
+        private String shortUrl;
     }
 
     @Getter
