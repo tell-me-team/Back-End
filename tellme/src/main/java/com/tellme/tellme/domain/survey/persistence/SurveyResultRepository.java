@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface SurveyResultRepository extends JpaRepository<SurveyResult, Integer> {
+    SurveyResult findByTypeNumber(int typeNumber);
 }
