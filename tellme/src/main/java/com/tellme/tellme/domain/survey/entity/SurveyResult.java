@@ -19,6 +19,9 @@ public class SurveyResult extends BaseEntity {
     @Column(length = 2000)
     private String content;
 
+    @Column(name = "type_number")
+    private int typeNumber;
+
     @ManyToOne(targetEntity = Survey.class, fetch = FetchType.LAZY)
     @JoinColumn(name = "survey_id")
     private Survey survey;
