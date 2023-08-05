@@ -1,9 +1,6 @@
 package com.tellme.tellme.domain.survey.presentation;
 
-import com.tellme.tellme.domain.survey.entity.Question;
-import com.tellme.tellme.domain.survey.entity.Survey;
-import com.tellme.tellme.domain.survey.entity.SurveyAnswer;
-import com.tellme.tellme.domain.survey.entity.SurveyCompletion;
+import com.tellme.tellme.domain.survey.entity.*;
 import com.tellme.tellme.domain.user.entity.User;
 import lombok.*;
 
@@ -80,6 +77,25 @@ public class SurveyDto {
         private String question;
         private String answerA;
         private String answerB;
+    }
+
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor(access = AccessLevel.PROTECTED)
+    @Builder
+    public static class SurveyResultInfo{
+        private String type;
+        private String content;
+        private int typeNumber;
+        private List<SurveyResultKeywordInfo> keywordInfo;
+    }
+
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor(access = AccessLevel.PROTECTED)
+    @Builder
+    public static class SurveyResultKeywordInfo{
+        private String title;
     }
 }
 

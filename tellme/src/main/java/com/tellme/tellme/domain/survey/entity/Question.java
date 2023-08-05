@@ -19,4 +19,8 @@ public class Question extends BaseEntity {
     private String answerA;
     @Column(length = 300, name = "answer_b")
     private String answerB;
+    @Column(length = 300, name = "answer_a_result")
+    private String answerAResult;
+    @Column(length = 300, name = "answer_b_result")
+    private String answerBResult;
 }
