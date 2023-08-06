@@ -3,9 +3,12 @@ package com.tellme.tellme.domain.survey.entity;
 import com.tellme.tellme.domain.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity
+@Getter
 @NoArgsConstructor
 @Table(name = "survey_answer")
 public class SurveyAnswer extends BaseEntity {

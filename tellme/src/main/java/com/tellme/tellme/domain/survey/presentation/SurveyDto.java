@@ -1,9 +1,11 @@
 package com.tellme.tellme.domain.survey.presentation;
 
+import com.querydsl.codegen.Keywords;
 import com.tellme.tellme.domain.survey.entity.*;
 import com.tellme.tellme.domain.user.entity.User;
 import lombok.*;
 
+import java.security.Key;
 import java.util.List;
 
 public class SurveyDto {
@@ -46,22 +48,11 @@ public class SurveyDto {
     @AllArgsConstructor
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
     @Builder
-    public static class SurveyCompletionWithAnswers {
-        private String question;
-        private Character answerToMe;
-        private String answerToOther;
-
-    }
-
-    @Getter
-    @AllArgsConstructor
-    @NoArgsConstructor(access = AccessLevel.PROTECTED)
-    @Builder
     public static class SurveyInfo{
         private int userId;
         private int surveyId;
         private int userCount;
-
+        private String nickname;
     }
 
     @Getter
@@ -92,6 +83,30 @@ public class SurveyDto {
     @Builder
     public static class SurveyResultKeywordInfo{
         private String title;
+    }
+
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor(access = AccessLevel.PROTECTED)
+    @Builder
+    public static class SurveyResultDetail{
+        private List<SurveyCompletionWithAnswers> surveyCompletionWithAnswers;
+        private List<SurveyResultKeywordInfo> feedBackKeywords;
+        private List<SurveyResultKeywordInfo> selfKeywords;
+    }
+
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor(access = AccessLevel.PROTECTED)
+    @Builder
+    public static class SurveyCompletionWithAnswers {
+        private String question;
+        private String answerToMe;
+        private String answerToOther;
+
+        public void setAnswerToOther(String answerToOther) {
+            this.answerToOther = answerToOther;
+        }
     }
 }
 
