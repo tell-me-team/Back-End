@@ -76,7 +76,7 @@ public class SurveyService {
         User createUser = userRepository.findById(createUserId).get();
         Survey survey = surveyRepository.findById(surveyId).get();
 
-        if(isSurveyCompletionFindCreateUser(user, survey)){
+        if(isSurveyCompletionFindCreateUser(createUser, survey, user.getId())){
             throw new BaseException(ErrorStatus.SURVEY_NOT_CREATE);
         }
 
@@ -201,8 +201,8 @@ public class SurveyService {
         return surveyCompletionRepository.findByUniqueId(uniqueId) != null;
     }
 
-    private boolean isSurveyCompletionFindCreateUser(User user, Survey survey){
-        return surveyCompletionRepository.findByUserAndSurvey(user, survey).isEmpty();
+    private boolean isSurveyCompletionFindCreateUser(User createUser, Survey survey, int uniqueId){
+        return surveyCompletionRepository.findByUserAndSurveyAndUniqueId(createUser, survey, String.valueOf(uniqueId)).isEmpty();
     }
 
     private SurveyResult generateCombinedAnswerResult(List<AnswerContent> answerContentList, Survey survey) {
