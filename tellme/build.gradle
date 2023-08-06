@@ -13,6 +13,14 @@ jib {
 		image = "snowdrop6342/tell-me"
 		tags = ["latest"]
 	}
+	container {
+		creationTime = "USE_CURRENT_TIMESTAMP"
+
+		// JVM 옵션들
+		jvmFlags = ['-Dspring.profiles.active=prod', '-XX:+UseContainerSupport', '-Dfile.encoding=UTF-8']
+
+
+	}
 }
 
 group = 'com.tell-me'
