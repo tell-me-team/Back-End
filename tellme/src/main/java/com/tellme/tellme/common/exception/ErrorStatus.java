@@ -16,6 +16,7 @@ public enum ErrorStatus {
     SURVEY_ALREADY_COMPLETED(HttpStatus.CONFLICT, "이미 설문조사에 참여했습니다."),
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버에 문제가 생겼습니다. 잠시 후 다시 시도해주세요."),
     SURVEY_ANSWER_INSUFFICIENT(HttpStatus.BAD_REQUEST, "설문 답변에 개수가 안 맞습니다."),
+    SURVEY_NOT_CREATE(HttpStatus.NOT_FOUND, "설문을 생성하지 않았습니다."),
 
     // AUTH
     CERTIFICATION_ERROR(HttpStatus.UNAUTHORIZED, "인증에 실패하였습니다."),
