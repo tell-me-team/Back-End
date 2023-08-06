@@ -46,7 +46,7 @@ jobs:
         run: export SPRING_PROFILES_ACTIVE=${{secrets.SPRING_PROFILES_ACTIVE}}
         
       - name: apply env
-        run: envsubst < application.yaml
+        run: envsubst < application.yml
         working-directory: ./tellme/src/main/resources
 
       # - name: write JWT_SECRET_KEY
