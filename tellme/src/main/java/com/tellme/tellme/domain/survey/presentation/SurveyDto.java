@@ -52,7 +52,7 @@ public class SurveyDto {
         private int userId;
         private int surveyId;
         private int userCount;
-
+        private String nickname;
     }
 
     @Getter

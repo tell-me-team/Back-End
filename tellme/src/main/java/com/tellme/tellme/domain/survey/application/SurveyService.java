@@ -168,6 +168,7 @@ public class SurveyService {
                 .surveyId(surveyId)
                 .userId(userId)
                 .userCount(userCount)
+                .nickname(user.getNickname())
                 .build();
     }
 
