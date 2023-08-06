@@ -6,6 +6,7 @@ import com.tellme.tellme.domain.survey.entity.*;
 import com.tellme.tellme.domain.survey.persistence.*;
 import com.tellme.tellme.domain.user.entity.User;
 import com.tellme.tellme.domain.user.persistence.UserRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,7 @@ import static com.tellme.tellme.domain.survey.presentation.SurveyDto.*;
 
 @Service
 @RequiredArgsConstructor
+
 public class SurveyService {
 
     private final SurveyCompletionRepository surveyCompletionRepository;
@@ -32,25 +34,26 @@ public class SurveyService {
     private final SurveyShortUrlRepository surveyShortUrlRepository;
     private final SurveyResultRepository surveyResultRepository;
 
-    public SurveyResultInfo saveAnswer(int surveyId, int userId, Answer answer, Authentication authentication) {
+
+    public SurveyResultInfo saveAnswer(int surveyId, int userId, Answer answer, Authentication authentication, HttpServletRequest httpServletRequest) {
         String shortUrl = null;
+        String uniqueId = httpServletRequest.getSession().getId();
         Survey survey = surveyRepository.findById(surveyId).get();
+
         if (authentication != null) {
             User userDetails = (User) authentication.getPrincipal();
-            answer.setUniqueId(String.valueOf(userDetails.getId()));
+            uniqueId = String.valueOf(userDetails.getId());
             shortUrl = getShareUrl(survey, userDetails);
         }
 
-        if (isSurveyAlreadyCompleted(answer.getUniqueId())) {
+        if (isSurveyAlreadyCompleted(uniqueId)) {
             throw new BaseException(ErrorStatus.SURVEY_ALREADY_COMPLETED);
         }
 
         User createUser = userRepository.findById(userId).get();
-        saveSurveyAnswer(survey, createUser, answer);
+        saveSurveyAnswer(survey, createUser, answer, uniqueId);
         String answerResult = generateCombinedAnswerResult(answer.getAnswerContentList(), survey);
         SurveyResult surveyResult = calculateMode(answerResult);
-
-
 
         return SurveyResultInfo.builder()
                 .type(surveyResult.getType())
@@ -65,8 +68,8 @@ public class SurveyService {
                 .build();
     }
 
-    private void saveSurveyAnswer(Survey survey, User user, Answer answer) {
-        SurveyCompletion surveyCompletion = surveyCompletionRepository.save(answer.toSurveyCompletion(survey, user));
+    private void saveSurveyAnswer(Survey survey, User user, Answer answer, String uniqueId) {
+        SurveyCompletion surveyCompletion = surveyCompletionRepository.save(answer.toSurveyCompletion(survey, user, uniqueId));
         for (AnswerContent answerContent : answer.getAnswerContentList()) {
             Question question = questionRepository.findById(answerContent.getQuestion()).get();
             surveyAnswerRepository.save(answerContent.toSurveyAnswer(surveyCompletion, question));

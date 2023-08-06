@@ -5,6 +5,8 @@ import com.tellme.tellme.domain.survey.application.SurveyService;
 import com.tellme.tellme.domain.survey.presentation.SurveyDto.Answer;
 import com.tellme.tellme.domain.survey.presentation.SurveyDto.SurveyResultInfo;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -24,8 +26,9 @@ public class SurveyControllerV1 {
     public BaseResponse<SurveyResultInfo> saveAnswer(@PathVariable("surveyId") int surveyId,
                                                      @PathVariable("userId") int userId,
                                                      @RequestBody Answer answer,
-                                                     Authentication authentication) {
-        return BaseResponse.ok(surveyService.saveAnswer(surveyId, userId, answer, authentication));
+                                                     Authentication authentication,
+                                                     HttpServletRequest httpServletRequest) {
+        return BaseResponse.ok(surveyService.saveAnswer(surveyId, userId, answer, authentication, httpServletRequest));
     }
 
     @GetMapping("/{shortUrl}")
