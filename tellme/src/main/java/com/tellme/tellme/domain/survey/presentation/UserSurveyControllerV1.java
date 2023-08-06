@@ -5,6 +5,7 @@ import com.tellme.tellme.domain.survey.application.SurveyService;
 import com.tellme.tellme.domain.survey.entity.SurveyAnswer;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,8 +22,8 @@ public class UserSurveyControllerV1 {
 
     @GetMapping("survey-results/{userId}/{surveyId}")
     @Operation(summary = "설문 결과")
-    public BaseResponse<List<SurveyAnswer>> getSurveyResult(@PathVariable int userId, @PathVariable int surveyId){
-        return BaseResponse.ok(surveyService.getSurveyResult(userId, surveyId));
+    public BaseResponse<List<SurveyAnswer>> getSurveyResult(@PathVariable int userId, @PathVariable int surveyId, Authentication authentication){
+        return BaseResponse.ok(surveyService.getSurveyResult(userId, surveyId, authentication));
     }
 
     @GetMapping("survey-results/{userId}/{surveyId}/details")
