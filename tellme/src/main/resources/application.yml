@@ -2,16 +2,11 @@
 spring:
   profiles:
     group:
-      local:
-        - common
-        - local
-      dev:
-        - common
-        - dev
-      prod:
-        - common
-        - prod
-    active: ${SPRING_PROFILES_ACTIVE}
+      local: common, local
+      dev: common, dev
+      prod: common, prod
+  config:
+    import: classpath:/env.properties
 
 ---
 spring:
