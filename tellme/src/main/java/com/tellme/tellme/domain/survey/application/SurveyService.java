@@ -73,43 +73,42 @@ public class SurveyService {
     @Transactional(readOnly = true)
     public SurveyResultDetail getSurveyResult(int createUserId, int surveyId, Authentication authentication) {
 
-        // 내가 선택하는 결과값들
         User user = (User) authentication.getPrincipal();
         User createUser = userRepository.findById(createUserId).get();
         Survey survey = surveyRepository.findById(surveyId).get();
 
         SurveyCompletion surveyCompletionToMe = surveyCompletionRepository.findByUserAndUniqueIdAndSurvey(createUser, String.valueOf(user.getId()), survey);
-
-        List<AnswerContent> answerContentList = new ArrayList<>();
-
-        for (SurveyAnswer surveyAnswer : surveyCompletionToMe.getSurveyAnswers()) {
-            AnswerContent answerContent = AnswerContent.builder()
-                    .question(surveyAnswer.getQuestion().getId())
-                    .answer(surveyAnswer.getAnswer())
-                    .build();
-            answerContentList.add(answerContent);
-        }
-
+        List<AnswerContent> answerContentList = surveyAnswerToMeSelectResult(surveyCompletionToMe);
         SurveyResult surveyAnswerToMe = generateCombinedAnswerResult(answerContentList, survey);
 
-        // 다른 사람들이 선택해준 결과값들
-        List<AnswerContent> answerContentToOtherToMeList = new ArrayList<>();
-        StringBuilder surveyResultTypeNumbers = new StringBuilder();
         List<SurveyCompletion> surveyCompletionOtherToMe = surveyCompletionRepository.findByUserAndUniqueIdNotAndSurvey(createUser, String.valueOf(user.getId()), survey);
+        SurveyResult surveyAnswerToOther = surveyAnswerToOtherMode(surveyCompletionOtherToMe, answerContentList, survey);
+
+        List<SurveyCompletionWithAnswers> surveyCompletionWithAnswersList = new ArrayList<>();
         for (SurveyCompletion surveyCompletion : surveyCompletionOtherToMe) {
+            List<AnswerContent> answerContentListToOtherToMe = new ArrayList<>();
             for (SurveyAnswer surveyAnswer : surveyCompletion.getSurveyAnswers()) {
                 AnswerContent answerContent = AnswerContent.builder()
                         .question(surveyAnswer.getQuestion().getId())
                         .answer(surveyAnswer.getAnswer())
                         .build();
-                answerContentToOtherToMeList.add(answerContent);
+                answerContentListToOtherToMe.add(answerContent);
             }
-            surveyResultTypeNumbers.append(generateCombinedAnswerResult(answerContentList, survey).getTypeNumber());
+
+            String answerToOther = generateCombinedAnswerResult(answerContentListToOtherToMe, survey).getContent();
+
+            SurveyCompletionWithAnswers completionWithAnswers = SurveyCompletionWithAnswers.builder()
+                    .question(surveyCompletion.getSurvey().getTitle())
+                    .answerToMe(surveyAnswerToMe.getContent())
+                    .answerToOther(answerToOther)
+                    .build();
+
+            surveyCompletionWithAnswersList.add(completionWithAnswers);
         }
-        SurveyResult surveyAnswerToOther = calculateMode(surveyResultTypeNumbers.toString());
 
 
         return SurveyResultDetail.builder()
+                .surveyCompletionWithAnswers(surveyCompletionWithAnswersList)
                 .feedBackKeywords(surveyAnswerToMe.getSurveyResultKeywords().stream().map(
                         surveyResultKeyword -> SurveyResultKeywordInfo.builder()
                                 .title(surveyResultKeyword.getTitle())
@@ -121,6 +120,37 @@ public class SurveyService {
                                 .build()
                 ).collect(Collectors.toList()))
                 .build();
+    }
+
+    private SurveyResult surveyAnswerToOtherMode(List<SurveyCompletion> surveyCompletionOtherToMe, List<AnswerContent> answerContentList, Survey survey) {
+
+        List<AnswerContent> answerContentToOtherToMeList = new ArrayList<>();
+        StringBuilder surveyResultTypeNumbers = new StringBuilder();
+
+        for (SurveyCompletion surveyCompletion : surveyCompletionOtherToMe) {
+            for (SurveyAnswer surveyAnswer : surveyCompletion.getSurveyAnswers()) {
+                AnswerContent answerContent = AnswerContent.builder()
+                        .question(surveyAnswer.getQuestion().getId())
+                        .answer(surveyAnswer.getAnswer())
+                        .build();
+                answerContentToOtherToMeList.add(answerContent);
+            }
+            surveyResultTypeNumbers.append(generateCombinedAnswerResult(answerContentList, survey).getTypeNumber());
+        }
+        return calculateMode(surveyResultTypeNumbers.toString());
+    }
+
+    private List<AnswerContent> surveyAnswerToMeSelectResult(SurveyCompletion surveyCompletionToMe) {
+        List<AnswerContent> answerContentList = new ArrayList<>();
+        for (SurveyAnswer surveyAnswer : surveyCompletionToMe.getSurveyAnswers()) {
+            AnswerContent answerContent = AnswerContent.builder()
+                    .question(surveyAnswer.getQuestion().getId())
+                    .answer(surveyAnswer.getAnswer())
+                    .build();
+            answerContentList.add(answerContent);
+        }
+
+        return answerContentList;
     }
 
     @Transactional(readOnly = true)

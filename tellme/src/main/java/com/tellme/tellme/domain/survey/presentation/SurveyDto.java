@@ -102,7 +102,7 @@ public class SurveyDto {
     @Builder
     public static class SurveyCompletionWithAnswers {
         private String question;
-        private Character answerToMe;
+        private String answerToMe;
         private String answerToOther;
 
     }
