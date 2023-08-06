@@ -8,7 +8,6 @@ import com.tellme.tellme.domain.user.entity.User;
 import com.tellme.tellme.domain.user.persistence.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,7 +39,7 @@ public class SurveyService {
         Survey survey = surveyRepository.findById(surveyId).get();
 
         // 질문갯수 확인
-        if(!isSurveyQuestionCount(survey, answer)){
+        if (!isSurveyQuestionCount(survey, answer)) {
             throw new BaseException(ErrorStatus.SURVEY_ANSWER_INSUFFICIENT);
         }
 
@@ -56,7 +55,7 @@ public class SurveyService {
 
         User createUser = userRepository.findById(userId).get();
         saveSurveyAnswer(survey, createUser, answer, uniqueId);
-        SurveyResult surveyResult = calculateMode(generateCombinedAnswerResult(answer.getAnswerContentList(), survey));
+        SurveyResult surveyResult = generateCombinedAnswerResult(answer.getAnswerContentList(), survey);
 
         return SurveyResultInfo.builder()
                 .type(surveyResult.getType())
@@ -71,7 +70,8 @@ public class SurveyService {
                 .build();
     }
 
-    public List<SurveyAnswer> getSurveyResult(int createUserId, int surveyId, Authentication authentication) {
+    @Transactional(readOnly = true)
+    public SurveyResultDetail getSurveyResult(int createUserId, int surveyId, Authentication authentication) {
 
         // 내가 선택하는 결과값들
         User user = (User) authentication.getPrincipal();
@@ -90,21 +90,37 @@ public class SurveyService {
             answerContentList.add(answerContent);
         }
 
-        SurveyResult answerToMe = generateCombinedAnswerResult(answerContentList, survey);
-
+        SurveyResult surveyAnswerToMe = generateCombinedAnswerResult(answerContentList, survey);
 
         // 다른 사람들이 선택해준 결과값들
-//        List<SurveyCompletion> surveyCompletionOtherToMe = surveyCompletionRepository.findByUserAndUniqueIdNotAndSurvey(createUser, String.valueOf(user.getId()), survey);
-//        for (SurveyCompletion surveyCompletion : surveyCompletionOtherToMe) {
-//            System.out.println(surveyCompletion);
-//        }
+        List<AnswerContent> answerContentToOtherToMeList = new ArrayList<>();
+        StringBuilder surveyResultTypeNumbers = new StringBuilder();
+        List<SurveyCompletion> surveyCompletionOtherToMe = surveyCompletionRepository.findByUserAndUniqueIdNotAndSurvey(createUser, String.valueOf(user.getId()), survey);
+        for (SurveyCompletion surveyCompletion : surveyCompletionOtherToMe) {
+            for (SurveyAnswer surveyAnswer : surveyCompletion.getSurveyAnswers()) {
+                AnswerContent answerContent = AnswerContent.builder()
+                        .question(surveyAnswer.getQuestion().getId())
+                        .answer(surveyAnswer.getAnswer())
+                        .build();
+                answerContentToOtherToMeList.add(answerContent);
+            }
+            surveyResultTypeNumbers.append(generateCombinedAnswerResult(answerContentList, survey).getTypeNumber());
+        }
+        SurveyResult surveyAnswerToOther = calculateMode(surveyResultTypeNumbers.toString());
 
-        //        User user = userRepository.findById(userId).get();
-//        SurveyCompletion surveyCompletion = surveyCompletionQueryRepository.findByUserIdAndSurveyId(user, surveyId);
-//        List<SurveyAnswer> surveyAnswerList = surveyAnswerRepository.findBySurveyCompletion(surveyCompletion);
-        // TODO 선택한 답변에따라서 키워드 출력
-//        return surveyAnswerList;
-        return null;
+
+        return SurveyResultDetail.builder()
+                .feedBackKeywords(surveyAnswerToMe.getSurveyResultKeywords().stream().map(
+                        surveyResultKeyword -> SurveyResultKeywordInfo.builder()
+                                .title(surveyResultKeyword.getTitle())
+                                .build()
+                ).collect(Collectors.toList()))
+                .selfKeywords(surveyAnswerToOther.getSurveyResultKeywords().stream().map(
+                        surveyResultKeyword -> SurveyResultKeywordInfo.builder()
+                                .title(surveyResultKeyword.getTitle())
+                                .build()
+                ).collect(Collectors.toList()))
+                .build();
     }
 
     @Transactional(readOnly = true)
@@ -175,7 +191,7 @@ public class SurveyService {
         }
     }
 
-    private String getShareUrl(Survey survey, User user){
+    private String getShareUrl(Survey survey, User user) {
         SurveyShortUrl findShortUrl = surveyShortUrlRepository.findBySurveyIdAndUserId(survey.getId(), user.getId());
         if (findShortUrl != null) {
             return findShortUrl.getUrl();
