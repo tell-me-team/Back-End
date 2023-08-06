@@ -68,8 +68,7 @@ public class User extends BaseEntity implements UserDetails {
     @JsonProperty(access = WRITE_ONLY)
     @Override
     public String getUsername() {
-        // TODO. USER ID로 변경
-        return this.email;
+        return Integer.toString(this.id);
     }
 
     /**
