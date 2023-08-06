@@ -2,9 +2,15 @@
 spring:
   profiles:
     group:
-      local: common, local
-      dev: common, dev
-      prod: common, prod
+      local:
+        - common
+        - local
+      dev:
+        - common
+        - dev
+      prod:
+        - common
+        - prod
     active: ${SPRING_PROFILES_ACTIVE}
 
 ---

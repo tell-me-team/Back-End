@@ -10,10 +10,10 @@ public class TellmeApplication {
 
 	public static void main(String[] args) {
 
-		new SpringApplicationBuilder(TellmeApplication.class)
-				.properties("spring.config.location = classpath:/application.yml, classpath:/env.yml")
-						.run(args);
-//		SpringApplication.run(TellmeApplication.class, args);
+//		new SpringApplicationBuilder(TellmeApplication.class)
+//				.properties("spring.config.location = classpath:/application.yml, classpath:/env.properties")
+//						.run(args);
+		SpringApplication.run(TellmeApplication.class, args);
 	}
 
 }
