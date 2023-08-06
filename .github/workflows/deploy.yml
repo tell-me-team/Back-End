@@ -4,7 +4,7 @@ name: deploy
 
 on:
   push:
-    branches: [ "test-deploy" ] # test-deploy push가 될 때 CD가 일어나도록 핸들링
+    branches: [ "main" ] # test-deploy push가 될 때 CD가 일어나도록 핸들링
     
 env:
   DOCKER_HUB_USERNAME: snowdrop6342
@@ -28,27 +28,6 @@ jobs:
         id: build-number
         run: echo "::set-output name=BUILD_NUMBER::$(date '+%-d.%-m.%Y.%-H.%-M.%-S')"
 
-      # - name:  register JWT_SECRET_KEY
-      #   run: export JWT_SECRET_KEY=${{secrets.JWT_SECRET_KEY}}
-      # - name:  register KAKAO_CLIENT_PW
-      #   run: export KAKAO_CLIENT_PW=${{secrets.KAKAO_CLIENT_PW}}
-      # - name:  register KAKAO_CLINET_ID
-      #   run: export KAKAO_CLINET_ID=${{secrets.KAKAO_CLINET_ID}}
-      # - name:  register KAKAO_REDIRECT_URI
-      #   run: export KAKAO_REDIRECT_URI=${{secrets.KAKAO_REDIRECT_URI}}
-      # - name:  register PROD_DATABASE_PASSWORD
-      #   run: export PROD_DATABASE_PASSWORD=${{secrets.PROD_DATABASE_PASSWORD}}
-      # - name:  register PROD_DATABASE_URL
-      #   run: export PROD_DATABASE_URL=${{secrets.PROD_DATABASE_URL}}
-      # - name:  register PROD_DATABASE_USERNAME
-      #   run: export PROD_DATABASE_USERNAME=${{secrets.PROD_DATABASE_USERNAME}}
-      # - name:  register SPRING_PROFILES_ACTIVE
-      #   run: export SPRING_PROFILES_ACTIVE=${{secrets.SPRING_PROFILES_ACTIVE}}
-        
-      # - name: apply env
-      #   run: envsubst < application.yml
-      #   working-directory: ./tellme/src/main/resources
-
       - name: write JWT_SECRET_KEY
         run: echo JWT_SECRET_KEY=${{secrets.JWT_SECRET_KEY}} >> env.properties
         working-directory: ./tellme/src/main/resources
@@ -70,9 +49,6 @@ jobs:
       - name: write PROD_DATABASE_USERNAME
         run: echo PROD_DATABASE_USERNAME=${{secrets.PROD_DATABASE_USERNAME}} >> env.properties
         working-directory: ./tellme/src/main/resources
-      # - name: write SPRING_PROFILES_ACTIVE
-      #   run: echo SPRING_PROFILES_ACTIVE=${{secrets.SPRING_PROFILES_ACTIVE}} >> env.properties
-      #   working-directory: ./tellme/src/main/resources
 
       - name: Docker Login
         uses: docker/login-action@f3364599c6aa293cdc2b8391b1b56d0c30e45c8a
