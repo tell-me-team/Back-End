@@ -14,6 +14,8 @@ import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import java.io.IOException;
 
+import static com.tellme.tellme.common.exception.ErrorStatus.AUTHORITY_ERROR;
+
 
 // 인증 실패시 결과를 처리해주는 로직을 가지고 있는 클래스
 @Slf4j
@@ -30,7 +32,17 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
     public void commence(HttpServletRequest request, HttpServletResponse response,
                          AuthenticationException exception) throws IOException {
 
-        resolver.resolveException(request, response, null, (Exception) request.getAttribute("exception"));
+        if (exception != null) {
+            resolver.resolveException(request, response, null, (Exception) request.getAttribute("exception"));
+        }else {
+            ObjectMapper objectMapper = new ObjectMapper();
+            log.info("[commence] 인증 예외 발생");
+
+            response.setStatus(403);
+            response.setContentType("application/json");
+            response.setCharacterEncoding("utf-8");
+            response.getWriter().write(objectMapper.writeValueAsString(new BaseExceptionResponse(AUTHORITY_ERROR)));
+        }
 
     }
 }

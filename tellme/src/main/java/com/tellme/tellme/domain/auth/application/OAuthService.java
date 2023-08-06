@@ -46,8 +46,8 @@ public class OAuthService {
                 if(userService.checkUserByEmail(kakaoUser.getKakao_account().getEmail())) {
 
                     User user = userService.getUserByEmail(kakaoUser.getKakao_account().getEmail());
-                    String accessToken = jwtTokenProvider.createAccessToken(user.getEmail(), List.of("ROLE_USER"));
-                    String refreshToken = jwtTokenProvider.createRefreshToken(user.getEmail(), List.of("ROLE_USER"));
+                    String accessToken = jwtTokenProvider.createAccessToken(user.getId(), List.of("ROLE_USER"));
+                    String refreshToken = jwtTokenProvider.createRefreshToken(user.getId(), List.of("ROLE_USER"));
 
                     GetSocialOAuthRes getSocialOAuthRes = new GetSocialOAuthRes(user.getId(), accessToken, refreshToken);
                     return getSocialOAuthRes;
@@ -56,8 +56,8 @@ public class OAuthService {
                 }else {
 
                     User user = userRepository.save(kakaoUser.toEntity());
-                    String accessToken = jwtTokenProvider.createAccessToken(user.getEmail(), List.of("ROLE_USER"));
-                    String refreshToken = jwtTokenProvider.createRefreshToken(user.getEmail(), List.of("ROLE_USER"));
+                    String accessToken = jwtTokenProvider.createAccessToken(user.getId(), List.of("ROLE_USER"));
+                    String refreshToken = jwtTokenProvider.createRefreshToken(user.getId(), List.of("ROLE_USER"));
 
                     GetSocialOAuthRes getSocialOAuthRes = new GetSocialOAuthRes(user.getId(), accessToken, refreshToken);
                     return getSocialOAuthRes;
