@@ -13,19 +13,14 @@ public class SurveyDto {
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
     @Builder
     public static class Answer {
-        private String uniqueId;
         private List<AnswerContent> answerContentList;
 
-        public SurveyCompletion toSurveyCompletion(Survey survey, User user) {
+        public SurveyCompletion toSurveyCompletion(Survey survey, User user, String uniqueId) {
             return SurveyCompletion.builder()
                     .survey(survey)
-                    .user(user)
                     .uniqueId(uniqueId)
+                    .user(user)
                     .build();
-        }
-
-        public void setUniqueId(String uniqueId) {
-            this.uniqueId = uniqueId;
         }
 
     }
