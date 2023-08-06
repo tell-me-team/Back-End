@@ -12,6 +12,7 @@ env:
   EB_ENVIRONMENT_NAME: Tell-me-application-env-2
   EB_APPLICATION_NAME: tell-me-application
   EB_DEPLOYMENT_PACKAGE: ./tellme/docker-compose.yml
+  RESOURCE_PATH: ./tellme/src/main/resources/application.yml
 
 jobs:
   build:
@@ -24,14 +25,16 @@ jobs:
           java-version: 17
           distribution: 'adopt'
 
-      - uses: actions/checkout@v3
-      - run: touch ./tellme/src/main/resources/application.yml
-      - run: echo "${{ secrets.APPLICATION_PROD }}" > ./tellme/src/main/resources/application.yml
-      - run: cat ./tellme/src/main/resources/application.yml
-         
       - name: Build Number
         id: build-number
         run: echo "::set-output name=BUILD_NUMBER::$(date '+%-d.%-m.%Y.%-H.%-M.%-S')"
+
+      - name: Set Yaml
+        uses: microsoft/variable-substitution@v1
+        with:
+          files: ${{ env.RESOURCE_PATH }} 
+        env:
+          SPRING_PROFILES_ACTIVE: ${{ secrets.SPRING_PROFILES_ACTIVE }}
 
       - name: Docker Login
         uses: docker/login-action@f3364599c6aa293cdc2b8391b1b56d0c30e45c8a
