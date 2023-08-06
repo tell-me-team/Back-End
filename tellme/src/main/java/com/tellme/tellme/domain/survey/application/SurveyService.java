@@ -12,10 +12,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.tellme.tellme.domain.survey.presentation.SurveyDto.*;
@@ -41,8 +38,7 @@ public class SurveyService {
         String uniqueId = httpServletRequest.getSession().getId();
         Survey survey = surveyRepository.findById(surveyId).get();
 
-        // 질문갯수 확인
-        if(!isSurveyQuestionCount(survey, answer)){
+        if (!isSurveyQuestionCount(survey, answer)) {
             throw new BaseException(ErrorStatus.SURVEY_ANSWER_INSUFFICIENT);
         }
 
@@ -58,8 +54,7 @@ public class SurveyService {
 
         User createUser = userRepository.findById(userId).get();
         saveSurveyAnswer(survey, createUser, answer, uniqueId);
-        String answerResult = generateCombinedAnswerResult(answer.getAnswerContentList(), survey);
-        SurveyResult surveyResult = calculateMode(answerResult);
+        SurveyResult surveyResult = generateCombinedAnswerResult(answer.getAnswerContentList(), survey);
 
         return SurveyResultInfo.builder()
                 .type(surveyResult.getType())
@@ -75,37 +70,89 @@ public class SurveyService {
     }
 
     @Transactional(readOnly = true)
-    public List<SurveyAnswer> getSurveyResult(int userId, int surveyId) {
-//        User user = userRepository.findById(userId).get();
-//        SurveyCompletion surveyCompletion = surveyCompletionQueryRepository.findByUserIdAndSurveyId(user, surveyId);
-//        List<SurveyAnswer> surveyAnswerList = surveyAnswerRepository.findBySurveyCompletion(surveyCompletion);
-        // TODO 선택한 답변에따라서 키워드 출력
-//        return surveyAnswerList;
-        return null;
-    }
+    public SurveyResultDetail getSurveyResult(int createUserId, int surveyId, Authentication authentication) {
 
-    @Transactional(readOnly = true)
-    public List<SurveyCompletionWithAnswers> getSurveyResultDetail(int userId, int surveyId) {
-//        Survey survey = surveyRepository.findById(surveyId).get();
-//        User user = userRepository.findById(userId).get();
-//
-//        List<Question> questionList = surveyQuestionQueryRepository.getQuestionList(survey);
-//        List<SurveyCompletionWithAnswers> surveyCompletionWithAnswersList = new ArrayList<>();
-//
-//        for (Question question : questionList) {
-//            Character answerToMe = surveyCompletionQueryRepository.getAnswerToMe(user, question);
-//
-//            SurveyCompletionWithAnswers answer = SurveyCompletionWithAnswers.builder()
-//                    .question(question.getQuestion())
-//                    .answerToMe(answerToMe)
-//                    .answerToOther("")
-//                    .build(); //  TODO 최빈값
-//
-//            surveyCompletionWithAnswersList.add(answer);
-//        }
-//        return surveyCompletionWithAnswersList;
-        return null;
+        User user = (User) authentication.getPrincipal();
+        User createUser = userRepository.findById(createUserId).get();
+        Survey survey = surveyRepository.findById(surveyId).get();
 
+        if(isSurveyCompletionFindCreateUser(createUser, survey, user.getId())){
+            throw new BaseException(ErrorStatus.SURVEY_NOT_CREATE);
+        }
+
+        SurveyCompletion surveyCompletionToMe = surveyCompletionRepository.findByUserAndUniqueIdAndSurvey(createUser, String.valueOf(user.getId()), survey);
+        List<AnswerContent> answerContentList = new ArrayList<>();
+        List<SurveyCompletionWithAnswers> surveyCompletionWithAnswersList = new ArrayList<>();
+        for (SurveyAnswer surveyAnswer : surveyCompletionToMe.getSurveyAnswers()) {
+            AnswerContent answerContent = AnswerContent.builder()
+                    .question(surveyAnswer.getQuestion().getId())
+                    .answer(surveyAnswer.getAnswer())
+                    .build();
+            answerContentList.add(answerContent);
+
+            SurveyCompletionWithAnswers surveyCompletionWithAnswers = SurveyCompletionWithAnswers.builder()
+                    .question(surveyAnswer.getQuestion().getQuestion())
+                    .answerToMe(surveyAnswer.getAnswer() == 'A' ? surveyAnswer.getQuestion().getAnswerA() : surveyAnswer.getQuestion().getAnswerB())
+                            .build();
+            surveyCompletionWithAnswersList.add(surveyCompletionWithAnswers);
+        }
+
+        SurveyResult surveyAnswerToMe = generateCombinedAnswerResult(answerContentList, survey);
+
+        if(user.getId() != createUserId){
+            return SurveyResultDetail.builder()
+                    .feedBackKeywords(surveyAnswerToMe.getSurveyResultKeywords().stream().map(
+                            surveyResultKeyword -> SurveyResultKeywordInfo.builder()
+                                    .title(surveyResultKeyword.getTitle())
+                                    .build()
+                    ).collect(Collectors.toList()))
+                    .build();
+        }
+
+        List<SurveyCompletion> surveyCompletionOtherToMe = surveyCompletionRepository.findByUserAndUniqueIdNotAndSurvey(createUser, String.valueOf(user.getId()), survey);
+        List<AnswerContent> answerContentToOtherToMeList = new ArrayList<>();
+        StringBuilder surveyResultTypeNumbers = new StringBuilder();
+
+        Map<Integer, Map<Character, Integer>> questionAnswerCountMap = countQuestionAnswer(surveyCompletionOtherToMe);
+        Map<Integer, Character> mostSelectedAnswers = findMostSelectedAnswers(questionAnswerCountMap);
+
+        int surveyCompletionWithAnswersIndex = 1;
+        for(SurveyCompletionWithAnswers surveyCompletionWithAnswers : surveyCompletionWithAnswersList){
+            Character answer = mostSelectedAnswers.get(surveyCompletionWithAnswersIndex);
+
+            Question question = questionRepository.findByQuestion(surveyCompletionWithAnswers.getQuestion());
+
+            surveyCompletionWithAnswers.setAnswerToOther(answer == 'A' ? question.getAnswerA() : question.getAnswerB());
+        }
+
+        for (SurveyCompletion surveyCompletion : surveyCompletionOtherToMe) {
+            for (SurveyAnswer surveyAnswer : surveyCompletion.getSurveyAnswers()) {
+                AnswerContent answerContent = AnswerContent.builder()
+                        .question(surveyAnswer.getQuestion().getId())
+                        .answer(surveyAnswer.getAnswer())
+                        .build();
+                answerContentToOtherToMeList.add(answerContent);
+
+            }
+
+            surveyResultTypeNumbers.append(generateCombinedAnswerResult(answerContentList, survey).getTypeNumber());
+        }
+        SurveyResult surveyAnswerToOther = calculateMode(surveyResultTypeNumbers.toString());
+
+
+        return SurveyResultDetail.builder()
+                .surveyCompletionWithAnswers(surveyCompletionWithAnswersList)
+                .feedBackKeywords(surveyAnswerToMe.getSurveyResultKeywords().stream().map(
+                        surveyResultKeyword -> SurveyResultKeywordInfo.builder()
+                                .title(surveyResultKeyword.getTitle())
+                                .build()
+                ).collect(Collectors.toList()))
+                .selfKeywords(surveyAnswerToOther.getSurveyResultKeywords().stream().map(
+                        surveyResultKeyword -> SurveyResultKeywordInfo.builder()
+                                .title(surveyResultKeyword.getTitle())
+                                .build()
+                ).collect(Collectors.toList()))
+                .build();
     }
 
     @Transactional(readOnly = true)
@@ -139,8 +186,6 @@ public class SurveyService {
 
     private boolean isSurveyQuestionCount(Survey survey, Answer answer) {
         long questionCount = surveyQuestionQueryRepository.getQuestionList(survey).stream().count();
-        System.out.println(questionCount);
-        System.out.println(answer.getAnswerContentList().size());
         return questionCount == answer.getAnswerContentList().size();
     }
 
@@ -152,7 +197,7 @@ public class SurveyService {
         }
     }
 
-    private String getShareUrl(Survey survey, User user){
+    private String getShareUrl(Survey survey, User user) {
         SurveyShortUrl findShortUrl = surveyShortUrlRepository.findBySurveyIdAndUserId(survey.getId(), user.getId());
         if (findShortUrl != null) {
             return findShortUrl.getUrl();
@@ -172,6 +217,26 @@ public class SurveyService {
 
     private boolean isSurveyAlreadyCompleted(String uniqueId) {
         return surveyCompletionRepository.findByUniqueId(uniqueId) != null;
+    }
+
+    private boolean isSurveyCompletionFindCreateUser(User createUser, Survey survey, int uniqueId){
+        return surveyCompletionRepository.findByUserAndSurveyAndUniqueId(createUser, survey, String.valueOf(uniqueId)).isEmpty();
+    }
+
+    private SurveyResult generateCombinedAnswerResult(List<AnswerContent> answerContentList, Survey survey) {
+        List<Question> questionList = surveyQuestionQueryRepository.getQuestionList(survey);
+
+        StringBuilder answerResult = new StringBuilder();
+        int index = 0;
+        for (AnswerContent answerContent : answerContentList) {
+            if (answerContent.getAnswer() == 'A') {
+                answerResult.append(questionList.get(index).getAnswerAResult());
+            } else {
+                answerResult.append(questionList.get(index).getAnswerBResult());
+            }
+            index++;
+        }
+        return calculateMode(answerResult.toString());
     }
 
     private SurveyResult calculateMode(String answerResult) {
@@ -196,19 +261,51 @@ public class SurveyService {
         return surveyResultRepository.findByTypeNumber(mostCommonDigit);
     }
 
-    private String generateCombinedAnswerResult(List<AnswerContent> answerContentList, Survey survey) {
-        List<Question> questionList = surveyQuestionQueryRepository.getQuestionList(survey);
+    //
+    private Map<Integer, Map<Character, Integer>> countQuestionAnswer(List<SurveyCompletion> surveyCompletions) {
+        Map<Integer, Map<Character, Integer>> questionAnswerCountMap = new HashMap<>();
 
-        StringBuilder answerResult = new StringBuilder();
-        int index = 0;
-        for (AnswerContent answerContent : answerContentList) {
-            if (answerContent.getAnswer() == 'A') {
-                answerResult.append(questionList.get(index).getAnswerAResult());
-            } else {
-                answerResult.append(questionList.get(index).getAnswerBResult());
+        for (SurveyCompletion surveyCompletion : surveyCompletions) {
+            for (SurveyAnswer surveyAnswer : surveyCompletion.getSurveyAnswers()) {
+                int questionId = surveyAnswer.getQuestion().getId();
+                char answer = surveyAnswer.getAnswer();
+
+                questionAnswerCountMap.computeIfAbsent(questionId, k -> new HashMap<>())
+                        .put(answer, questionAnswerCountMap.getOrDefault(questionId, new HashMap<>()).getOrDefault(answer, 0) + 1);
             }
-            index++;
         }
-        return answerResult.toString();
+
+        return questionAnswerCountMap;
+    }
+
+    private Map<Integer, Character> findMostSelectedAnswers(Map<Integer, Map<Character, Integer>> questionAnswerCountMap) {
+        Map<Integer, Character> mostSelectedAnswers = new HashMap<>();
+
+        for (Map.Entry<Integer, Map<Character, Integer>> entry : questionAnswerCountMap.entrySet()) {
+            int questionId = entry.getKey();
+            Map<Character, Integer> answerCountMap = entry.getValue();
+
+            char mostSelectedAnswer = findMostSelectedAnswer(answerCountMap);
+            mostSelectedAnswers.put(questionId, mostSelectedAnswer);
+        }
+
+        return mostSelectedAnswers;
+    }
+
+    private char findMostSelectedAnswer(Map<Character, Integer> answerCountMap) {
+        char mostSelectedAnswer = '\0';
+        int maxCount = 0;
+
+        for (Map.Entry<Character, Integer> entry : answerCountMap.entrySet()) {
+            char answer = entry.getKey();
+            int count = entry.getValue();
+
+            if (count > maxCount) {
+                mostSelectedAnswer = answer;
+                maxCount = count;
+            }
+        }
+
+        return mostSelectedAnswer;
     }
 }
