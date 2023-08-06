@@ -5,7 +5,8 @@ spring:
       local: common, local
       dev: common, dev
       prod: common, prod
-    active: ${SPRING_PROFILES_ACTIVE}
+  config:
+    import: classpath:/env.properties
 
 ---
 spring:
