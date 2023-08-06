@@ -4,7 +4,7 @@ name: deploy
 
 on:
   push:
-    branches: [ "main" ] # test-deploy push가 될 때 CD가 일어나도록 핸들링
+    branches: [ "main" ] # main branch push가 될 때 CD가 일어나도록 핸들링
     
 env:
   DOCKER_HUB_USERNAME: snowdrop6342
