@@ -25,10 +25,4 @@ public class UserSurveyControllerV1 {
     public BaseResponse<SurveyDto.SurveyResultDetail> getSurveyResult(@PathVariable int userId, @PathVariable int surveyId, Authentication authentication){
         return BaseResponse.ok(surveyService.getSurveyResult(userId, surveyId, authentication));
     }
-
-    @GetMapping("survey-results/{userId}/{surveyId}/details")
-    @Operation(summary = "설문 결과 상세보기")
-    public BaseResponse<List<SurveyDto.SurveyCompletionWithAnswers>> getSurveyResultDetail(@PathVariable int userId, @PathVariable int surveyId){
-        return BaseResponse.ok(surveyService.getSurveyResultDetail(userId, surveyId));
-    }
 }
