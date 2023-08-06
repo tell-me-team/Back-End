@@ -22,7 +22,7 @@ public class UserSurveyControllerV1 {
 
     @GetMapping("survey-results/{userId}/{surveyId}")
     @Operation(summary = "설문 결과")
-    public BaseResponse<List<SurveyAnswer>> getSurveyResult(@PathVariable int userId, @PathVariable int surveyId, Authentication authentication){
+    public BaseResponse<SurveyDto.SurveyResultDetail> getSurveyResult(@PathVariable int userId, @PathVariable int surveyId, Authentication authentication){
         return BaseResponse.ok(surveyService.getSurveyResult(userId, surveyId, authentication));
     }
 
