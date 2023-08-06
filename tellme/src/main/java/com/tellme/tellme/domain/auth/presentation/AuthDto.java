@@ -16,8 +16,10 @@ public class AuthDto {
     public static class GetSocialOAuthRes {
 
         private int userId;
+        private String userPicture;
         private String accessToken;
         private String refreshToken;
+
 
     }
 
