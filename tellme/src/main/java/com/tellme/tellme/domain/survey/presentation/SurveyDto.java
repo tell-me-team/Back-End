@@ -34,6 +34,7 @@ public class SurveyDto {
     @AllArgsConstructor
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
     @Builder
+    @ToString
     public static class AnswerContent {
         private int question;
         private char answer;

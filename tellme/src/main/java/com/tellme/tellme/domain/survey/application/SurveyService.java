@@ -7,13 +7,11 @@ import com.tellme.tellme.domain.survey.persistence.*;
 import com.tellme.tellme.domain.user.entity.User;
 import com.tellme.tellme.domain.user.persistence.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.tellme.tellme.domain.survey.presentation.SurveyDto.*;
@@ -35,22 +33,20 @@ public class SurveyService {
     public SurveyResultInfo saveAnswer(int surveyId, int userId, Answer answer, Authentication authentication) {
         String shortUrl = null;
         Survey survey = surveyRepository.findById(surveyId).get();
+
+        if (isSurveyAlreadyCompleted(answer.getUniqueId())) {
+            throw new BaseException(ErrorStatus.SURVEY_ALREADY_COMPLETED);
+        }
+
         if (authentication != null) {
             User userDetails = (User) authentication.getPrincipal();
             answer.setUniqueId(String.valueOf(userDetails.getId()));
             shortUrl = getShareUrl(survey, userDetails);
         }
 
-        if (isSurveyAlreadyCompleted(answer.getUniqueId())) {
-            throw new BaseException(ErrorStatus.SURVEY_ALREADY_COMPLETED);
-        }
-
         User createUser = userRepository.findById(userId).get();
         saveSurveyAnswer(survey, createUser, answer);
-        String answerResult = generateCombinedAnswerResult(answer.getAnswerContentList(), survey);
-        SurveyResult surveyResult = calculateMode(answerResult);
-
-
+        SurveyResult surveyResult = generateCombinedAnswerResult(answer.getAnswerContentList(), survey);
 
         return SurveyResultInfo.builder()
                 .type(surveyResult.getType())
@@ -74,7 +70,35 @@ public class SurveyService {
     }
 
 
-    public List<SurveyAnswer> getSurveyResult(int userId, int surveyId) {
+    public List<SurveyAnswer> getSurveyResult(int createUserId, int surveyId, Authentication authentication) {
+
+        // 내가 선택하는 결과값들
+        User user = (User) authentication.getPrincipal();
+        User createUser = userRepository.findById(createUserId).get();
+        Survey survey = surveyRepository.findById(surveyId).get();
+
+        SurveyCompletion surveyCompletionToMe = surveyCompletionRepository.findByUserAndUniqueIdAndSurvey(createUser, String.valueOf(user.getId()), survey);
+
+        List<AnswerContent> answerContentList = new ArrayList<>();
+
+        for (SurveyAnswer surveyAnswer : surveyCompletionToMe.getSurveyAnswers()) {
+            AnswerContent answerContent = AnswerContent.builder()
+                    .question(surveyAnswer.getQuestion().getId())
+                    .answer(surveyAnswer.getAnswer())
+                    .build();
+            answerContentList.add(answerContent);
+        }
+
+        SurveyResult answerToMe = generateCombinedAnswerResult(answerContentList, survey);
+
+
+        // 다른 사람들이 선택해준 결과값들
+//        List<SurveyCompletion> surveyCompletionOtherToMe = surveyCompletionRepository.findByUserAndUniqueIdNotAndSurvey(createUser, String.valueOf(user.getId()), survey);
+//        for (SurveyCompletion surveyCompletion : surveyCompletionOtherToMe) {
+//            System.out.println(surveyCompletion);
+//        }
+
+
 //        User user = userRepository.findById(userId).get();
 //        SurveyCompletion surveyCompletion = surveyCompletionQueryRepository.findByUserIdAndSurveyId(user, surveyId);
 //        List<SurveyAnswer> surveyAnswerList = surveyAnswerRepository.findBySurveyCompletion(surveyCompletion);
@@ -106,7 +130,7 @@ public class SurveyService {
 
     }
 
-    private String getShareUrl(Survey survey, User user){
+    private String getShareUrl(Survey survey, User user) {
         SurveyShortUrl findShortUrl = surveyShortUrlRepository.findBySurveyIdAndUserId(survey.getId(), user.getId());
         if (findShortUrl != null) {
             return findShortUrl.getUrl();
@@ -155,7 +179,24 @@ public class SurveyService {
         return surveyCompletionRepository.findByUniqueId(uniqueId) != null;
     }
 
+    private SurveyResult generateCombinedAnswerResult(List<AnswerContent> answerContentList, Survey survey) {
+        List<Question> questionList = surveyQuestionQueryRepository.getQuestionList(survey);
+
+        StringBuilder answerResult = new StringBuilder();
+        int index = 0;
+        for (AnswerContent answerContent : answerContentList) {
+            if (answerContent.getAnswer() == 'A') {
+                answerResult.append(questionList.get(index).getAnswerAResult());
+            } else {
+                answerResult.append(questionList.get(index).getAnswerBResult());
+            }
+            index++;
+        }
+        return calculateMode(answerResult.toString());
+    }
+
     private SurveyResult calculateMode(String answerResult) {
+        System.out.println(answerResult);
 
         Map<Integer, Integer> digitCountMap = new HashMap<>();
 
@@ -175,21 +216,5 @@ public class SurveyService {
             }
         }
         return surveyResultRepository.findByTypeNumber(mostCommonDigit);
-    }
-
-    private String generateCombinedAnswerResult(List<AnswerContent> answerContentList, Survey survey) {
-        List<Question> questionList = surveyQuestionQueryRepository.getQuestionList(survey);
-
-        StringBuilder answerResult = new StringBuilder();
-        int index = 0;
-        for (AnswerContent answerContent : answerContentList) {
-            if (answerContent.getAnswer() == 'A') {
-                answerResult.append(questionList.get(index).getAnswerAResult());
-            } else {
-                answerResult.append(questionList.get(index).getAnswerBResult());
-            }
-            index++;
-        }
-        return answerResult.toString();
     }
 }

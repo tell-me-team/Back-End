@@ -3,16 +3,16 @@ package com.tellme.tellme.domain.survey.entity;
 import com.tellme.tellme.domain.BaseEntity;
 import com.tellme.tellme.domain.user.entity.User;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "survey_completion")
+@ToString
 public class SurveyCompletion extends BaseEntity {
 
     @Id
