@@ -41,6 +41,11 @@ public class SurveyService {
         String uniqueId = httpServletRequest.getSession().getId();
         Survey survey = surveyRepository.findById(surveyId).get();
 
+        // 질문갯수 확인
+        if(!isSurveyQuestionCount(survey, answer)){
+            throw new BaseException(ErrorStatus.SURVEY_ANSWER_INSUFFICIENT);
+        }
+
         if (authentication != null) {
             User userDetails = (User) authentication.getPrincipal();
             uniqueId = String.valueOf(userDetails.getId());
@@ -130,6 +135,13 @@ public class SurveyService {
                         .answerA(question.getAnswerA())
                         .answerB(question.getAnswerB())
                         .build()).collect(Collectors.toList());
+    }
+
+    private boolean isSurveyQuestionCount(Survey survey, Answer answer) {
+        long questionCount = surveyQuestionQueryRepository.getQuestionList(survey).stream().count();
+        System.out.println(questionCount);
+        System.out.println(answer.getAnswerContentList().size());
+        return questionCount == answer.getAnswerContentList().size();
     }
 
     private void saveSurveyAnswer(Survey survey, User user, Answer answer, String uniqueId) {
