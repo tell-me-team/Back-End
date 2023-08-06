@@ -49,7 +49,7 @@ public class OAuthService {
                     String accessToken = jwtTokenProvider.createAccessToken(user.getId(), List.of("ROLE_USER"));
                     String refreshToken = jwtTokenProvider.createRefreshToken(user.getId(), List.of("ROLE_USER"));
 
-                    GetSocialOAuthRes getSocialOAuthRes = new GetSocialOAuthRes(user.getId(), accessToken, refreshToken);
+                    GetSocialOAuthRes getSocialOAuthRes = new GetSocialOAuthRes(user.getId(), user.getPicture(), accessToken, refreshToken);
                     return getSocialOAuthRes;
 
                 // 회원가입
@@ -59,7 +59,7 @@ public class OAuthService {
                     String accessToken = jwtTokenProvider.createAccessToken(user.getId(), List.of("ROLE_USER"));
                     String refreshToken = jwtTokenProvider.createRefreshToken(user.getId(), List.of("ROLE_USER"));
 
-                    GetSocialOAuthRes getSocialOAuthRes = new GetSocialOAuthRes(user.getId(), accessToken, refreshToken);
+                    GetSocialOAuthRes getSocialOAuthRes = new GetSocialOAuthRes(user.getId(), user.getPicture(), accessToken, refreshToken);
                     return getSocialOAuthRes;
                 }
 
