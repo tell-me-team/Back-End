@@ -29,28 +29,28 @@ jobs:
         run: echo "::set-output name=BUILD_NUMBER::$(date '+%-d.%-m.%Y.%-H.%-M.%-S')"
 
       - name: write JWT_SECRET_KEY
-        run: echo "JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}" >> env.yml
+        run: echo JWT_SECRET_KEY=${{secrets.JWT_SECRET_KEY}} >> env.yml
         working-directory: ./tellme/src/main/resources
       - name: write KAKAO_CLIENT_PW
-        run: echo "KAKAO_CLIENT_PW=${{ secrets.KAKAO_CLIENT_PW }}" >> env.yml
+        run: echo KAKAO_CLIENT_PW=${{secrets.KAKAO_CLIENT_PW}} >> env.yml
         working-directory: ./tellme/src/main/resources
       - name: write KAKAO_CLINET_ID
-        run: echo "KAKAO_CLINET_ID=${{ secrets.KAKAO_CLINET_ID }}" >> env.yml
+        run: echo KAKAO_CLINET_ID=${{secrets.KAKAO_CLINET_ID}} >> env.yml
         working-directory: ./tellme/src/main/resources
       - name: write KAKAO_REDIRECT_URI
-        run: echo "KAKAO_REDIRECT_URI=${{ secrets.KAKAO_REDIRECT_URI }}" >> env.yml
+        run: echo KAKAO_REDIRECT_URI=${{secrets.KAKAO_REDIRECT_URI}} >> env.yml
         working-directory: ./tellme/src/main/resources
       - name: write PROD_DATABASE_PASSWORD
-        run: echo "PROD_DATABASE_PASSWORD=${{ secrets.PROD_DATABASE_PASSWORD }}" >> env.yml
+        run: echo PROD_DATABASE_PASSWORD=${{secrets.PROD_DATABASE_PASSWORD}} >> env.yml
         working-directory: ./tellme/src/main/resources
       - name: write PROD_DATABASE_URL
-        run: echo "PROD_DATABASE_URL=${{ secrets.PROD_DATABASE_URL }}" >> env.yml
+        run: echo PROD_DATABASE_URL=${{secrets.PROD_DATABASE_URL}} >> env.yml
         working-directory: ./tellme/src/main/resources
       - name: write PROD_DATABASE_USERNAME
-        run: echo "PROD_DATABASE_USERNAME=${{ secrets.PROD_DATABASE_USERNAME }}" >> env.yml
+        run: echo PROD_DATABASE_USERNAME=${{secrets.PROD_DATABASE_USERNAME}} >> env.yml
         working-directory: ./tellme/src/main/resources
       - name: write SPRING_PROFILES_ACTIVE
-        run: echo "SPRING_PROFILES_ACTIVE=${{ secrets.SPRING_PROFILES_ACTIVE }}" >> env.yml
+        run: echo SPRING_PROFILES_ACTIVE=${{secrets.SPRING_PROFILES_ACTIVE}} >> env.yml
         working-directory: ./tellme/src/main/resources
 
       - name: Docker Login
