@@ -12,7 +12,6 @@ import java.util.List;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "survey_completion")
-@ToString
 public class SurveyCompletion extends BaseEntity {
 
     @Id

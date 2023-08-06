@@ -11,7 +11,6 @@ import java.util.List;
 @Entity
 @Getter
 @Table(name = "survey_result")
-@ToString
 public class SurveyResult extends BaseEntity {
 
     @Id

@@ -81,7 +81,22 @@ public class SurveyService {
         }
 
         SurveyCompletion surveyCompletionToMe = surveyCompletionRepository.findByUserAndUniqueIdAndSurvey(createUser, String.valueOf(user.getId()), survey);
-        List<AnswerContent> answerContentList = surveyAnswerToMeSelectResult(surveyCompletionToMe);
+        List<AnswerContent> answerContentList = new ArrayList<>();
+        List<SurveyCompletionWithAnswers> surveyCompletionWithAnswersList = new ArrayList<>();
+        for (SurveyAnswer surveyAnswer : surveyCompletionToMe.getSurveyAnswers()) {
+            AnswerContent answerContent = AnswerContent.builder()
+                    .question(surveyAnswer.getQuestion().getId())
+                    .answer(surveyAnswer.getAnswer())
+                    .build();
+            answerContentList.add(answerContent);
+
+            SurveyCompletionWithAnswers surveyCompletionWithAnswers = SurveyCompletionWithAnswers.builder()
+                    .question(surveyAnswer.getQuestion().getQuestion())
+                    .answerToMe(surveyAnswer.getAnswer() == 'A' ? surveyAnswer.getQuestion().getAnswerA() : surveyAnswer.getQuestion().getAnswerB())
+                            .build();
+            surveyCompletionWithAnswersList.add(surveyCompletionWithAnswers);
+        }
+
         SurveyResult surveyAnswerToMe = generateCombinedAnswerResult(answerContentList, survey);
 
         if(user.getId() != createUserId){
@@ -95,29 +110,34 @@ public class SurveyService {
         }
 
         List<SurveyCompletion> surveyCompletionOtherToMe = surveyCompletionRepository.findByUserAndUniqueIdNotAndSurvey(createUser, String.valueOf(user.getId()), survey);
-        SurveyResult surveyAnswerToOther = surveyAnswerToOtherMode(surveyCompletionOtherToMe, answerContentList, survey);
+        List<AnswerContent> answerContentToOtherToMeList = new ArrayList<>();
+        StringBuilder surveyResultTypeNumbers = new StringBuilder();
 
-        List<SurveyCompletionWithAnswers> surveyCompletionWithAnswersList = new ArrayList<>();
+        Map<Integer, Map<Character, Integer>> questionAnswerCountMap = countQuestionAnswer(surveyCompletionOtherToMe);
+        Map<Integer, Character> mostSelectedAnswers = findMostSelectedAnswers(questionAnswerCountMap);
+
+        int surveyCompletionWithAnswersIndex = 1;
+        for(SurveyCompletionWithAnswers surveyCompletionWithAnswers : surveyCompletionWithAnswersList){
+            Character answer = mostSelectedAnswers.get(surveyCompletionWithAnswersIndex);
+
+            Question question = questionRepository.findByQuestion(surveyCompletionWithAnswers.getQuestion());
+
+            surveyCompletionWithAnswers.setAnswerToOther(answer == 'A' ? question.getAnswerA() : question.getAnswerB());
+        }
+
         for (SurveyCompletion surveyCompletion : surveyCompletionOtherToMe) {
-            List<AnswerContent> answerContentListToOtherToMe = new ArrayList<>();
             for (SurveyAnswer surveyAnswer : surveyCompletion.getSurveyAnswers()) {
                 AnswerContent answerContent = AnswerContent.builder()
                         .question(surveyAnswer.getQuestion().getId())
                         .answer(surveyAnswer.getAnswer())
                         .build();
-                answerContentListToOtherToMe.add(answerContent);
+                answerContentToOtherToMeList.add(answerContent);
+
             }
 
-            String answerToOther = generateCombinedAnswerResult(answerContentListToOtherToMe, survey).getContent();
-
-            SurveyCompletionWithAnswers completionWithAnswers = SurveyCompletionWithAnswers.builder()
-                    .question(surveyCompletion.getSurvey().getTitle())
-                    .answerToMe(surveyAnswerToMe.getContent())
-                    .answerToOther(answerToOther)
-                    .build();
-
-            surveyCompletionWithAnswersList.add(completionWithAnswers);
+            surveyResultTypeNumbers.append(generateCombinedAnswerResult(answerContentList, survey).getTypeNumber());
         }
+        SurveyResult surveyAnswerToOther = calculateMode(surveyResultTypeNumbers.toString());
 
 
         return SurveyResultDetail.builder()
@@ -166,8 +186,6 @@ public class SurveyService {
 
     private boolean isSurveyQuestionCount(Survey survey, Answer answer) {
         long questionCount = surveyQuestionQueryRepository.getQuestionList(survey).stream().count();
-        System.out.println(questionCount);
-        System.out.println(answer.getAnswerContentList().size());
         return questionCount == answer.getAnswerContentList().size();
     }
 
@@ -243,34 +261,51 @@ public class SurveyService {
         return surveyResultRepository.findByTypeNumber(mostCommonDigit);
     }
 
-    private SurveyResult surveyAnswerToOtherMode(List<SurveyCompletion> surveyCompletionOtherToMe, List<AnswerContent> answerContentList, Survey survey) {
+    //
+    private Map<Integer, Map<Character, Integer>> countQuestionAnswer(List<SurveyCompletion> surveyCompletions) {
+        Map<Integer, Map<Character, Integer>> questionAnswerCountMap = new HashMap<>();
 
-        List<AnswerContent> answerContentToOtherToMeList = new ArrayList<>();
-        StringBuilder surveyResultTypeNumbers = new StringBuilder();
-
-        for (SurveyCompletion surveyCompletion : surveyCompletionOtherToMe) {
+        for (SurveyCompletion surveyCompletion : surveyCompletions) {
             for (SurveyAnswer surveyAnswer : surveyCompletion.getSurveyAnswers()) {
-                AnswerContent answerContent = AnswerContent.builder()
-                        .question(surveyAnswer.getQuestion().getId())
-                        .answer(surveyAnswer.getAnswer())
-                        .build();
-                answerContentToOtherToMeList.add(answerContent);
+                int questionId = surveyAnswer.getQuestion().getId();
+                char answer = surveyAnswer.getAnswer();
+
+                questionAnswerCountMap.computeIfAbsent(questionId, k -> new HashMap<>())
+                        .put(answer, questionAnswerCountMap.getOrDefault(questionId, new HashMap<>()).getOrDefault(answer, 0) + 1);
             }
-            surveyResultTypeNumbers.append(generateCombinedAnswerResult(answerContentList, survey).getTypeNumber());
         }
-        return calculateMode(surveyResultTypeNumbers.toString());
+
+        return questionAnswerCountMap;
     }
 
-    private List<AnswerContent> surveyAnswerToMeSelectResult(SurveyCompletion surveyCompletionToMe) {
-        List<AnswerContent> answerContentList = new ArrayList<>();
-        for (SurveyAnswer surveyAnswer : surveyCompletionToMe.getSurveyAnswers()) {
-            AnswerContent answerContent = AnswerContent.builder()
-                    .question(surveyAnswer.getQuestion().getId())
-                    .answer(surveyAnswer.getAnswer())
-                    .build();
-            answerContentList.add(answerContent);
+    private Map<Integer, Character> findMostSelectedAnswers(Map<Integer, Map<Character, Integer>> questionAnswerCountMap) {
+        Map<Integer, Character> mostSelectedAnswers = new HashMap<>();
+
+        for (Map.Entry<Integer, Map<Character, Integer>> entry : questionAnswerCountMap.entrySet()) {
+            int questionId = entry.getKey();
+            Map<Character, Integer> answerCountMap = entry.getValue();
+
+            char mostSelectedAnswer = findMostSelectedAnswer(answerCountMap);
+            mostSelectedAnswers.put(questionId, mostSelectedAnswer);
         }
 
-        return answerContentList;
+        return mostSelectedAnswers;
+    }
+
+    private char findMostSelectedAnswer(Map<Character, Integer> answerCountMap) {
+        char mostSelectedAnswer = '\0';
+        int maxCount = 0;
+
+        for (Map.Entry<Character, Integer> entry : answerCountMap.entrySet()) {
+            char answer = entry.getKey();
+            int count = entry.getValue();
+
+            if (count > maxCount) {
+                mostSelectedAnswer = answer;
+                maxCount = count;
+            }
+        }
+
+        return mostSelectedAnswer;
     }
 }
