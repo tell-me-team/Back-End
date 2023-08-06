@@ -16,6 +16,7 @@ public enum ErrorStatus {
     // SURVEY
     SURVEY_ALREADY_COMPLETED(HttpStatus.CONFLICT, "이미 설문조사에 참여했습니다."),
     SURVEY_ANSWER_INSUFFICIENT(HttpStatus.BAD_REQUEST, "설문 답변에 개수가 안 맞습니다."),
+    SURVEY_NOT_CREATE(HttpStatus.NOT_FOUND, "설문을 생성하지 않았습니다."),
 
 
     // AUTH

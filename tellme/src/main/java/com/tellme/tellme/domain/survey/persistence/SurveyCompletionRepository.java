@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface SurveyCompletionRepository extends JpaRepository<SurveyCompletion, Integer> {
@@ -18,4 +19,5 @@ public interface SurveyCompletionRepository extends JpaRepository<SurveyCompleti
 
     List<SurveyCompletion> findByUserAndUniqueIdNotAndSurvey(User createUser, String uniqueId, Survey survey);
 
+    Optional<SurveyCompletion> findByUserAndSurvey(User user, Survey survey);
 }
