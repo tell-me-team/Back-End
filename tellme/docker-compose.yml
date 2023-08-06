@@ -3,5 +3,5 @@ services:
   backend:
     image: "snowdrop6342/tell-me:latest"
     ports:
-      - "443:8080"
+      - "80:8080"
     restart: "always"
