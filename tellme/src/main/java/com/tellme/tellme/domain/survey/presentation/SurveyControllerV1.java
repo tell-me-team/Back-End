@@ -3,6 +3,7 @@ package com.tellme.tellme.domain.survey.presentation;
 import com.tellme.tellme.common.response.BaseResponse;
 import com.tellme.tellme.domain.survey.application.SurveyService;
 import com.tellme.tellme.domain.survey.presentation.SurveyDto.Answer;
+import com.tellme.tellme.domain.survey.presentation.SurveyDto.SurveyResultInfo;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -20,20 +21,11 @@ public class SurveyControllerV1 {
     @PostMapping("/{surveyId}/{userId}/answers")
     @Operation(summary = "설문 답변")
     @ResponseBody
-    public BaseResponse saveAnswer(@PathVariable("surveyId") int surveyId,
-                                   @PathVariable("userId") int userId,
-                                   @RequestBody Answer answer,
-                                   Authentication authentication) {
-        return surveyService.saveAnswer(surveyId, userId, answer, authentication);
-    }
-
-    @GetMapping("/share/{surveyId}")
-    @Operation(summary = "설문 링크 공유 url 생성")
-    @ResponseBody
-    public BaseResponse<String> share(@PathVariable("surveyId") int surveyId,
-                                       Authentication authentication){
-
-        return BaseResponse.ok(surveyService.share(surveyId, authentication));
+    public BaseResponse<SurveyResultInfo> saveAnswer(@PathVariable("surveyId") int surveyId,
+                                                     @PathVariable("userId") int userId,
+                                                     @RequestBody Answer answer,
+                                                     Authentication authentication) {
+        return BaseResponse.ok(surveyService.saveAnswer(surveyId, userId, answer, authentication));
     }
 
     @GetMapping("/{shortUrl}")
