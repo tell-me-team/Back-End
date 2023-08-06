@@ -1,7 +1,6 @@
 package com.tellme.tellme.common.auth;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -17,18 +16,13 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity // (debug = true)
+@RequiredArgsConstructor
 public class SpringSecurityConfig {
 
 
     private final AuthenticationEntryPoint authenticationEntryPoint;
     private final JwtTokenProvider jwtTokenProvider;
 
-
-    @Autowired
-    public SpringSecurityConfig(AuthenticationEntryPoint authenticationEntryPoint, JwtTokenProvider jwtTokenProvider) {
-        this.authenticationEntryPoint = authenticationEntryPoint;
-        this.jwtTokenProvider = jwtTokenProvider;
-    }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -37,20 +31,22 @@ public class SpringSecurityConfig {
                 .authorizeHttpRequests((authorizeRequests) -> {
                     authorizeRequests
                             .requestMatchers("/v1/users/profiles/**").hasRole("USER")
-                            .requestMatchers("/v1/auth/**", "/v1/users/survey-results/**", "/v1/survey/**", "/actuator/**", "/swagger-ui/**", "/swagger-resources/**", "/v3/api-docs/**").permitAll()
+                            .requestMatchers("/v1/auth/**", "/v1/users/survey-results/**", "/v1/survey/**", "/actuator/**", "/swagger-ui/**", "/swagger-resources/**", "/v3/api-docs/**", "/healthcheck").permitAll()
                             .anyRequest().authenticated();
                 })
                 .sessionManagement((sessionManagement) ->
                     sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .csrf(AbstractHttpConfigurer::disable)
+//                .anonymous((anonymous) ->
+//                        anonymous.disable()
+//                )
                 .headers((headers) ->
                         headers
                                 .frameOptions((frameOptions) -> frameOptions.sameOrigin())
                 )
                 .exceptionHandling((exceptionHandling) ->
                         exceptionHandling
-//                                .authenticationEntryPoint(new CustomAuthenticationEntryPoint())
                                 .authenticationEntryPoint(authenticationEntryPoint)
                                 .accessDeniedHandler(new CustomAccessDeniedHandler())
                 )

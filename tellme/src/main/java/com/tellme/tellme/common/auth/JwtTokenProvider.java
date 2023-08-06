@@ -47,10 +47,10 @@ public class JwtTokenProvider {
 
 
     // JWT accessToken 생성
-    public String createAccessToken(String userUid, List<String> roles) {
+    public String createAccessToken(int userUid, List<String> roles) {
 
         LOGGER.info("[AccessToken] 토큰 생성 시작");
-        Claims claims = Jwts.claims().setSubject(userUid);
+        Claims claims = Jwts.claims().setSubject(Integer.toString(userUid));
         claims.put("roles", roles);
 
         Date now = new Date();
@@ -66,10 +66,10 @@ public class JwtTokenProvider {
     }
 
     // JWT refreshToken 생성
-    public String createRefreshToken(String userUid, List<String> roles) {
+    public String createRefreshToken(int userUid, List<String> roles) {
 
         LOGGER.info("[RefreshToken] 토큰 생성 시작");
-        Claims claims = Jwts.claims().setSubject(userUid);
+        Claims claims = Jwts.claims().setSubject(Integer.toString(userUid));
         claims.put("roles", roles);
 
         Date now = new Date();
