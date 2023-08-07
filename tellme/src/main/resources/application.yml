@@ -112,6 +112,7 @@ spring:
       hibernate:
         format_sql: false
 
+---
 spring:
   profiles:
     group:
