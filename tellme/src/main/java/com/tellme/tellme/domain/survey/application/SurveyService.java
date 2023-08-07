@@ -32,7 +32,7 @@ public class SurveyService {
     private final SurveyShortUrlRepository surveyShortUrlRepository;
     private final SurveyResultRepository surveyResultRepository;
 
-    @Transactional(readOnly = true)
+    @Transactional
     public SurveyResultInfo saveAnswer(int surveyId, int userId, Answer answer, Authentication authentication, HttpServletRequest httpServletRequest) {
         String shortUrl = null;
         String uniqueId = httpServletRequest.getSession().getId();
