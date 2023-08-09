@@ -7,6 +7,7 @@ import com.tellme.tellme.domain.user.entity.User;
 import com.tellme.tellme.domain.user.persistence.UserRepository;
 import com.tellme.tellme.domain.user.presentation.UserDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,6 +34,12 @@ public class UserService {
         return userRepository.findByEmail(email).orElseThrow(() -> new BaseException(ErrorStatus.RESOURCE_NOT_VALID));
     }
 
-
-
+    @Transactional(readOnly = true)
+    public UserInfo info(Authentication authentication) {
+        User user = (User)authentication.getPrincipal();
+        return UserInfo.builder()
+                .userId(user.getId())
+                .profileImage(user.getPicture())
+                .build();
+    }
 }
