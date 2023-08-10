@@ -26,6 +26,7 @@ public class UserControllerV1 {
         return "oauth-test success!!";
     }
 
+    @CrossOrigin("*")
     @GetMapping("/info")
     @Operation(summary = "user 정보")
     public BaseResponse<UserInfo> info(Authentication authentication){
