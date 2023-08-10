@@ -6,10 +6,7 @@ import com.tellme.tellme.domain.survey.entity.SurveyAnswer;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -20,6 +17,7 @@ public class UserSurveyControllerV1 {
 
     private final SurveyService surveyService;
 
+    @CrossOrigin("*")
     @GetMapping("survey-results/{userId}/{surveyId}")
     @Operation(summary = "설문 결과")
     public BaseResponse<SurveyDto.SurveyResultDetail> getSurveyResult(@PathVariable int userId, @PathVariable int surveyId, Authentication authentication){
