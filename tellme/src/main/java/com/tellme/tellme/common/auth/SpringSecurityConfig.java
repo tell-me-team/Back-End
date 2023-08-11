@@ -13,9 +13,11 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import static org.springframework.security.config.Customizer.withDefaults;
+
 
 @Configuration
-@EnableWebSecurity // (debug = true)
+@EnableWebSecurity(debug = true)
 @RequiredArgsConstructor
 public class SpringSecurityConfig {
 
@@ -38,6 +40,7 @@ public class SpringSecurityConfig {
                     sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .csrf(AbstractHttpConfigurer::disable)
+                .cors(withDefaults())
 //                .anonymous((anonymous) ->
 //                        anonymous.disable()
 //                )
