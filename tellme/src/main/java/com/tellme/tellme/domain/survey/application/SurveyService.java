@@ -42,10 +42,12 @@ public class SurveyService {
             throw new BaseException(ErrorStatus.SURVEY_ANSWER_INSUFFICIENT);
         }
 
-        if (authentication != null) {
+        if (authentication != null ) {
             User userDetails = (User) authentication.getPrincipal();
-            uniqueId = String.valueOf(userDetails.getId());
-            shortUrl = getShareUrl(survey, userDetails);
+            if(userDetails.getId() == userId){
+                uniqueId = String.valueOf(userDetails.getId());
+                shortUrl = getShareUrl(survey, userDetails);
+            }
         }
 
         if (isSurveyAlreadyCompleted(uniqueId)) {
@@ -217,6 +219,8 @@ public class SurveyService {
     }
 
     private boolean isSurveyAlreadyCompleted(String uniqueId) {
+        System.out.println("uniqueId");
+        System.out.println(uniqueId);
         return surveyCompletionRepository.findByUniqueId(uniqueId) != null;
     }
 
