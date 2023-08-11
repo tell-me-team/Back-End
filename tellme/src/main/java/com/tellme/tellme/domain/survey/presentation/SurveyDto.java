@@ -90,6 +90,7 @@ public class SurveyDto {
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
     @Builder
     public static class SurveyResultDetail{
+        private String nickname;
         private List<SurveyCompletionWithAnswers> surveyCompletionWithAnswers;
         private List<SurveyResultKeywordInfo> feedBackKeywords;
         private List<SurveyResultKeywordInfo> selfKeywords;
