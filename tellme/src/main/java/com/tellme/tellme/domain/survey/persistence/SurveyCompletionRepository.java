@@ -11,7 +11,7 @@ import java.util.Optional;
 
 @Repository
 public interface SurveyCompletionRepository extends JpaRepository<SurveyCompletion, Integer> {
-    SurveyCompletion findByUniqueId(String uniqueId);
+    SurveyCompletion findByUniqueIdAndSurveyAndUser(String uniqueId, Survey survey, User user);
 
     List<SurveyCompletion> findByUser(User user);
 

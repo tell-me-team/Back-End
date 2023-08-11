@@ -37,6 +37,7 @@ public class SurveyService {
         String shortUrl = null;
         String uniqueId = httpServletRequest.getSession().getId();
         Survey survey = surveyRepository.findById(surveyId).get();
+        User createUser = userRepository.findById(userId).get();
 
         if (!isSurveyQuestionCount(survey, answer)) {
             throw new BaseException(ErrorStatus.SURVEY_ANSWER_INSUFFICIENT);
@@ -44,17 +45,16 @@ public class SurveyService {
 
         if (authentication != null ) {
             User userDetails = (User) authentication.getPrincipal();
+            uniqueId = String.valueOf(userDetails.getId());
             if(userDetails.getId() == userId){
-                uniqueId = String.valueOf(userDetails.getId());
                 shortUrl = getShareUrl(survey, userDetails);
             }
         }
 
-        if (isSurveyAlreadyCompleted(uniqueId)) {
+        if (isSurveyAlreadyCompleted(uniqueId, survey, createUser)) {
             throw new BaseException(ErrorStatus.SURVEY_ALREADY_COMPLETED);
         }
 
-        User createUser = userRepository.findById(userId).get();
         saveSurveyAnswer(survey, createUser, answer, uniqueId);
         SurveyResult surveyResult = generateCombinedAnswerResult(answer.getAnswerContentList(), survey);
 
@@ -218,10 +218,8 @@ public class SurveyService {
         return shortUrl.getUrl();
     }
 
-    private boolean isSurveyAlreadyCompleted(String uniqueId) {
-        System.out.println("uniqueId");
-        System.out.println(uniqueId);
-        return surveyCompletionRepository.findByUniqueId(uniqueId) != null;
+    private boolean isSurveyAlreadyCompleted(String uniqueId, Survey survey, User createUser) {
+        return surveyCompletionRepository.findByUniqueIdAndSurveyAndUser(uniqueId, survey, createUser) != null;
     }
 
     private boolean isSurveyCompletionFindCreateUser(User createUser, Survey survey, int uniqueId){
