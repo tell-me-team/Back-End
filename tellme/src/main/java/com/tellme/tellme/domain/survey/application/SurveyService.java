@@ -37,22 +37,24 @@ public class SurveyService {
         String shortUrl = null;
         String uniqueId = httpServletRequest.getSession().getId();
         Survey survey = surveyRepository.findById(surveyId).get();
+        User createUser = userRepository.findById(userId).get();
 
         if (!isSurveyQuestionCount(survey, answer)) {
             throw new BaseException(ErrorStatus.SURVEY_ANSWER_INSUFFICIENT);
         }
 
-        if (authentication != null) {
+        if (authentication != null ) {
             User userDetails = (User) authentication.getPrincipal();
             uniqueId = String.valueOf(userDetails.getId());
-            shortUrl = getShareUrl(survey, userDetails);
+            if(userDetails.getId() == userId){
+                shortUrl = getShareUrl(survey, userDetails);
+            }
         }
 
-        if (isSurveyAlreadyCompleted(uniqueId)) {
+        if (isSurveyAlreadyCompleted(uniqueId, survey, createUser)) {
             throw new BaseException(ErrorStatus.SURVEY_ALREADY_COMPLETED);
         }
 
-        User createUser = userRepository.findById(userId).get();
         saveSurveyAnswer(survey, createUser, answer, uniqueId);
         SurveyResult surveyResult = generateCombinedAnswerResult(answer.getAnswerContentList(), survey);
 
@@ -72,15 +74,14 @@ public class SurveyService {
     @Transactional(readOnly = true)
     public SurveyResultDetail getSurveyResult(int createUserId, int surveyId, Authentication authentication) {
 
-        User user = (User) authentication.getPrincipal();
         User createUser = userRepository.findById(createUserId).get();
         Survey survey = surveyRepository.findById(surveyId).get();
 
-        if(isSurveyCompletionFindCreateUser(createUser, survey, user.getId())){
+        if(isSurveyCompletionFindCreateUser(createUser, survey, createUser.getId())){
             throw new BaseException(ErrorStatus.SURVEY_NOT_CREATE);
         }
 
-        SurveyCompletion surveyCompletionToMe = surveyCompletionRepository.findByUserAndUniqueIdAndSurvey(createUser, String.valueOf(user.getId()), survey);
+        SurveyCompletion surveyCompletionToMe = surveyCompletionRepository.findByUserAndUniqueIdAndSurvey(createUser, String.valueOf(createUserId), survey);
         List<AnswerContent> answerContentList = new ArrayList<>();
         List<SurveyCompletionWithAnswers> surveyCompletionWithAnswersList = new ArrayList<>();
         for (SurveyAnswer surveyAnswer : surveyCompletionToMe.getSurveyAnswers()) {
@@ -98,10 +99,10 @@ public class SurveyService {
         }
 
         SurveyResult surveyAnswerToMe = generateCombinedAnswerResult(answerContentList, survey);
-
-        if(user.getId() != createUserId){
+        if(authentication == null){
             return SurveyResultDetail.builder()
-                    .feedBackKeywords(surveyAnswerToMe.getSurveyResultKeywords().stream().map(
+                    .nickname(createUser.getNickname())
+                    .selfKeywords(surveyAnswerToMe.getSurveyResultKeywords().stream().map(
                             surveyResultKeyword -> SurveyResultKeywordInfo.builder()
                                     .title(surveyResultKeyword.getTitle())
                                     .build()
@@ -109,7 +110,21 @@ public class SurveyService {
                     .build();
         }
 
-        List<SurveyCompletion> surveyCompletionOtherToMe = surveyCompletionRepository.findByUserAndUniqueIdNotAndSurvey(createUser, String.valueOf(user.getId()), survey);
+        User user = (User) authentication.getPrincipal();
+
+        if(user.getId() != createUserId){
+
+            return SurveyResultDetail.builder()
+                    .nickname(createUser.getNickname())
+                    .selfKeywords(surveyAnswerToMe.getSurveyResultKeywords().stream().map(
+                            surveyResultKeyword -> SurveyResultKeywordInfo.builder()
+                                    .title(surveyResultKeyword.getTitle())
+                                    .build()
+                    ).collect(Collectors.toList()))
+                    .build();
+        }
+
+        List<SurveyCompletion> surveyCompletionOtherToMe = surveyCompletionRepository.findByUserAndUniqueIdNotAndSurvey(createUser, String.valueOf(createUserId), survey);
         List<AnswerContent> answerContentToOtherToMeList = new ArrayList<>();
         StringBuilder surveyResultTypeNumbers = new StringBuilder();
 
@@ -141,6 +156,7 @@ public class SurveyService {
 
 
         return SurveyResultDetail.builder()
+                .nickname(createUser.getNickname())
                 .surveyCompletionWithAnswers(surveyCompletionWithAnswersList)
                 .feedBackKeywords(surveyAnswerToMe.getSurveyResultKeywords().stream().map(
                         surveyResultKeyword -> SurveyResultKeywordInfo.builder()
@@ -216,8 +232,8 @@ public class SurveyService {
         return shortUrl.getUrl();
     }
 
-    private boolean isSurveyAlreadyCompleted(String uniqueId) {
-        return surveyCompletionRepository.findByUniqueId(uniqueId) != null;
+    private boolean isSurveyAlreadyCompleted(String uniqueId, Survey survey, User createUser) {
+        return surveyCompletionRepository.findByUniqueIdAndSurveyAndUser(uniqueId, survey, createUser) != null;
     }
 
     private boolean isSurveyCompletionFindCreateUser(User createUser, Survey survey, int uniqueId){
