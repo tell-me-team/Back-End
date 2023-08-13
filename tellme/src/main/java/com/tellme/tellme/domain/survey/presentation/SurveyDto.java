@@ -92,6 +92,7 @@ public class SurveyDto {
     public static class SurveyResultDetail{
         private String nickname;
         private List<SurveyCompletionWithAnswers> surveyCompletionWithAnswers;
+        private String type;
         private List<SurveyResultKeywordInfo> feedBackKeywords;
         private List<SurveyResultKeywordInfo> selfKeywords;
     }
