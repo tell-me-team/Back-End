@@ -9,7 +9,6 @@ import com.tellme.tellme.domain.user.persistence.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -122,77 +121,138 @@ public class SurveyService {
             surveyCompletionWithAnswersList.add(surveyCompletionWithAnswers);
         }
 
-        SurveyResult surveyAnswerToMe = generateCombinedAnswerResult(answerContentList, survey);
-        if(authentication == null){
-            return SurveyResultDetail.builder()
-                    .nickname(createUser.getNickname())
-                    .selfKeywords(surveyAnswerToMe.getSurveyResultKeywords().stream().map(
-                            surveyResultKeyword -> SurveyResultKeywordInfo.builder()
-                                    .title(surveyResultKeyword.getTitle())
-                                    .build()
-                    ).collect(Collectors.toList()))
-                    .build();
-        }
+        SurveyResult surveyResultFromMe = generateCombinedAnswerResult(answerContentList, survey);
 
-        User user = (User) authentication.getPrincipal();
-
-        if(user.getId() != createUserId){
-
-            return SurveyResultDetail.builder()
-                    .nickname(createUser.getNickname())
-                    .selfKeywords(surveyAnswerToMe.getSurveyResultKeywords().stream().map(
-                            surveyResultKeyword -> SurveyResultKeywordInfo.builder()
-                                    .title(surveyResultKeyword.getTitle())
-                                    .build()
-                    ).collect(Collectors.toList()))
-                    .build();
-        }
 
         List<SurveyCompletion> surveyCompletionOtherToMe = surveyCompletionRepository.findByUserAndUniqueIdNotAndSurvey(createUser, String.valueOf(createUserId), survey);
-        List<AnswerContent> answerContentToOtherToMeList = new ArrayList<>();
-        StringBuilder surveyResultTypeNumbers = new StringBuilder();
 
-        Map<Integer, Map<Character, Integer>> questionAnswerCountMap = countQuestionAnswer(surveyCompletionOtherToMe);
-        Map<Integer, Character> mostSelectedAnswers = findMostSelectedAnswers(questionAnswerCountMap);
+        if (surveyCompletionOtherToMe.size() == 0) {
 
-        int surveyCompletionWithAnswersIndex = 1;
-        for(SurveyCompletionWithAnswers surveyCompletionWithAnswers : surveyCompletionWithAnswersList){
-            Character answer = mostSelectedAnswers.get(surveyCompletionWithAnswersIndex);
-
-            Question question = questionRepository.findByQuestion(surveyCompletionWithAnswers.getQuestion());
-
-            surveyCompletionWithAnswers.setAnswerToOther(answer == 'A' ? question.getAnswerA() : question.getAnswerB());
-        }
-
-        for (SurveyCompletion surveyCompletion : surveyCompletionOtherToMe) {
-            for (SurveyAnswer surveyAnswer : surveyCompletion.getSurveyAnswers()) {
-                AnswerContent answerContent = AnswerContent.builder()
-                        .question(surveyAnswer.getQuestion().getId())
-                        .answer(surveyAnswer.getAnswer())
+            if(authentication == null){
+                return SurveyResultDetail.builder()
+                        .nickname(createUser.getNickname())
+                        .type(surveyResultFromMe.getType())
+                        .selfKeywords(surveyResultFromMe.getSurveyResultKeywords().stream().map(
+                                surveyResultKeyword -> SurveyResultKeywordInfo.builder()
+                                        .title(surveyResultKeyword.getTitle())
+                                        .build()
+                        ).collect(Collectors.toList()))
                         .build();
-                answerContentToOtherToMeList.add(answerContent);
-
             }
 
-            surveyResultTypeNumbers.append(generateCombinedAnswerResult(answerContentList, survey).getTypeNumber());
+            User user = (User) authentication.getPrincipal();
+
+            if(user.getId() != createUserId){
+                return SurveyResultDetail.builder()
+                        .nickname(createUser.getNickname())
+                        .type(surveyResultFromMe.getType())
+                        .selfKeywords(surveyResultFromMe.getSurveyResultKeywords().stream().map(
+                                surveyResultKeyword -> SurveyResultKeywordInfo.builder()
+                                        .title(surveyResultKeyword.getTitle())
+                                        .build()
+                        ).collect(Collectors.toList()))
+                        .build();
+            }
+
+
+            return SurveyResultDetail.builder()
+                    .nickname(createUser.getNickname())
+                    .type(surveyResultFromMe.getType())
+                    .surveyCompletionWithAnswers(surveyCompletionWithAnswersList)
+                    .selfKeywords(surveyResultFromMe.getSurveyResultKeywords().stream().map(
+                            surveyResultKeyword -> SurveyResultKeywordInfo.builder()
+                                    .title(surveyResultKeyword.getTitle())
+                                    .build()
+                    ).collect(Collectors.toList()))
+                    .build();
+
+
+
+        }else {
+            List<AnswerContent> answerContentFromOtherToMeList = new ArrayList<>();
+
+
+            Map<Integer, Map<Character, Integer>> questionAnswerCountMap = countQuestionAnswer(surveyCompletionOtherToMe);
+            Map<Integer, Character> mostSelectedAnswers = findMostSelectedAnswers(questionAnswerCountMap);
+
+            int surveyCompletionWithAnswersIndex = 1;
+            for(SurveyCompletionWithAnswers surveyCompletionWithAnswers : surveyCompletionWithAnswersList){
+                Character answer = mostSelectedAnswers.get(surveyCompletionWithAnswersIndex);
+
+                Question question = questionRepository.findByQuestion(surveyCompletionWithAnswers.getQuestion());
+
+                surveyCompletionWithAnswers.setAnswerToOther(answer == 'A' ? question.getAnswerA() : question.getAnswerB());
+                surveyCompletionWithAnswersIndex++;
+            }
+
+            for (SurveyCompletion surveyCompletion : surveyCompletionOtherToMe) {
+                for (SurveyAnswer surveyAnswer : surveyCompletion.getSurveyAnswers()) {
+                    AnswerContent answerContent = AnswerContent.builder()
+                            .question(surveyAnswer.getQuestion().getId())
+                            .answer(surveyAnswer.getAnswer())
+                            .build();
+                    answerContentFromOtherToMeList.add(answerContent);
+
+                }
+
+
+            }
+            SurveyResult surveyResultFromOther = generateCombinedAnswerResult(answerContentFromOtherToMeList, survey);
+
+            if(authentication == null){
+                return SurveyResultDetail.builder()
+                        .nickname(createUser.getNickname())
+                        .type(surveyResultFromMe.getType())
+                        .feedBackKeywords(surveyResultFromOther.getSurveyResultKeywords().stream().map(
+                                surveyResultKeyword -> SurveyResultKeywordInfo.builder()
+                                        .title(surveyResultKeyword.getTitle())
+                                        .build()
+                        ).collect(Collectors.toList()))
+                        .selfKeywords(surveyResultFromMe.getSurveyResultKeywords().stream().map(
+                                surveyResultKeyword -> SurveyResultKeywordInfo.builder()
+                                        .title(surveyResultKeyword.getTitle())
+                                        .build()
+                        ).collect(Collectors.toList()))
+                        .build();
+            }
+
+            User user = (User) authentication.getPrincipal();
+
+            if(user.getId() != createUserId){
+                return SurveyResultDetail.builder()
+                        .nickname(createUser.getNickname())
+                        .type(surveyResultFromMe.getType())
+                        .feedBackKeywords(surveyResultFromOther.getSurveyResultKeywords().stream().map(
+                                surveyResultKeyword -> SurveyResultKeywordInfo.builder()
+                                        .title(surveyResultKeyword.getTitle())
+                                        .build()
+                        ).collect(Collectors.toList()))
+                        .selfKeywords(surveyResultFromMe.getSurveyResultKeywords().stream().map(
+                                surveyResultKeyword -> SurveyResultKeywordInfo.builder()
+                                        .title(surveyResultKeyword.getTitle())
+                                        .build()
+                        ).collect(Collectors.toList()))
+                        .build();
+            }
+
+
+            return SurveyResultDetail.builder()
+                    .nickname(createUser.getNickname())
+                    .type(surveyResultFromMe.getType())
+                    .surveyCompletionWithAnswers(surveyCompletionWithAnswersList)
+                    .feedBackKeywords(surveyResultFromOther.getSurveyResultKeywords().stream().map(
+                            surveyResultKeyword -> SurveyResultKeywordInfo.builder()
+                                    .title(surveyResultKeyword.getTitle())
+                                    .build()
+                    ).collect(Collectors.toList()))
+                    .selfKeywords(surveyResultFromMe.getSurveyResultKeywords().stream().map(
+                            surveyResultKeyword -> SurveyResultKeywordInfo.builder()
+                                    .title(surveyResultKeyword.getTitle())
+                                    .build()
+                    ).collect(Collectors.toList()))
+                    .build();
         }
-        SurveyResult surveyAnswerToOther = calculateMode(surveyResultTypeNumbers.toString());
 
-
-        return SurveyResultDetail.builder()
-                .nickname(createUser.getNickname())
-                .surveyCompletionWithAnswers(surveyCompletionWithAnswersList)
-                .feedBackKeywords(surveyAnswerToMe.getSurveyResultKeywords().stream().map(
-                        surveyResultKeyword -> SurveyResultKeywordInfo.builder()
-                                .title(surveyResultKeyword.getTitle())
-                                .build()
-                ).collect(Collectors.toList()))
-                .selfKeywords(surveyAnswerToOther.getSurveyResultKeywords().stream().map(
-                        surveyResultKeyword -> SurveyResultKeywordInfo.builder()
-                                .title(surveyResultKeyword.getTitle())
-                                .build()
-                ).collect(Collectors.toList()))
-                .build();
     }
 
     @Transactional(readOnly = true)
@@ -268,12 +328,14 @@ public class SurveyService {
         StringBuilder answerResult = new StringBuilder();
         int index = 0;
         for (AnswerContent answerContent : answerContentList) {
+
             if (answerContent.getAnswer() == 'A') {
                 answerResult.append(questionList.get(index).getAnswerAResult());
             } else {
                 answerResult.append(questionList.get(index).getAnswerBResult());
             }
             index++;
+            if (index == questionList.size()) index = 0;
         }
         return calculateMode(answerResult.toString());
     }
