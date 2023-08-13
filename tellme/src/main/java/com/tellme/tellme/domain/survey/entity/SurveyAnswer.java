@@ -34,4 +34,8 @@ public class SurveyAnswer extends BaseEntity {
         this.question = question;
         this.answer = answer;
     }
+
+    public void updateSurveyAnswer(char answer) {
+        this.answer = answer;
+    }
 }

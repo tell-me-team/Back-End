@@ -19,7 +19,7 @@ public class UserControllerV1 {
     private final UserService userService;
 
     @GetMapping("/test")
-    @Operation(summary = "authentication 테스트")
+    @Operation(summary = "authentication 테스트", description = "토큰 필수 | authentication 객체 조회 테스트")
     public String test(Authentication authentication) {
         log.info("authentication : {}", authentication);
         log.info("principal : {}", authentication.getPrincipal());
@@ -28,7 +28,7 @@ public class UserControllerV1 {
 
     @CrossOrigin("*")
     @GetMapping("/info")
-    @Operation(summary = "user 정보")
+    @Operation(summary = "user 정보", description = "토큰 필수 | 유저 정보 조회")
     public BaseResponse<UserInfo> info(Authentication authentication){
         return BaseResponse.ok(userService.info(authentication));
     }

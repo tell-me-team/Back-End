@@ -21,7 +21,7 @@ public class SurveyControllerV1 {
     private final SurveyService surveyService;
 
     @PostMapping("/{surveyId}/{userId}/answers")
-    @Operation(summary = "설문 답변")
+    @Operation(summary = "설문 답변", description = "토큰 필수X | 토큰X: 익명 설문 답변, 토큰O: 유저 설문 답변")
     @ResponseBody
     public BaseResponse<SurveyResultInfo> saveAnswer(@PathVariable("surveyId") int surveyId,
                                                      @PathVariable("userId") int userId,
@@ -32,14 +32,14 @@ public class SurveyControllerV1 {
     }
 
     @GetMapping("/{shortUrl}")
-    @Operation(summary = "설문 링크 url 디코드")
+    @Operation(summary = "설문 링크 url 디코드", description = "토큰 필수X | short url에 담긴 userId, surveyId 조회")
     @ResponseBody
     public BaseResponse<SurveyDto.SurveyInfo> shortUrlDecoding(@PathVariable String shortUrl){
         return BaseResponse.ok(surveyService.shortUrlDecoding(shortUrl));
     }
 
     @GetMapping("/questions/{surveyId}")
-    @Operation(summary = "설문 질문 리스트")
+    @Operation(summary = "설문 질문 리스트", description = "토큰 필수X | survey 질문 리스트 조회")
     @ResponseBody
     public BaseResponse<List<SurveyDto.QuestionInfo>> getQuestionInfo(@PathVariable int surveyId){
         return BaseResponse.ok(surveyService.getQuestionInfo(surveyId));

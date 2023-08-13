@@ -19,7 +19,7 @@ public class UserSurveyControllerV1 {
 
     @CrossOrigin("*")
     @GetMapping("survey-results/{userId}/{surveyId}")
-    @Operation(summary = "설문 결과")
+    @Operation(summary = "설문 결과", description = "토큰 필수X | 유저가 만든 설문 결과 조회")
     public BaseResponse<SurveyDto.SurveyResultDetail> getSurveyResult(@PathVariable int userId, @PathVariable int surveyId, Authentication authentication){
         return BaseResponse.ok(surveyService.getSurveyResult(userId, surveyId, authentication));
     }
