@@ -9,6 +9,7 @@ import com.tellme.tellme.domain.user.persistence.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -51,11 +52,18 @@ public class SurveyService {
             }
         }
 
-        if (isSurveyAlreadyCompleted(uniqueId, survey, createUser)) {
-            throw new BaseException(ErrorStatus.SURVEY_ALREADY_COMPLETED);
+        SurveyCompletion alreadyExistSurveyCompletion = surveyCompletionRepository.findByUniqueIdAndSurveyAndUser(uniqueId, survey, createUser);
+
+
+        if (alreadyExistSurveyCompletion == null) {
+            saveSurveyAnswer(survey, createUser, answer, uniqueId);
+        }else {
+            if(!isCreateUserSurveyCompletion(createUser, alreadyExistSurveyCompletion)) {
+                throw new BaseException(ErrorStatus.SURVEY_ALREADY_COMPLETED);
+            }
+            updateSurveyAnswers(answer, alreadyExistSurveyCompletion);
         }
 
-        saveSurveyAnswer(survey, createUser, answer, uniqueId);
         SurveyResult surveyResult = generateCombinedAnswerResult(answer.getAnswerContentList(), survey);
 
         return SurveyResultInfo.builder()
@@ -69,6 +77,22 @@ public class SurveyService {
                         .collect(Collectors.toList()))
                 .shortUrl(shortUrl)
                 .build();
+
+
+    }
+
+    private static void updateSurveyAnswers(Answer answer, SurveyCompletion alreadyExistSurveyCompletion) {
+        List<AnswerContent> answerContentList = answer.getAnswerContentList();
+
+        for (int i = 0; i < answerContentList.size(); i++) {
+            char newAnswer = answerContentList.get(i).getAnswer();
+            SurveyAnswer alreadyExistSurveyAnswer = alreadyExistSurveyCompletion.getSurveyAnswers().get(i);
+            alreadyExistSurveyAnswer.updateSurveyAnswer(newAnswer);
+        }
+    }
+
+    private static boolean isCreateUserSurveyCompletion(User createUser, SurveyCompletion alreadyExistSurveyCompletion) {
+        return alreadyExistSurveyCompletion.getUniqueId().equals(Integer.toString(createUser.getId()));
     }
 
     @Transactional(readOnly = true)
@@ -206,8 +230,9 @@ public class SurveyService {
         return questionCount == answer.getAnswerContentList().size();
     }
 
-    private void saveSurveyAnswer(Survey survey, User user, Answer answer, String uniqueId) {
-        SurveyCompletion surveyCompletion = surveyCompletionRepository.save(answer.toSurveyCompletion(survey, user, uniqueId));
+    private void saveSurveyAnswer(Survey survey, User createUser, Answer answer, String uniqueId) {
+
+        SurveyCompletion surveyCompletion = surveyCompletionRepository.save(answer.toSurveyCompletion(survey, createUser, uniqueId));
         for (AnswerContent answerContent : answer.getAnswerContentList()) {
             Question question = questionRepository.findById(answerContent.getQuestion()).get();
             surveyAnswerRepository.save(answerContent.toSurveyAnswer(surveyCompletion, question));
@@ -232,9 +257,6 @@ public class SurveyService {
         return shortUrl.getUrl();
     }
 
-    private boolean isSurveyAlreadyCompleted(String uniqueId, Survey survey, User createUser) {
-        return surveyCompletionRepository.findByUniqueIdAndSurveyAndUser(uniqueId, survey, createUser) != null;
-    }
 
     private boolean isSurveyCompletionFindCreateUser(User createUser, Survey survey, int uniqueId){
         return surveyCompletionRepository.findByUserAndSurveyAndUniqueId(createUser, survey, String.valueOf(uniqueId)).isEmpty();
