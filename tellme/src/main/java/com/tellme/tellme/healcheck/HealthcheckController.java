@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class HealthcheckController {
 
     @GetMapping("/healthcheck")
-    @Operation(summary = "서버 상태 확인 체크")
+    @Operation(summary = "서버 상태 확인 체크", description = "토큰 필수X | 서버 상태 체크 테스트")
     public String healthcheck(){
         return "ok";
     }
