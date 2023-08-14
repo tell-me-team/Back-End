@@ -3,6 +3,8 @@ package com.tellme.tellme.domain.user.presentation;
 
 import lombok.*;
 
+import java.util.List;
+
 public class UserDto {
 
     @Getter
@@ -12,6 +14,7 @@ public class UserDto {
     public static class UserInfo{
         private int userId;
         private String profileImage;
+        private List<Integer> MyCompleteSurveyList;
     }
 
 }
