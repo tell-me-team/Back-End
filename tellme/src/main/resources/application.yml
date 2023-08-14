@@ -150,8 +150,8 @@ spring:
 constant:
   jwt:
     secret-key: ${JWT_SECRET_KEY}
-    access-token-expiration-time: 43200000
-    refresh-token-expiration-time: 604800000
+    access-token-expiration-time: 1209600000
+    refresh-token-expiration-time: 1209600000
 
 server:
   forward-headers-strategy: FRAMEWORK

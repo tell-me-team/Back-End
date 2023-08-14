@@ -28,10 +28,10 @@ public class JwtTokenProvider {
     private String secretKey;
 
     @Value("${constant.jwt.access-token-expiration-time}")
-    private final long ACCESS_TOKEN_EXPIRATION_TIME = 43200000L; // 12시간
+    private final long ACCESS_TOKEN_EXPIRATION_TIME = 1209600000L; // TODO. // 43200000L; // 12시간
 
     @Value("${constant.jwt.refresh-token-expiration-time}")
-    private final long REFRESH_TOKEN_EXPIRATION_TIME = 604800000L; // 7일
+    private final long REFRESH_TOKEN_EXPIRATION_TIME = 1209600000L; //TODO. 604800000L; // 7일
 
 
 
