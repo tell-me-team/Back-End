@@ -22,4 +22,6 @@ public interface SurveyCompletionRepository extends JpaRepository<SurveyCompleti
     List<SurveyCompletion> findByUserAndUniqueIdNotAndSurvey(User createUser, String uniqueId, Survey survey);
 
     Optional<SurveyCompletion> findByUserAndSurveyAndUniqueId(User user, Survey survey, String uniqueId);
+
+    List<SurveyCompletion> findByUniqueId(String uniqueId);
 }
