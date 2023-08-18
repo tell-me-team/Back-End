@@ -51,6 +51,8 @@ INSERT INTO survey_result_keyword (id, created, deleted, updated, title, survey_
 
 -- survey_completion
 INSERT INTO survey_completion (create_user_id, id, survey_id, created, deleted, updated, unique_id) VALUES (3, 5, 1, '2023-08-06 04:32:36.071682', null, '2023-08-06 04:32:36.071739', '3');
+INSERT INTO survey_completion (create_user_id, id, survey_id, created, deleted, updated, unique_id) VALUES (3, 7, 1, '2023-08-06 15:24:09.893958', null, '2023-08-06 15:24:09.894015', '2DE3C7B5DA297B03CAFB4F0FF42FF3D3');
+
 
 -- survey_answer
 INSERT INTO survey_answer (answer, id, question_id, survey_completion_id, created, deleted, updated) VALUES ('A', 41, 1, 5, '2023-08-06 04:32:36.104666', null, '2023-08-06 04:32:36.104689');
@@ -63,6 +65,17 @@ INSERT INTO survey_answer (answer, id, question_id, survey_completion_id, create
 INSERT INTO survey_answer (answer, id, question_id, survey_completion_id, created, deleted, updated) VALUES ('A', 48, 8, 5, '2023-08-06 04:32:36.161561', null, '2023-08-06 04:32:36.161590');
 INSERT INTO survey_answer (answer, id, question_id, survey_completion_id, created, deleted, updated) VALUES ('A', 49, 9, 5, '2023-08-06 04:32:36.165726', null, '2023-08-06 04:32:36.165751');
 INSERT INTO survey_answer (answer, id, question_id, survey_completion_id, created, deleted, updated) VALUES ('A', 50, 10, 5, '2023-08-06 04:32:36.170607', null, '2023-08-06 04:32:36.170623');
+
+INSERT INTO survey_answer (answer, id, question_id, survey_completion_id, created, deleted, updated) VALUES ('B', 61, 1, 7, '2023-08-06 15:24:09.941517', null, '2023-08-06 15:24:09.941538');
+INSERT INTO survey_answer (answer, id, question_id, survey_completion_id, created, deleted, updated) VALUES ('B', 62, 2, 7, '2023-08-06 15:24:09.957804', null, '2023-08-06 15:24:09.957820');
+INSERT INTO survey_answer (answer, id, question_id, survey_completion_id, created, deleted, updated) VALUES ('B', 63, 3, 7, '2023-08-06 15:24:09.969103', null, '2023-08-06 15:24:09.969120');
+INSERT INTO survey_answer (answer, id, question_id, survey_completion_id, created, deleted, updated) VALUES ('A', 64, 4, 7, '2023-08-06 15:24:09.984590', null, '2023-08-06 15:24:09.984612');
+INSERT INTO survey_answer (answer, id, question_id, survey_completion_id, created, deleted, updated) VALUES ('A', 65, 5, 7, '2023-08-06 15:24:09.990198', null, '2023-08-06 15:24:09.990216');
+INSERT INTO survey_answer (answer, id, question_id, survey_completion_id, created, deleted, updated) VALUES ('A', 66, 6, 7, '2023-08-06 15:24:10.003765', null, '2023-08-06 15:24:10.003780');
+INSERT INTO survey_answer (answer, id, question_id, survey_completion_id, created, deleted, updated) VALUES ('A', 67, 7, 7, '2023-08-06 15:24:10.008061', null, '2023-08-06 15:24:10.008078');
+INSERT INTO survey_answer (answer, id, question_id, survey_completion_id, created, deleted, updated) VALUES ('A', 68, 8, 7, '2023-08-06 15:24:10.020053', null, '2023-08-06 15:24:10.020075');
+INSERT INTO survey_answer (answer, id, question_id, survey_completion_id, created, deleted, updated) VALUES ('A', 69, 9, 7, '2023-08-06 15:24:10.027502', null, '2023-08-06 15:24:10.027521');
+INSERT INTO survey_answer (answer, id, question_id, survey_completion_id, created, deleted, updated) VALUES ('A', 70, 10, 7, '2023-08-06 15:24:10.039945', null, '2023-08-06 15:24:10.039964');
 
 -- survey_short_url
 INSERT INTO survey_short_url (id, survey_id, user_id, created, deleted, updated, url) VALUES (1, 1, 3, '2023-08-06 02:01:18.532118', null, '2023-08-06 02:01:18.532171', 'MQ==');
