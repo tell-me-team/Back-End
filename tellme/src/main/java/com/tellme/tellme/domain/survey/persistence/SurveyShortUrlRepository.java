@@ -4,9 +4,11 @@ import com.tellme.tellme.domain.survey.entity.SurveyShortUrl;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface SurveyShortUrlRepository extends JpaRepository<SurveyShortUrl, Integer> {
-    SurveyShortUrl findByUrl(String url);
+    Optional<SurveyShortUrl> findByUrl(String url);
 
-    SurveyShortUrl findBySurveyIdAndUserId(int surveyId, int userId);
+    Optional<SurveyShortUrl> findBySurveyIdAndUserId(int surveyId, int userId);
 }

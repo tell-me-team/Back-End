@@ -257,7 +257,9 @@ public class SurveyService {
 
     @Transactional(readOnly = true)
     public SurveyInfo shortUrlDecoding(String shortUrl) {
-        SurveyShortUrl surveyShortUrl = surveyShortUrlRepository.findByUrl(shortUrl);
+        SurveyShortUrl surveyShortUrl = surveyShortUrlRepository.findByUrl(shortUrl).orElseThrow(
+                ()-> new RuntimeException("shortUrl이 존재하지 않습니다.")
+        );
         int surveyId = surveyShortUrl.getSurveyId();
         int userId = surveyShortUrl.getUserId();
 
@@ -300,7 +302,9 @@ public class SurveyService {
     }
 
     private String getShareUrl(Survey survey, User user) {
-        SurveyShortUrl findShortUrl = surveyShortUrlRepository.findBySurveyIdAndUserId(survey.getId(), user.getId());
+        SurveyShortUrl findShortUrl = surveyShortUrlRepository.findBySurveyIdAndUserId(survey.getId(), user.getId()).orElseThrow(
+                () -> new RuntimeException("url이 생성되지 않았습니다.")
+        );
         if (findShortUrl != null) {
             return findShortUrl.getUrl();
         }
