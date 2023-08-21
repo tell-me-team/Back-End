@@ -1,11 +1,9 @@
 package com.tellme.tellme.domain.survey.presentation;
 
-import com.querydsl.codegen.Keywords;
 import com.tellme.tellme.domain.survey.entity.*;
 import com.tellme.tellme.domain.user.entity.User;
 import lombok.*;
 
-import java.security.Key;
 import java.util.List;
 
 public class SurveyDto {
