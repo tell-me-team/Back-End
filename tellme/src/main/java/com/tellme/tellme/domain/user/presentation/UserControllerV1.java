@@ -30,7 +30,7 @@ public class UserControllerV1 {
     @CrossOrigin("*")
     @GetMapping("/info")
     @Operation(summary = "user 정보", description = "토큰 필수 | 유저 정보 및 수행한 내 설문 조회")
-    public BaseResponse<UserInfo> info(Authentication authentication){
+    public BaseResponse<UserInfo> getInfo(Authentication authentication){
         User user = (User)authentication.getPrincipal();
         return BaseResponse.ok(userService.getInfo(user));
     }
