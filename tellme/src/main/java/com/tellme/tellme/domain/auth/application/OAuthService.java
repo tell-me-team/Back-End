@@ -43,9 +43,9 @@ public class OAuthService {
                 log.info(">> 카카오 UserInfo 가공 후: {}", kakaoUser);
 
                 // 로그인
-                if(userService.checkUserByEmail(kakaoUser.getKakao_account().getEmail())) {
+                if(userService.checkByEmail(kakaoUser.getKakao_account().getEmail())) {
 
-                    User user = userService.getUserByEmail(kakaoUser.getKakao_account().getEmail());
+                    User user = userService.getByEmail(kakaoUser.getKakao_account().getEmail());
                     String accessToken = jwtTokenProvider.createAccessToken(user.getId(), List.of("ROLE_USER"));
                     String refreshToken = jwtTokenProvider.createRefreshToken(user.getId(), List.of("ROLE_USER"));
 
