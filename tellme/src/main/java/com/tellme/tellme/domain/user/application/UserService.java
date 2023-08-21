@@ -29,14 +29,14 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public boolean checkUserByEmail(String email) {
-        Optional<User> result = userRepository.findByEmail(email);
+        Optional<User> result = userRepository.findByEmailAndDeletedIsNull(email);
         if (result.isPresent()) return true;
         return false;
     }
 
     @Transactional(readOnly = true)
     public User getUserByEmail(String email) {
-        return userRepository.findByEmail(email).orElseThrow(() -> new BaseException(ErrorStatus.RESOURCE_NOT_VALID));
+        return userRepository.findByEmailAndDeletedIsNull(email).orElseThrow(() -> new BaseException(ErrorStatus.RESOURCE_NOT_VALID));
     }
 
     @Transactional(readOnly = true)
