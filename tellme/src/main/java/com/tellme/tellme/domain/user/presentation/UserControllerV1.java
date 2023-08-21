@@ -2,6 +2,7 @@ package com.tellme.tellme.domain.user.presentation;
 
 import com.tellme.tellme.common.response.BaseResponse;
 import com.tellme.tellme.domain.user.application.UserService;
+import com.tellme.tellme.domain.user.entity.User;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,7 +31,8 @@ public class UserControllerV1 {
     @GetMapping("/info")
     @Operation(summary = "user 정보", description = "토큰 필수 | 유저 정보 및 수행한 내 설문 조회")
     public BaseResponse<UserInfo> info(Authentication authentication){
-        return BaseResponse.ok(userService.info(authentication));
+        User user = (User)authentication.getPrincipal();
+        return BaseResponse.ok(userService.getInfo(user));
     }
 
 
