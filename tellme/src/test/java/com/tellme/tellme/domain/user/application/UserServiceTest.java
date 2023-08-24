@@ -5,7 +5,7 @@ import com.tellme.tellme.common.auth.JwtTokenProvider;
 import com.tellme.tellme.common.enums.UserRole;
 import com.tellme.tellme.common.exception.BaseException;
 import com.tellme.tellme.domain.auth.application.KakaoOauth;
-import com.tellme.tellme.domain.user.application.UserService;
+import com.tellme.tellme.domain.survey.presentation.UserSurveyControllerV1Test;
 import com.tellme.tellme.domain.user.entity.User;
 import com.tellme.tellme.domain.user.presentation.UserDto.UserInfo;
 import org.junit.jupiter.api.Test;
@@ -36,7 +36,6 @@ public class UserServiceTest {
     private JwtTokenProvider jwtTokenProvider;
     @MockBean
     private KakaoOauth kakaoOauth;
-
 
     @Test
     void 주어진_email_에_해당하는_유저가_있는지_판별할_수_있다() {

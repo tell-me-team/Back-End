@@ -77,7 +77,7 @@ public class SurveyService {
     }
 
     @Transactional(readOnly = true)
-    public SurveyResultDetail getSurveyResult(int createUserId, int surveyId, Authentication authentication) {
+    public SurveyResultDetail getSurveyResult(int createUserId, int surveyId, User authenticationUser) {
 
         User createUser = userRepository.findById(createUserId).get();
         Survey survey = surveyRepository.findById(surveyId).get();
@@ -110,7 +110,7 @@ public class SurveyService {
 
         if (surveyCompletionOtherToMe.size() == 0) {
 
-            if(authentication == null){
+            if(authenticationUser == null){
                 return SurveyResultDetail.builder()
                         .nickname(createUser.getNickname())
                         .type(surveyResultFromMe.getType())
@@ -122,9 +122,7 @@ public class SurveyService {
                         .build();
             }
 
-            User user = (User) authentication.getPrincipal();
-
-            if(user.getId() != createUserId){
+            if(authenticationUser.getId() != createUserId){
                 return SurveyResultDetail.builder()
                         .nickname(createUser.getNickname())
                         .type(surveyResultFromMe.getType())
@@ -181,7 +179,7 @@ public class SurveyService {
             }
             SurveyResult surveyResultFromOther = generateCombinedAnswerResult(answerContentFromOtherToMeList, survey);
 
-            if(authentication == null){
+            if(authenticationUser == null){
                 return SurveyResultDetail.builder()
                         .nickname(createUser.getNickname())
                         .type(surveyResultFromMe.getType())
@@ -198,9 +196,8 @@ public class SurveyService {
                         .build();
             }
 
-            User user = (User) authentication.getPrincipal();
 
-            if(user.getId() != createUserId){
+            if(authenticationUser.getId() != createUserId){
                 return SurveyResultDetail.builder()
                         .nickname(createUser.getNickname())
                         .type(surveyResultFromMe.getType())

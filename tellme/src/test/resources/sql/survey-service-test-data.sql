@@ -1,6 +1,7 @@
 -- user
-INSERT INTO user (id, created, deleted, updated, social_type, nickname, email, password, picture) VALUES (3, '2023-08-04 00:02:39.000028', null, '2023-08-04 00:02:39.000081', 'KAKAO', '김태영', null, 'NONE', 'http://k.kakaocdn.net/dn/bomDTm/btso6bKwAAw/NW0E3uMlmIwMFnIKRluapK/img_640x640.jpg');
-INSERT INTO user (id, created, deleted, updated, social_type, nickname, email, password, picture) VALUES (4, '2023-08-04 00:02:39.000028', null, '2023-08-04 00:02:39.000081', 'KAKAO', '김태영1', null, 'NONE', 'http://k.kakaocdn.net/dn/bomDTm/btso6bKwAAw/NW0E3uMlmIwMFnIKRluapK/img_640x640.jpg');
+INSERT INTO user (id, created, deleted, updated, social_type, nickname, email, password, picture) VALUES (2, '2023-08-04 00:02:39.000028', null, '2023-08-04 00:02:39.000081', 'KAKAO', '정수범', 'email0@naver.com', 'NONE', 'http://k.kakaocdn.net/dn/bomDTm/btso6bKwAAw/NW0E3uMlmIwMFnIKRluapK/img_640x640.jpg');
+INSERT INTO user (id, created, deleted, updated, social_type, nickname, email, password, picture) VALUES (3, '2023-08-04 00:02:39.000028', null, '2023-08-04 00:02:39.000081', 'KAKAO', '김태영', 'email1@naver.com', 'NONE', 'http://k.kakaocdn.net/dn/bomDTm/btso6bKwAAw/NW0E3uMlmIwMFnIKRluapK/img_640x640.jpg');
+INSERT INTO user (id, created, deleted, updated, social_type, nickname, email, password, picture) VALUES (4, '2023-08-04 00:02:39.000028', null, '2023-08-04 00:02:39.000081', 'KAKAO', '김태영1', 'email2@naver.com', 'NONE', 'http://k.kakaocdn.net/dn/bomDTm/btso6bKwAAw/NW0E3uMlmIwMFnIKRluapK/img_640x640.jpg');
 
 -- survey
 INSERT INTO survey (id, created, deleted, updated, title, content, image) VALUES (1, '2023-08-03 23:57:40', null, null, '유형테스트', '유형테스트 - MBTI', null);
@@ -38,21 +39,30 @@ INSERT INTO survey_result (id, created, deleted, updated, content, type, type_nu
 INSERT INTO survey_result (id, created, deleted, updated, content, type, type_number, survey_id) VALUES (6, '2023-08-06 02:42:40', null, null, '잭 스패로우는 독특한 성격을 지닌 자유로운 영혼의 캐릭터에요. 자신의 규칙에 따라 살고자 하며, 권위와 규칙에 대한 반항적이에요. 전통적인 규칙과 기존의 질서를 거부하고, 자신만의 방식으로 사는 것을 선호하죠. 불가사의한 상황에서도 유머와 센스로 주변 사람들과 우호적인 관계를 형성하며, 신뢰를 쌓는 독특하고 마력적인 캐릭터에요.', '잭 스패로우', 1, 1);
 
 -- survey_result_keyword
-INSERT INTO survey_result_keyword (id, created, deleted, updated, title, survey_result_id) VALUES (2, '2023-08-06 02:52:22', null, null, '순수', 1);
-INSERT INTO survey_result_keyword (id, created, deleted, updated, title, survey_result_id) VALUES (3, '2023-08-06 02:52:23', null, null, '선량', 1);
-INSERT INTO survey_result_keyword (id, created, deleted, updated, title, survey_result_id) VALUES (4, '2023-08-06 02:52:24', null, null, '믿음', 1);
-INSERT INTO survey_result_keyword (id, created, deleted, updated, title, survey_result_id) VALUES (20, '2023-08-06 02:56:10', null, null, '열정', 2);
-INSERT INTO survey_result_keyword (id, created, deleted, updated, title, survey_result_id) VALUES (21, '2023-08-06 02:56:12', null, null, '꿈', 2);
-INSERT INTO survey_result_keyword (id, created, deleted, updated, title, survey_result_id) VALUES (22, '2023-08-06 02:56:12', null, null, '자유', 2);
-INSERT INTO survey_result_keyword (id, created, deleted, updated, title, survey_result_id) VALUES (24, '2023-08-06 02:56:42', null, null, '탐구', 3);
-INSERT INTO survey_result_keyword (id, created, deleted, updated, title, survey_result_id) VALUES (25, '2023-08-06 02:56:43', null, null, '지적', 3);
-INSERT INTO survey_result_keyword (id, created, deleted, updated, title, survey_result_id) VALUES (26, '2023-08-06 02:56:44', null, null, '성장', 3);
-INSERT INTO survey_result_keyword (id, created, deleted, updated, title, survey_result_id) VALUES (27, '2023-08-06 02:56:45', null, null, '용기', 4);
+INSERT INTO survey_result_keyword (id, created, deleted, updated, title, survey_result_id) VALUES (1, '2023-08-06 02:52:22', null, null, '순수', 1);
+INSERT INTO survey_result_keyword (id, created, deleted, updated, title, survey_result_id) VALUES (2, '2023-08-06 02:52:23', null, null, '선량', 1);
+INSERT INTO survey_result_keyword (id, created, deleted, updated, title, survey_result_id) VALUES (3, '2023-08-06 02:52:24', null, null, '믿음', 1);
+INSERT INTO survey_result_keyword (id, created, deleted, updated, title, survey_result_id) VALUES (4, '2023-08-06 02:56:10', null, null, '열정', 2);
+INSERT INTO survey_result_keyword (id, created, deleted, updated, title, survey_result_id) VALUES (5, '2023-08-06 02:56:12', null, null, '꿈', 2);
+INSERT INTO survey_result_keyword (id, created, deleted, updated, title, survey_result_id) VALUES (6, '2023-08-06 02:56:12', null, null, '자유', 2);
+INSERT INTO survey_result_keyword (id, created, deleted, updated, title, survey_result_id) VALUES (7, '2023-08-06 02:56:42', null, null, '탐구', 3);
+INSERT INTO survey_result_keyword (id, created, deleted, updated, title, survey_result_id) VALUES (8, '2023-08-06 02:56:43', null, null, '지적', 3);
+INSERT INTO survey_result_keyword (id, created, deleted, updated, title, survey_result_id) VALUES (9, '2023-08-06 02:56:44', null, null, '성장', 3);
+INSERT INTO survey_result_keyword (id, created, deleted, updated, title, survey_result_id) VALUES (10, '2023-08-06 02:56:45', null, null, '용기', 4);
+INSERT INTO survey_result_keyword (id, created, deleted, updated, title, survey_result_id) VALUES (11, '2023-08-06 02:56:45', null, null, '비전', 4);
+INSERT INTO survey_result_keyword (id, created, deleted, updated, title, survey_result_id) VALUES (12, '2023-08-06 02:56:45', null, null, '카리스마', 4);
+INSERT INTO survey_result_keyword (id, created, deleted, updated, title, survey_result_id) VALUES (13, '2023-08-06 02:56:45', null, null, '관용', 5);
+INSERT INTO survey_result_keyword (id, created, deleted, updated, title, survey_result_id) VALUES (14, '2023-08-06 02:56:45', null, null, '협력', 5);
+INSERT INTO survey_result_keyword (id, created, deleted, updated, title, survey_result_id) VALUES (15, '2023-08-06 02:56:45', null, null, '조화', 5);
+INSERT INTO survey_result_keyword (id, created, deleted, updated, title, survey_result_id) VALUES (16, '2023-08-06 02:56:45', null, null, '자유', 6);
+INSERT INTO survey_result_keyword (id, created, deleted, updated, title, survey_result_id) VALUES (17, '2023-08-06 02:56:45', null, null, '모험', 6);
+INSERT INTO survey_result_keyword (id, created, deleted, updated, title, survey_result_id) VALUES (18, '2023-08-06 02:56:45', null, null, '협력', 6);
+
 
 -- survey_completion
 INSERT INTO survey_completion (create_user_id, id, survey_id, created, deleted, updated, unique_id) VALUES (4, 5, 1, '2023-08-06 04:32:36.071682', null, '2023-08-06 04:32:36.071739', '4');
 INSERT INTO survey_completion (create_user_id, id, survey_id, created, deleted, updated, unique_id) VALUES (4, 7, 1, '2023-08-06 15:24:09.893958', null, '2023-08-06 15:24:09.894015', '2DE3C7B5DA297B03CAFB4F0FF42FF3D3');
-
+INSERT INTO survey_completion (create_user_id, id, survey_id, created, deleted, updated, unique_id) VALUES (2, 8, 1, '2023-08-06 04:32:36.071682', null, '2023-08-06 04:32:36.071739', '2');
 
 -- survey_answer
 INSERT INTO survey_answer (answer, id, question_id, survey_completion_id, created, deleted, updated) VALUES ('A', 41, 1, 5, '2023-08-06 04:32:36.104666', null, '2023-08-06 04:32:36.104689');
@@ -77,5 +87,17 @@ INSERT INTO survey_answer (answer, id, question_id, survey_completion_id, create
 INSERT INTO survey_answer (answer, id, question_id, survey_completion_id, created, deleted, updated) VALUES ('A', 69, 9, 7, '2023-08-06 15:24:10.027502', null, '2023-08-06 15:24:10.027521');
 INSERT INTO survey_answer (answer, id, question_id, survey_completion_id, created, deleted, updated) VALUES ('A', 70, 10, 7, '2023-08-06 15:24:10.039945', null, '2023-08-06 15:24:10.039964');
 
+INSERT INTO survey_answer (answer, id, question_id, survey_completion_id, created, deleted, updated) VALUES ('A', 81, 1, 8, '2023-08-06 04:32:36.104666', null, '2023-08-06 04:32:36.104689');
+INSERT INTO survey_answer (answer, id, question_id, survey_completion_id, created, deleted, updated) VALUES ('A', 82, 2, 8, '2023-08-06 04:32:36.114222', null, '2023-08-06 04:32:36.114239');
+INSERT INTO survey_answer (answer, id, question_id, survey_completion_id, created, deleted, updated) VALUES ('A', 83, 3, 8, '2023-08-06 04:32:36.126256', null, '2023-08-06 04:32:36.126277');
+INSERT INTO survey_answer (answer, id, question_id, survey_completion_id, created, deleted, updated) VALUES ('A', 85, 5, 8, '2023-08-06 04:32:36.146339', null, '2023-08-06 04:32:36.146357');
+INSERT INTO survey_answer (answer, id, question_id, survey_completion_id, created, deleted, updated) VALUES ('A', 84, 4, 8, '2023-08-06 04:32:36.132985', null, '2023-08-06 04:32:36.133000');
+INSERT INTO survey_answer (answer, id, question_id, survey_completion_id, created, deleted, updated) VALUES ('A', 86, 6, 8, '2023-08-06 04:32:36.149628', null, '2023-08-06 04:32:36.149641');
+INSERT INTO survey_answer (answer, id, question_id, survey_completion_id, created, deleted, updated) VALUES ('A', 87, 7, 8, '2023-08-06 04:32:36.153206', null, '2023-08-06 04:32:36.153225');
+INSERT INTO survey_answer (answer, id, question_id, survey_completion_id, created, deleted, updated) VALUES ('A', 88, 8, 8, '2023-08-06 04:32:36.161561', null, '2023-08-06 04:32:36.161590');
+INSERT INTO survey_answer (answer, id, question_id, survey_completion_id, created, deleted, updated) VALUES ('A', 89, 9, 8, '2023-08-06 04:32:36.165726', null, '2023-08-06 04:32:36.165751');
+INSERT INTO survey_answer (answer, id, question_id, survey_completion_id, created, deleted, updated) VALUES ('A', 90, 10, 8, '2023-08-06 04:32:36.170607', null, '2023-08-06 04:32:36.170623');
+
 -- survey_short_url
 INSERT INTO survey_short_url (id, survey_id, user_id, created, deleted, updated, url) VALUES (1, 1, 4, '2023-08-06 02:01:18.532118', null, '2023-08-06 02:01:18.532171', 'MQ==');
+INSERT INTO survey_short_url (id, survey_id, user_id, created, deleted, updated, url) VALUES (2, 1, 2, '2023-08-06 02:01:18.532118', null, '2023-08-06 02:01:18.532171', 'Mr==');

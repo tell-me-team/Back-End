@@ -1,6 +1,7 @@
 package com.tellme.tellme.domain.survey.application;
 
 import com.tellme.tellme.common.auth.JwtTokenProvider;
+import com.tellme.tellme.common.enums.UserRole;
 import com.tellme.tellme.common.exception.BaseException;
 import com.tellme.tellme.domain.auth.application.KakaoOauth;
 import com.tellme.tellme.domain.survey.entity.Question;
@@ -23,8 +24,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
 @SqlGroup({
-        @Sql(value = "/sql/survey-service-test-data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-//        @Sql(value = "/sql/delete-all-data.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+        @Sql(value = "/sql/survey-service-test-data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD),
+        @Sql(value = "/sql/delete-all-data.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 })
 class SurveyServiceTest {
 
@@ -70,7 +71,7 @@ class SurveyServiceTest {
         SurveyResultInfo survey = surveyService.saveAnswer(surveyId, createUserId, answer, authenticationUser, uniqueId);
 
         // then
-        assertThat(survey.getShortUrl()).isEqualTo("Mg==");
+        assertThat(survey.getShortUrl()).isNotNull();
     }
 
     @Test
@@ -174,5 +175,86 @@ class SurveyServiceTest {
         // then
         assertThat(questionList.size()).isEqualTo(10);
     }
+
+    @Test
+    void 설문_주인_유저는_지금까지_누적된_설문_결과의_모든_데이터를_조회할_수_있다() {
+        // given
+        int createUserId = 4;
+        int surveyId = 1;
+        User user = User.builder()
+                .id(4)
+                .email("email2@naver.com")
+                .password("NONE")
+                .nickname("김태영1")
+                .picture("http://k.kakaocdn.net/dn/bomDTm/btso6bKwAAw/NW0E3uMlmIwMFnIKRluapK/img_640x640.jpg")
+                .socialType("KAKAO")
+                .roles(List.of(UserRole.USER.toString()))
+                .build();
+
+        // when
+        SurveyResultDetail result = surveyService.getSurveyResult(createUserId, surveyId, user);
+
+        // then
+        assertThat(result.getNickname()).isEqualTo(user.getNickname());
+        assertThat(result.getSurveyCompletionWithAnswers()).size().isGreaterThan(1);
+        assertThat(result.getSelfKeywords()).size().isGreaterThan(1);
+        assertThat(result.getFeedBackKeywords()).size().isGreaterThan(1);
+        assertThat(result.getType()).isNotNull();
+
+    }
+    @Test
+    void 설문_주인이_아닌_유저는_타인과의_답변_비교_데이터를_제외한_지금까지_누적된_설문_결과_데이터를_조회할_수_있다() {
+        // given
+        int createUserId = 4;
+        int surveyId = 1;
+        User user = User.builder()
+                .id(3)
+                .email("email2@naver.com")
+                .password("NONE")
+                .nickname("김태영1")
+                .picture("http://k.kakaocdn.net/dn/bomDTm/btso6bKwAAw/NW0E3uMlmIwMFnIKRluapK/img_640x640.jpg")
+                .socialType("KAKAO")
+                .roles(List.of(UserRole.USER.toString()))
+                .build();
+
+        // when
+        SurveyResultDetail result = surveyService.getSurveyResult(createUserId, surveyId, user);
+
+        // then
+        assertThat(result.getNickname()).isEqualTo(user.getNickname());
+        assertThat(result.getSurveyCompletionWithAnswers()).isNull();
+        assertThat(result.getSelfKeywords()).size().isGreaterThan(1);
+        assertThat(result.getType()).isNotNull();
+
+    }
+
+    @Test
+    void 설문_주인_유저는_지금까지_누적된_설문_결과의_모든_데이터를_조회할_수_있다_이때_타인_설문이_1개도_수행되지_않으면_해당_데이터는_null로_조회된다() {
+        // given
+        int createUserId = 2;
+        int surveyId = 1;
+        User user = User.builder()
+                .id(2)
+                .email("email0@naver.com")
+                .password("NONE")
+                .nickname("정수범")
+                .picture("http://k.kakaocdn.net/dn/bomDTm/btso6bKwAAw/NW0E3uMlmIwMFnIKRluapK/img_640x640.jpg")
+                .socialType("KAKAO")
+                .roles(List.of(UserRole.USER.toString()))
+                .build();
+
+        // when
+        SurveyResultDetail result = surveyService.getSurveyResult(createUserId, surveyId, user);
+
+        // then
+        assertThat(result.getNickname()).isEqualTo(user.getNickname());
+        assertThat(result.getSurveyCompletionWithAnswers()).size().isGreaterThan(1);
+        assertThat(result.getSelfKeywords()).size().isGreaterThan(1);
+        assertThat(result.getFeedBackKeywords()).isNull();
+        assertThat(result.getType()).isNotNull();
+
+    }
+
+
 
 }

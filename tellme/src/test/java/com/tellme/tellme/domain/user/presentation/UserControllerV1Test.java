@@ -78,7 +78,10 @@ public class UserControllerV1Test {
         mockMvc.perform(get("/v1/users/info")
                         .content(objectMapper.writeValueAsString(authentication)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data").exists()); // TODO. data 안에 있는 세부 값들까지 비교
+                .andExpect(jsonPath("$.data.userId").value(1))
+                .andExpect(jsonPath("$.data.profileImage").value("http://test-user-picture1.com"));
+
+
     }
 
 }
