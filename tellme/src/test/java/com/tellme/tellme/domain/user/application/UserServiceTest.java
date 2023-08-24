@@ -1,4 +1,4 @@
-package com.tellme.tellme.domain.survey.user.application;
+package com.tellme.tellme.domain.user.application;
 
 
 import com.tellme.tellme.common.auth.JwtTokenProvider;

@@ -1,4 +1,4 @@
-package com.tellme.tellme.domain.survey.user.persistence;
+package com.tellme.tellme.domain.user.persistence;
 
 import com.tellme.tellme.domain.user.entity.User;
 import com.tellme.tellme.domain.user.persistence.UserRepository;

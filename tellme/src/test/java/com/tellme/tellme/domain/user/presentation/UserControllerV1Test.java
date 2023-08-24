@@ -1,4 +1,4 @@
-package com.tellme.tellme.domain.survey.user.presentation;
+package com.tellme.tellme.domain.user.presentation;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tellme.tellme.common.auth.JwtTokenProvider;
