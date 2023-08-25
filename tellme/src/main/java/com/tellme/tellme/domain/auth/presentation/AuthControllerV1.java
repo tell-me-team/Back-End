@@ -22,7 +22,7 @@ public class AuthControllerV1 {
     private final OAuthService oAuthService;
 
     @ResponseBody
-    @GetMapping(value = "{socialLoginType}/login")
+    @GetMapping(value = "{socialLoginType}/login") // FIXME. POST 요청으로 수정
     @Operation(summary = "소셜 로그인")
     public BaseResponse<GetSocialOAuthRes> socialLoginCallback(
             @PathVariable(name = "socialLoginType") String socialLoginPath,
