@@ -30,8 +30,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class SurveyServiceTest {
 
     @MockBean
-    private JwtTokenProvider jwtTokenProvider;
-    @MockBean
     private KakaoOauth kakaoOauth;
     @Autowired
     private SurveyService surveyService;

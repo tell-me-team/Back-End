@@ -14,3 +14,9 @@ spring:
     hibernate:
       ddl-auto: create-drop
     open-in-view: false
+
+constant:
+  jwt:
+    secret-key: test-secret-key-test-secret-key-test-secret-key-test-secret-key-test-secret-key-test-secret-key
+    access-token-expiration-time: 43200000
+    refresh-token-expiration-time: 604800000

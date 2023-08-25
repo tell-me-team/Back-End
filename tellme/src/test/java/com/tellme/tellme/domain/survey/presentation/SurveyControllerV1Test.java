@@ -49,8 +49,6 @@ class SurveyControllerV1Test {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @MockBean
-    private JwtTokenProvider jwtTokenProvider;
-    @MockBean
     private KakaoOauth kakaoOauth;
     @Autowired
     private MockHttpServletRequest mockHttpServletRequest;

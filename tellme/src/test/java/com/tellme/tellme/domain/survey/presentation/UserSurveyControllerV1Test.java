@@ -47,8 +47,6 @@ public class UserSurveyControllerV1Test {
     private final ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
 
     @MockBean
-    private JwtTokenProvider jwtTokenProvider;
-    @MockBean
     private KakaoOauth kakaoOauth;
     @Autowired
     private MockHttpServletRequest mockHttpServletRequest;
