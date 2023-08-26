@@ -4,6 +4,7 @@ import com.tellme.tellme.common.response.BaseResponse;
 import com.tellme.tellme.domain.survey.application.SurveyService;
 import com.tellme.tellme.domain.survey.presentation.SurveyDto.Answer;
 import com.tellme.tellme.domain.survey.presentation.SurveyDto.SurveyResultInfo;
+import com.tellme.tellme.domain.user.entity.User;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -28,7 +29,9 @@ public class SurveyControllerV1 {
                                                      @RequestBody Answer answer,
                                                      Authentication authentication,
                                                      HttpServletRequest httpServletRequest) {
-        return BaseResponse.ok(surveyService.saveAnswer(surveyId, userId, answer, authentication, httpServletRequest));
+        String uniqueId = httpServletRequest.getSession().getId();
+        User authenticationUser = (User) authentication.getPrincipal();
+        return BaseResponse.ok(surveyService.saveAnswer(surveyId, userId, answer, authenticationUser, uniqueId));
     }
 
     @GetMapping("/{shortUrl}")

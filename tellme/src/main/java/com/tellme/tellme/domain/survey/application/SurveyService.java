@@ -6,7 +6,6 @@ import com.tellme.tellme.domain.survey.entity.*;
 import com.tellme.tellme.domain.survey.persistence.*;
 import com.tellme.tellme.domain.user.entity.User;
 import com.tellme.tellme.domain.user.persistence.UserRepository;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -33,9 +32,8 @@ public class SurveyService {
     private final SurveyResultRepository surveyResultRepository;
 
     @Transactional
-    public SurveyResultInfo saveAnswer(int surveyId, int userId, Answer answer, Authentication authentication, HttpServletRequest httpServletRequest) {
+    public SurveyResultInfo saveAnswer(int surveyId, int userId, Answer answer, User authenticationUser, String uniqueId) {
         String shortUrl = null;
-        String uniqueId = httpServletRequest.getSession().getId();
         Survey survey = surveyRepository.findById(surveyId).get();
         User createUser = userRepository.findById(userId).get();
 
@@ -43,16 +41,14 @@ public class SurveyService {
             throw new BaseException(ErrorStatus.SURVEY_ANSWER_INSUFFICIENT);
         }
 
-        if (authentication != null ) {
-            User userDetails = (User) authentication.getPrincipal();
-            uniqueId = String.valueOf(userDetails.getId());
-            if(userDetails.getId() == userId){
-                shortUrl = getShareUrl(survey, userDetails);
+        if (authenticationUser != null ) {
+            uniqueId = String.valueOf(authenticationUser.getId());
+            if(authenticationUser.getId() == userId){
+                shortUrl = getShareUrl(survey, authenticationUser);
             }
         }
 
         SurveyCompletion alreadyExistSurveyCompletion = surveyCompletionRepository.findByUniqueIdAndSurveyAndUser(uniqueId, survey, createUser);
-
 
         if (alreadyExistSurveyCompletion == null) {
             saveSurveyAnswer(survey, createUser, answer, uniqueId);
@@ -80,22 +76,8 @@ public class SurveyService {
 
     }
 
-    private static void updateSurveyAnswers(Answer answer, SurveyCompletion alreadyExistSurveyCompletion) {
-        List<AnswerContent> answerContentList = answer.getAnswerContentList();
-
-        for (int i = 0; i < answerContentList.size(); i++) {
-            char newAnswer = answerContentList.get(i).getAnswer();
-            SurveyAnswer alreadyExistSurveyAnswer = alreadyExistSurveyCompletion.getSurveyAnswers().get(i);
-            alreadyExistSurveyAnswer.updateSurveyAnswer(newAnswer);
-        }
-    }
-
-    private static boolean isCreateUserSurveyCompletion(User createUser, SurveyCompletion alreadyExistSurveyCompletion) {
-        return alreadyExistSurveyCompletion.getUniqueId().equals(Integer.toString(createUser.getId()));
-    }
-
     @Transactional(readOnly = true)
-    public SurveyResultDetail getSurveyResult(int createUserId, int surveyId, Authentication authentication) {
+    public SurveyResultDetail getSurveyResult(int createUserId, int surveyId, User authenticationUser) {
 
         User createUser = userRepository.findById(createUserId).get();
         Survey survey = surveyRepository.findById(surveyId).get();
@@ -128,7 +110,7 @@ public class SurveyService {
 
         if (surveyCompletionOtherToMe.size() == 0) {
 
-            if(authentication == null){
+            if(authenticationUser == null){
                 return SurveyResultDetail.builder()
                         .nickname(createUser.getNickname())
                         .type(surveyResultFromMe.getType())
@@ -140,9 +122,7 @@ public class SurveyService {
                         .build();
             }
 
-            User user = (User) authentication.getPrincipal();
-
-            if(user.getId() != createUserId){
+            if(authenticationUser.getId() != createUserId){
                 return SurveyResultDetail.builder()
                         .nickname(createUser.getNickname())
                         .type(surveyResultFromMe.getType())
@@ -199,7 +179,7 @@ public class SurveyService {
             }
             SurveyResult surveyResultFromOther = generateCombinedAnswerResult(answerContentFromOtherToMeList, survey);
 
-            if(authentication == null){
+            if(authenticationUser == null){
                 return SurveyResultDetail.builder()
                         .nickname(createUser.getNickname())
                         .type(surveyResultFromMe.getType())
@@ -216,9 +196,8 @@ public class SurveyService {
                         .build();
             }
 
-            User user = (User) authentication.getPrincipal();
 
-            if(user.getId() != createUserId){
+            if(authenticationUser.getId() != createUserId){
                 return SurveyResultDetail.builder()
                         .nickname(createUser.getNickname())
                         .type(surveyResultFromMe.getType())
@@ -257,7 +236,9 @@ public class SurveyService {
 
     @Transactional(readOnly = true)
     public SurveyInfo shortUrlDecoding(String shortUrl) {
-        SurveyShortUrl surveyShortUrl = surveyShortUrlRepository.findByUrl(shortUrl);
+        SurveyShortUrl surveyShortUrl = surveyShortUrlRepository.findByUrl(shortUrl).orElseThrow(
+                ()-> new RuntimeException("shortUrl이 존재하지 않습니다.")
+        );
         int surveyId = surveyShortUrl.getSurveyId();
         int userId = surveyShortUrl.getUserId();
 
@@ -285,6 +266,20 @@ public class SurveyService {
                         .build()).collect(Collectors.toList());
     }
 
+    private static void updateSurveyAnswers(Answer answer, SurveyCompletion alreadyExistSurveyCompletion) {
+        List<AnswerContent> answerContentList = answer.getAnswerContentList();
+
+        for (int i = 0; i < answerContentList.size(); i++) {
+            char newAnswer = answerContentList.get(i).getAnswer();
+            SurveyAnswer alreadyExistSurveyAnswer = alreadyExistSurveyCompletion.getSurveyAnswers().get(i);
+            alreadyExistSurveyAnswer.updateSurveyAnswer(newAnswer);
+        }
+    }
+
+    private static boolean isCreateUserSurveyCompletion(User createUser, SurveyCompletion alreadyExistSurveyCompletion) {
+        return alreadyExistSurveyCompletion.getUniqueId().equals(Integer.toString(createUser.getId()));
+    }
+
     private boolean isSurveyQuestionCount(Survey survey, Answer answer) {
         long questionCount = surveyQuestionQueryRepository.getQuestionList(survey).stream().count();
         return questionCount == answer.getAnswerContentList().size();
@@ -300,7 +295,7 @@ public class SurveyService {
     }
 
     private String getShareUrl(Survey survey, User user) {
-        SurveyShortUrl findShortUrl = surveyShortUrlRepository.findBySurveyIdAndUserId(survey.getId(), user.getId());
+        SurveyShortUrl findShortUrl = surveyShortUrlRepository.findBySurveyIdAndUserId(survey.getId(), user.getId()).orElse(null);
         if (findShortUrl != null) {
             return findShortUrl.getUrl();
         }
@@ -362,7 +357,6 @@ public class SurveyService {
         return surveyResultRepository.findByTypeNumber(mostCommonDigit);
     }
 
-    //
     private Map<Integer, Map<Character, Integer>> countQuestionAnswer(List<SurveyCompletion> surveyCompletions) {
         Map<Integer, Map<Character, Integer>> questionAnswerCountMap = new HashMap<>();
 

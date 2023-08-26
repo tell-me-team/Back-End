@@ -19,6 +19,7 @@ import static com.fasterxml.jackson.annotation.JsonProperty.Access.*;
 
 @Entity
 @Getter
+@Builder
 @NoArgsConstructor
 public class User extends BaseEntity implements UserDetails {
 
@@ -53,7 +54,8 @@ public class User extends BaseEntity implements UserDetails {
     }
 
     @Builder
-    public User(String email, String password, String nickname, String picture, String socialType, List<String> roles) {
+    public User(int id, String email, String password, String nickname, String picture, String socialType, List<String> roles) {
+        this.id = id;
         this.email = email;
         this.password = password;
         this.nickname = nickname;
