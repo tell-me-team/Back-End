@@ -1,10 +1,8 @@
 package com.tellme.tellme.domain.survey.application;
 
-import com.tellme.tellme.common.auth.JwtTokenProvider;
 import com.tellme.tellme.common.enums.UserRole;
 import com.tellme.tellme.common.exception.BaseException;
 import com.tellme.tellme.domain.auth.application.KakaoOauth;
-import com.tellme.tellme.domain.survey.entity.Question;
 import com.tellme.tellme.domain.user.entity.User;
 import com.tellme.tellme.domain.user.persistence.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;

@@ -21,11 +21,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 class SurveyCompletionRepositoryTest {
 
     @Autowired
-    private SurveyCompletionRepository surveyCompletionRepository;
+    private SurveyCompletionJpaRepository surveyCompletionJpaRepository;
     @Autowired
     private UserRepository userRepository;
     @Autowired
-    private SurveyRepository surveyRepository;
+    private SurveyJpaRepository surveyJpaRepository;
 
     @Test
     void 설문_참여한_유저인지_확인() {
@@ -34,11 +34,11 @@ class SurveyCompletionRepositoryTest {
         int userId = 3;
         int surveyId = 1;
 
-        Survey survey = surveyRepository.findById(surveyId).orElseThrow( () -> new RuntimeException("존재하지 않는 설문입니다."));
+        Survey survey = surveyJpaRepository.findById(surveyId).orElseThrow( () -> new RuntimeException("존재하지 않는 설문입니다."));
         User user = userRepository.findById(userId).orElseThrow( () -> new RuntimeException("존재하지 않는 유저 입니다."));
 
         // when
-        SurveyCompletion surveyCompletion = surveyCompletionRepository.findByUniqueIdAndSurveyAndUser(uniqueId, survey, user);
+        SurveyCompletion surveyCompletion = surveyCompletionJpaRepository.findByUniqueIdAndSurveyAndUser(uniqueId, survey, user);
 
         //then
         assertThat(surveyCompletion.getUniqueId()).isEqualTo("3");
@@ -51,11 +51,11 @@ class SurveyCompletionRepositoryTest {
         int userId = 3;
         int surveyId = 1;
 
-        Survey survey = surveyRepository.findById(surveyId).orElseThrow( () -> new RuntimeException("존재하지 않는 설문입니다."));
+        Survey survey = surveyJpaRepository.findById(surveyId).orElseThrow( () -> new RuntimeException("존재하지 않는 설문입니다."));
         User user = userRepository.findById(userId).orElseThrow( () -> new RuntimeException("존재하지 않는 유저 입니다."));
 
         // when
-        SurveyCompletion surveyCompletion = surveyCompletionRepository.findByUniqueIdAndSurveyAndUser(uniqueId, survey, user);
+        SurveyCompletion surveyCompletion = surveyCompletionJpaRepository.findByUniqueIdAndSurveyAndUser(uniqueId, survey, user);
 
         //then
         assertThat(surveyCompletion).isNull();
@@ -70,7 +70,7 @@ class SurveyCompletionRepositoryTest {
         User user = userRepository.findById(userId).orElseThrow(
                 () -> new RuntimeException("존재하지 않는 유저입니다.")
         );
-        List<SurveyCompletion> result = surveyCompletionRepository.findByUser(user);
+        List<SurveyCompletion> result = surveyCompletionJpaRepository.findByUser(user);
 
         // then
         assertThat(result).hasSizeGreaterThan(0);
@@ -87,11 +87,11 @@ class SurveyCompletionRepositoryTest {
         User createUser = userRepository.findById(createUserId).orElseThrow(
                 () -> new RuntimeException("존재하지 않는 유저입니다.")
         );
-        Survey survey = surveyRepository.findById(surveyId).orElseThrow(
+        Survey survey = surveyJpaRepository.findById(surveyId).orElseThrow(
                 () -> new RuntimeException("존재하지 않는 설문입니다.")
         );
 
-        SurveyCompletion result = surveyCompletionRepository.findByUserAndUniqueIdAndSurvey(createUser, userId, survey);
+        SurveyCompletion result = surveyCompletionJpaRepository.findByUserAndUniqueIdAndSurvey(createUser, userId, survey);
 
         // then
         assertThat(result.getUniqueId()).isEqualTo("3");
@@ -108,11 +108,11 @@ class SurveyCompletionRepositoryTest {
         User createUser = userRepository.findById(createUserId).orElseThrow(
                 () -> new RuntimeException("존재하지 않는 유저입니다.")
         );
-        Survey survey = surveyRepository.findById(surveyId).orElseThrow(
+        Survey survey = surveyJpaRepository.findById(surveyId).orElseThrow(
                 () -> new RuntimeException("존재하지 않는 설문입니다.")
         );
 
-        List<SurveyCompletion> result = surveyCompletionRepository.findByUserAndUniqueIdNotAndSurvey(createUser, userId, survey);
+        List<SurveyCompletion> result = surveyCompletionJpaRepository.findByUserAndUniqueIdNotAndSurvey(createUser, userId, survey);
 
         // then
         assertThat(result).hasSizeGreaterThan(0);
@@ -129,11 +129,11 @@ class SurveyCompletionRepositoryTest {
         User createUser = userRepository.findById(userId).orElseThrow(
                 () -> new RuntimeException("존재하지 않는 유저입니다.")
         );
-        Survey survey = surveyRepository.findById(surveyId).orElseThrow(
+        Survey survey = surveyJpaRepository.findById(surveyId).orElseThrow(
                 () -> new RuntimeException("존재하지 않는 설문입니다.")
         );
 
-        SurveyCompletion result = surveyCompletionRepository.findByUserAndSurveyAndUniqueId(createUser, survey, uniqueId).orElseThrow(
+        SurveyCompletion result = surveyCompletionJpaRepository.findByUserAndSurveyAndUniqueId(createUser, survey, uniqueId).orElseThrow(
                 () -> new RuntimeException("설문을 생성하지 않았습니다.")
         );
 
@@ -147,7 +147,7 @@ class SurveyCompletionRepositoryTest {
         String uniqueId = "3";
 
         // when
-        List<SurveyCompletion> result = surveyCompletionRepository.findByUniqueId(uniqueId);
+        List<SurveyCompletion> result = surveyCompletionJpaRepository.findByUniqueId(uniqueId);
 
         // then
         assertThat(result).hasSizeGreaterThan(0);

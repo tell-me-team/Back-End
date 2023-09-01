@@ -2,12 +2,12 @@ package com.tellme.tellme.domain.survey.application;
 
 import com.tellme.tellme.common.exception.BaseException;
 import com.tellme.tellme.common.exception.ErrorStatus;
+import com.tellme.tellme.domain.survey.application.port.*;
 import com.tellme.tellme.domain.survey.entity.*;
 import com.tellme.tellme.domain.survey.persistence.*;
 import com.tellme.tellme.domain.user.entity.User;
 import com.tellme.tellme.domain.user.persistence.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,7 +22,6 @@ import static com.tellme.tellme.domain.survey.presentation.SurveyDto.*;
 public class SurveyService {
 
     private final SurveyCompletionRepository surveyCompletionRepository;
-    private final SurveyCompletionQueryRepository surveyCompletionQueryRepository;
     private final SurveyAnswerRepository surveyAnswerRepository;
     private final SurveyRepository surveyRepository;
     private final QuestionRepository questionRepository;

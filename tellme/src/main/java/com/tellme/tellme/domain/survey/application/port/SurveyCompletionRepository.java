@@ -1,16 +1,13 @@
-package com.tellme.tellme.domain.survey.persistence;
+package com.tellme.tellme.domain.survey.application.port;
 
 import com.tellme.tellme.domain.survey.entity.Survey;
 import com.tellme.tellme.domain.survey.entity.SurveyCompletion;
 import com.tellme.tellme.domain.user.entity.User;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
 
-@Repository
-public interface SurveyCompletionRepository extends JpaRepository<SurveyCompletion, Integer> {
+public interface SurveyCompletionRepository {
     SurveyCompletion findByUniqueIdAndSurveyAndUser(String uniqueId, Survey survey, User user);
 
     List<SurveyCompletion> findByUser(User user);
@@ -22,4 +19,6 @@ public interface SurveyCompletionRepository extends JpaRepository<SurveyCompleti
     Optional<SurveyCompletion> findByUserAndSurveyAndUniqueId(User user, Survey survey, String uniqueId);
 
     List<SurveyCompletion> findByUniqueId(String uniqueId);
+
+    SurveyCompletion save(SurveyCompletion toSurveyCompletion);
 }

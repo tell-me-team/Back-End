@@ -8,6 +8,5 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface SurveyAnswerRepository extends JpaRepository<SurveyAnswer, Integer> {
-    List<SurveyAnswer> findBySurveyCompletion(SurveyCompletion surveyCompletion);
+public interface SurveyAnswerJpaRepository extends JpaRepository<SurveyAnswer, Integer> {
 }
