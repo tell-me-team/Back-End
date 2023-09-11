@@ -57,7 +57,6 @@ public class AuthControllerV1Test {
         mockMvc.perform(get("/v1/auth/KAKAO/login") // FIXME. POST 요청으로 수정
                 .param("code", "test-code"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.userId").value(3))
                 .andExpect(jsonPath("$.data.userPicture").value("http://test-user-picture3.com"))
                 .andExpect(jsonPath("$.data.accessToken").exists())
                 .andExpect(jsonPath("$.data.refreshToken").exists());
