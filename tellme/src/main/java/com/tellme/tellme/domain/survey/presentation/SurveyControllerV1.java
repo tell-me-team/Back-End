@@ -4,9 +4,8 @@ import com.tellme.tellme.common.response.BaseResponse;
 import com.tellme.tellme.domain.survey.application.SurveyService;
 import com.tellme.tellme.domain.survey.presentation.SurveyDto.Answer;
 import com.tellme.tellme.domain.survey.presentation.SurveyDto.SurveyResultInfo;
-import com.tellme.tellme.domain.user.entity.User;
+import com.tellme.tellme.domain.user.entity.UserEntity;
 import io.swagger.v3.oas.annotations.Operation;
-import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -30,8 +29,8 @@ public class SurveyControllerV1 {
                                                      Authentication authentication,
                                                      HttpServletRequest httpServletRequest) {
         String uniqueId = httpServletRequest.getSession().getId();
-        User authenticationUser = (User) authentication.getPrincipal();
-        return BaseResponse.ok(surveyService.saveAnswer(surveyId, userId, answer, authenticationUser, uniqueId));
+        UserEntity authenticationUserEntity = (UserEntity) authentication.getPrincipal();
+        return BaseResponse.ok(surveyService.saveAnswer(surveyId, userId, answer, authenticationUserEntity, uniqueId));
     }
 
     @GetMapping("/{shortUrl}")

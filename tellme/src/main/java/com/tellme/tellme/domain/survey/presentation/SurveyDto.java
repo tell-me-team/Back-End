@@ -1,7 +1,7 @@
 package com.tellme.tellme.domain.survey.presentation;
 
 import com.tellme.tellme.domain.survey.entity.*;
-import com.tellme.tellme.domain.user.entity.User;
+import com.tellme.tellme.domain.user.entity.UserEntity;
 import lombok.*;
 
 import java.util.List;
@@ -15,11 +15,11 @@ public class SurveyDto {
     public static class Answer {
         private List<AnswerContent> answerContentList;
 
-        public SurveyCompletion toSurveyCompletion(Survey survey, User user, String uniqueId) {
+        public SurveyCompletion toSurveyCompletion(Survey survey, UserEntity userEntity, String uniqueId) {
             return SurveyCompletion.builder()
                     .survey(survey)
                     .uniqueId(uniqueId)
-                    .user(user)
+                    .userEntity(userEntity)
                     .build();
         }
 

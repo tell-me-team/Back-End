@@ -1,6 +1,6 @@
 package com.tellme.tellme.domain.user.infrastructure;
 
-import com.tellme.tellme.domain.user.entity.User;
+import com.tellme.tellme.domain.user.entity.UserEntity;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -13,10 +13,10 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @DataJpaTest(showSql = true)
 @Sql("/sql/user-repository-test-data.sql")
-public class UserJpaRepositoryTest {
+public class UserEntityJpaRepositoryTest {
 
     @Autowired
-    private UserJpaRepository userJpaRepository;
+    private UserEntityRepository userEntityRepository;
 
     @Test
     void findByEmailAndDeletedIsNull_로_유저_데이터를_찾아올_수_있다() {
@@ -24,7 +24,7 @@ public class UserJpaRepositoryTest {
         String email = "email1@naver.com";
 
         //when
-        User result = userJpaRepository.findByEmailAndDeletedIsNull(email).get();
+        UserEntity result = userEntityRepository.findByEmailAndDeletedIsNull(email).get();
 
         //then
         assertThat(result).isNotNull();
@@ -38,7 +38,7 @@ public class UserJpaRepositoryTest {
         String email = "email2@naver.com";
 
         //when
-        Optional<User> result = userJpaRepository.findByEmailAndDeletedIsNull(email);
+        Optional<UserEntity> result = userEntityRepository.findByEmailAndDeletedIsNull(email);
 
         //then
         assertThat(result.isPresent()).isFalse();
@@ -50,7 +50,7 @@ public class UserJpaRepositoryTest {
         int id = 1;
 
         //when
-        User result = userJpaRepository.findByIdAndDeletedIsNull(id).get();
+        UserEntity result = userEntityRepository.findByIdAndDeletedIsNull(id).get();
 
         //then
         assertThat(result).isNotNull();
@@ -64,7 +64,7 @@ public class UserJpaRepositoryTest {
         int id = 2;
 
         //when
-        Optional<User> result = userJpaRepository.findByIdAndDeletedIsNull(id);
+        Optional<UserEntity> result = userEntityRepository.findByIdAndDeletedIsNull(id);
 
         //then
         assertThat(result.isPresent()).isFalse();

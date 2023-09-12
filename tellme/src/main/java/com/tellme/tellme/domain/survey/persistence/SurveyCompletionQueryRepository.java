@@ -3,7 +3,7 @@ package com.tellme.tellme.domain.survey.persistence;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.tellme.tellme.domain.survey.entity.Question;
 import com.tellme.tellme.domain.survey.entity.SurveyCompletion;
-import com.tellme.tellme.domain.user.entity.User;
+import com.tellme.tellme.domain.user.entity.UserEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -15,20 +15,20 @@ import static com.tellme.tellme.domain.survey.entity.QSurveyCompletion.surveyCom
 public class SurveyCompletionQueryRepository {
     private final JPAQueryFactory query;
 
-    public SurveyCompletion findByUserIdAndSurveyId(User user, int surveyId) {
+    public SurveyCompletion findByUserEntityIdAndSurveyId(UserEntity userEntity, int surveyId) {
         return query
                 .select(
                         surveyCompletion
                 )
                 .from(surveyCompletion)
-                .where(surveyCompletion.user.eq(user),
+                .where(surveyCompletion.userEntity.eq(userEntity),
                         surveyCompletion.survey.id.eq(surveyId)
                 )
                 .fetchOne();
     }
 
-    public Character getAnswerToMe(User user, Question question) {
-        String userIdAsString = String.valueOf(user.getId());
+    public Character getAnswerToMe(UserEntity userEntity, Question question) {
+        String userIdAsString = String.valueOf(userEntity.getId());
         return query
                 .select(
                         surveyAnswer.answer
@@ -36,7 +36,7 @@ public class SurveyCompletionQueryRepository {
                 .from(surveyCompletion)
                 .join(surveyCompletion.surveyAnswers, surveyAnswer)
                 .where(
-                        surveyCompletion.user.eq(user),
+                        surveyCompletion.userEntity.eq(userEntity),
                         surveyCompletion.uniqueId.eq(userIdAsString),
                         surveyAnswer.question.eq(question)
                 )

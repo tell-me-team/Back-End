@@ -2,11 +2,10 @@ package com.tellme.tellme.domain.survey.presentation;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.tellme.tellme.common.auth.JwtTokenProvider;
 import com.tellme.tellme.common.enums.UserRole;
 import com.tellme.tellme.domain.auth.application.KakaoOauth;
 import com.tellme.tellme.domain.survey.application.SurveyService;
-import com.tellme.tellme.domain.user.entity.User;
+import com.tellme.tellme.domain.user.entity.UserEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,7 +60,7 @@ class SurveyControllerV1Test {
 
     @BeforeEach
     void setUp() {
-        User user = User.builder()
+        UserEntity userEntity = UserEntity.builder()
                 .id(3)
                 .email("taeyoung6873@gmail.com")
                 .password("NONE")
@@ -71,7 +70,7 @@ class SurveyControllerV1Test {
                 .roles(List.of(UserRole.USER.toString()))
                 .build();
 
-        UserDetails userDetails = userDetailsService.loadUserByUsername(Integer.toString(user.getId()));
+        UserDetails userDetails = userDetailsService.loadUserByUsername(Integer.toString(userEntity.getId()));
 
         SecurityContext context = SecurityContextHolder.getContext();
         context.setAuthentication(new UsernamePasswordAuthenticationToken(userDetails, userDetails.getPassword(), userDetails.getAuthorities()));

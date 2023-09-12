@@ -3,8 +3,8 @@ package com.tellme.tellme.domain.survey.application;
 import com.tellme.tellme.common.enums.UserRole;
 import com.tellme.tellme.common.exception.BaseException;
 import com.tellme.tellme.domain.auth.application.KakaoOauth;
-import com.tellme.tellme.domain.user.entity.User;
-import com.tellme.tellme.domain.user.infrastructure.UserJpaRepository;
+import com.tellme.tellme.domain.user.entity.UserEntity;
+import com.tellme.tellme.domain.user.infrastructure.UserEntityRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +34,7 @@ class SurveyServiceTest {
     @Autowired
     private HttpServletRequest http;
     @Autowired
-    private UserJpaRepository userJpaRepository;
+    private UserEntityRepository userEntityRepository;
 
     @Test
     void 최초_설문지_작성하면_short_url_생성() {
@@ -44,7 +44,7 @@ class SurveyServiceTest {
         int surveyId = 1;
         String uniqueId = "session1";
 
-        User authenticationUser = userJpaRepository.findById(userId).orElseThrow(
+        UserEntity authenticationUserEntity = userEntityRepository.findById(userId).orElseThrow(
                 () -> new RuntimeException("존재하지 않는 회원 입니다.")
         );
 
@@ -64,7 +64,7 @@ class SurveyServiceTest {
                 .build();
 
         // when
-        SurveyResultInfo survey = surveyService.saveAnswer(surveyId, createUserId, answer, authenticationUser, uniqueId);
+        SurveyResultInfo survey = surveyService.saveAnswer(surveyId, createUserId, answer, authenticationUserEntity, uniqueId);
 
         // then
         assertThat(survey.getShortUrl()).isNotNull();
@@ -78,7 +78,7 @@ class SurveyServiceTest {
         int surveyId = 1;
         String uniqueId = "session1";
 
-        User authenticationUser = userJpaRepository.findById(userId).orElseThrow(
+        UserEntity authenticationUserEntity = userEntityRepository.findById(userId).orElseThrow(
                 () -> new RuntimeException("존재하지 않는 회원 입니다.")
         );
 
@@ -100,7 +100,7 @@ class SurveyServiceTest {
         // when
         // then
         assertThatThrownBy(() -> {
-            surveyService.saveAnswer(surveyId, createUserId, answer, authenticationUser, uniqueId);
+            surveyService.saveAnswer(surveyId, createUserId, answer, authenticationUserEntity, uniqueId);
         }).isInstanceOf(BaseException.class);
     }
 
@@ -111,7 +111,7 @@ class SurveyServiceTest {
         int surveyId = 1;
         String uniqueId = "2DE3C7B5DA297B03CAFB4F0FF42FF3D3";
 
-        User authenticationUser = null;
+        UserEntity authenticationUserEntity = null;
 
         List<AnswerContent> list = new ArrayList<>();
         int i = 1;
@@ -131,7 +131,7 @@ class SurveyServiceTest {
         // when
         // then
         assertThatThrownBy(() -> {
-            surveyService.saveAnswer(surveyId, createUserId, answer, authenticationUser, uniqueId);
+            surveyService.saveAnswer(surveyId, createUserId, answer, authenticationUserEntity, uniqueId);
         }).isInstanceOf(BaseException.class);
     }
 
@@ -177,7 +177,7 @@ class SurveyServiceTest {
         // given
         int createUserId = 4;
         int surveyId = 1;
-        User user = User.builder()
+        UserEntity userEntity = UserEntity.builder()
                 .id(4)
                 .email("email2@naver.com")
                 .password("NONE")
@@ -188,10 +188,10 @@ class SurveyServiceTest {
                 .build();
 
         // when
-        SurveyResultDetail result = surveyService.getSurveyResult(createUserId, surveyId, user);
+        SurveyResultDetail result = surveyService.getSurveyResult(createUserId, surveyId, userEntity);
 
         // then
-        assertThat(result.getNickname()).isEqualTo(user.getNickname());
+        assertThat(result.getNickname()).isEqualTo(userEntity.getNickname());
         assertThat(result.getSurveyCompletionWithAnswers()).size().isGreaterThan(1);
         assertThat(result.getSelfKeywords()).size().isGreaterThan(1);
         assertThat(result.getFeedBackKeywords()).size().isGreaterThan(1);
@@ -203,7 +203,7 @@ class SurveyServiceTest {
         // given
         int createUserId = 4;
         int surveyId = 1;
-        User user = User.builder()
+        UserEntity userEntity = UserEntity.builder()
                 .id(3)
                 .email("email2@naver.com")
                 .password("NONE")
@@ -214,10 +214,10 @@ class SurveyServiceTest {
                 .build();
 
         // when
-        SurveyResultDetail result = surveyService.getSurveyResult(createUserId, surveyId, user);
+        SurveyResultDetail result = surveyService.getSurveyResult(createUserId, surveyId, userEntity);
 
         // then
-        assertThat(result.getNickname()).isEqualTo(user.getNickname());
+        assertThat(result.getNickname()).isEqualTo(userEntity.getNickname());
         assertThat(result.getSurveyCompletionWithAnswers()).isNull();
         assertThat(result.getSelfKeywords()).size().isGreaterThan(1);
         assertThat(result.getType()).isNotNull();
@@ -229,7 +229,7 @@ class SurveyServiceTest {
         // given
         int createUserId = 2;
         int surveyId = 1;
-        User user = User.builder()
+        UserEntity userEntity = UserEntity.builder()
                 .id(2)
                 .email("email0@naver.com")
                 .password("NONE")
@@ -240,10 +240,10 @@ class SurveyServiceTest {
                 .build();
 
         // when
-        SurveyResultDetail result = surveyService.getSurveyResult(createUserId, surveyId, user);
+        SurveyResultDetail result = surveyService.getSurveyResult(createUserId, surveyId, userEntity);
 
         // then
-        assertThat(result.getNickname()).isEqualTo(user.getNickname());
+        assertThat(result.getNickname()).isEqualTo(userEntity.getNickname());
         assertThat(result.getSurveyCompletionWithAnswers()).size().isGreaterThan(1);
         assertThat(result.getSelfKeywords()).size().isGreaterThan(1);
         assertThat(result.getFeedBackKeywords()).isNull();

@@ -5,8 +5,7 @@ import com.tellme.tellme.common.auth.JwtTokenProvider;
 import com.tellme.tellme.common.enums.UserRole;
 import com.tellme.tellme.common.exception.BaseException;
 import com.tellme.tellme.domain.auth.application.KakaoOauth;
-import com.tellme.tellme.domain.survey.presentation.UserSurveyControllerV1Test;
-import com.tellme.tellme.domain.user.entity.User;
+import com.tellme.tellme.domain.user.entity.UserEntity;
 import com.tellme.tellme.domain.user.presentation.UserDto.UserInfo;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +27,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
         @Sql(value = "/sql/user-service-test-data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD),
         @Sql(value = "/sql/delete-all-data.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 })
-public class UserServiceTest {
+public class UserEntityServiceTest {
 
     @Autowired
     private UserService userService;
@@ -58,7 +57,7 @@ public class UserServiceTest {
         String email = "email1@naver.com";
 
         //when
-        User result = userService.getByEmail(email);
+        UserEntity result = userService.getByEmail(email);
 
         //then
         assertThat(result.getEmail()).isEqualTo("email1@naver.com");
@@ -73,7 +72,7 @@ public class UserServiceTest {
         //when
         //then
         assertThatThrownBy(() -> {
-            User result = userService.getByEmail(email);
+            UserEntity result = userService.getByEmail(email);
         }).isInstanceOf(BaseException.class);
     }
 
@@ -81,7 +80,7 @@ public class UserServiceTest {
     @Test
     void 내_유저_정보를_조회할_수_있다() {
         //given
-        User user = User.builder()
+        UserEntity userEntity = UserEntity.builder()
                 .id(1)
                 .email("email1@naver.com")
                 .password("NONE")
@@ -92,7 +91,7 @@ public class UserServiceTest {
                 .build();
 
         //when
-        UserInfo result = userService.getInfo(user);
+        UserInfo result = userService.getInfo(userEntity);
 
         //then
         assertThat(result.getUserId()).isEqualTo(1);

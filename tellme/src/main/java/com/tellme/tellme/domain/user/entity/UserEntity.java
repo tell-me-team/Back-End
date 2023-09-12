@@ -1,6 +1,7 @@
 package com.tellme.tellme.domain.user.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.tellme.tellme.common.enums.UserRole;
 import com.tellme.tellme.domain.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Builder;
@@ -21,7 +22,8 @@ import static com.fasterxml.jackson.annotation.JsonProperty.Access.*;
 @Getter
 @Builder
 @NoArgsConstructor
-public class User extends BaseEntity implements UserDetails {
+@Table(name = "USER")
+public class UserEntity extends BaseEntity implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -43,10 +45,9 @@ public class User extends BaseEntity implements UserDetails {
     @Column(length = 20)
     private String socialType;
 
-
     @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "USER_ROLES")
     private List<String> roles = new ArrayList<>();
-
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -54,7 +55,7 @@ public class User extends BaseEntity implements UserDetails {
     }
 
     @Builder
-    public User(int id, String email, String password, String nickname, String picture, String socialType, List<String> roles) {
+    public UserEntity(int id, String email, String password, String nickname, String picture, String socialType, List<String> roles) {
         this.id = id;
         this.email = email;
         this.password = password;

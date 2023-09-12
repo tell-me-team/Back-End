@@ -1,7 +1,7 @@
 package com.tellme.tellme.domain.survey.entity;
 
 import com.tellme.tellme.domain.BaseEntity;
-import com.tellme.tellme.domain.user.entity.User;
+import com.tellme.tellme.domain.user.entity.UserEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -22,9 +22,9 @@ public class SurveyCompletion extends BaseEntity {
     @JoinColumn(name = "survey_id")
     private Survey survey;
 
-    @ManyToOne(targetEntity = User.class, fetch = FetchType.LAZY)
+    @ManyToOne(targetEntity = UserEntity.class, fetch = FetchType.LAZY)
     @JoinColumn(name = "create_user_id")
-    private User user;
+    private UserEntity userEntity;
 
     @Column(name = "unique_id")
     private String uniqueId;
@@ -33,9 +33,9 @@ public class SurveyCompletion extends BaseEntity {
     private List<SurveyAnswer> surveyAnswers = new ArrayList<>();
 
     @Builder
-    public SurveyCompletion(Survey survey, User user, String uniqueId) {
+    public SurveyCompletion(Survey survey, UserEntity userEntity, String uniqueId) {
         this.survey = survey;
-        this.user = user;
+        this.userEntity = userEntity;
         this.uniqueId = uniqueId;
     }
 }

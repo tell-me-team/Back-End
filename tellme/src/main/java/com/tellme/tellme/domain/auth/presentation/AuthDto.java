@@ -2,7 +2,7 @@ package com.tellme.tellme.domain.auth.presentation;
 
 import com.tellme.tellme.common.enums.SocialLoginType;
 import com.tellme.tellme.common.enums.UserRole;
-import com.tellme.tellme.domain.user.entity.User;
+import com.tellme.tellme.domain.user.entity.UserEntity;
 import lombok.*;
 
 import java.util.List;
@@ -48,8 +48,8 @@ public class AuthDto {
         public properties properties;
         public kakao_account kakao_account;
 
-        public User toEntity() {
-            return User.builder()
+        public UserEntity toEntity() {
+            return UserEntity.builder()
                     .email(this.getKakao_account().getEmail())
                     .password("NONE")
                     .nickname(this.getProperties().getNickname())
