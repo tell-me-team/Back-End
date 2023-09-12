@@ -5,6 +5,7 @@ import com.tellme.tellme.common.auth.JwtTokenProvider;
 import com.tellme.tellme.common.enums.UserRole;
 import com.tellme.tellme.common.exception.BaseException;
 import com.tellme.tellme.domains.auth.application.KakaoOauth;
+import com.tellme.tellme.domains.user.domain.User;
 import com.tellme.tellme.domains.user.infrastructure.UserEntity;
 import com.tellme.tellme.domains.user.presentation.UserDto.UserInfo;
 import org.junit.jupiter.api.Test;
@@ -57,7 +58,7 @@ public class UserEntityServiceTest {
         String email = "email1@naver.com";
 
         //when
-        UserEntity result = userServiceImpl.getByEmail(email);
+        User result = userServiceImpl.getByEmail(email);
 
         //then
         assertThat(result.getEmail()).isEqualTo("email1@naver.com");
@@ -72,7 +73,7 @@ public class UserEntityServiceTest {
         //when
         //then
         assertThatThrownBy(() -> {
-            UserEntity result = userServiceImpl.getByEmail(email);
+            User result = userServiceImpl.getByEmail(email);
         }).isInstanceOf(BaseException.class);
     }
 
@@ -80,7 +81,7 @@ public class UserEntityServiceTest {
     @Test
     void 내_유저_정보를_조회할_수_있다() {
         //given
-        UserEntity userEntity = UserEntity.builder()
+        User user = User.builder()
                 .id(1)
                 .email("email1@naver.com")
                 .password("NONE")
@@ -91,7 +92,7 @@ public class UserEntityServiceTest {
                 .build();
 
         //when
-        UserInfo result = userServiceImpl.getInfo(userEntity);
+        UserInfo result = userServiceImpl.getInfo(user);
 
         //then
         assertThat(result.getUserId()).isEqualTo(1);

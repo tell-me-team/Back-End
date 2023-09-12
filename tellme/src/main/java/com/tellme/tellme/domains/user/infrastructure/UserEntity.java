@@ -2,6 +2,7 @@ package com.tellme.tellme.domains.user.infrastructure;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.tellme.tellme.domains.BaseEntity;
+import com.tellme.tellme.domains.user.domain.User;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -22,7 +23,7 @@ import static com.fasterxml.jackson.annotation.JsonProperty.Access.*;
 @Builder
 @NoArgsConstructor
 @Table(name = "USER")
-public class UserEntity extends BaseEntity implements UserDetails {
+public class UserEntity extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -48,10 +49,6 @@ public class UserEntity extends BaseEntity implements UserDetails {
     @CollectionTable(name = "USER_ROLES")
     private List<String> roles = new ArrayList<>();
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return this.roles.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
-    }
 
     @Builder
     public UserEntity(int id, String email, String password, String nickname, String picture, String socialType, List<String> roles) {
@@ -64,54 +61,31 @@ public class UserEntity extends BaseEntity implements UserDetails {
         this.roles = roles;
     }
 
-    /**
-     * security 에서 사용하는 회원 구분 id
-     */
-    @JsonProperty(access = WRITE_ONLY)
-    @Override
-    public String getUsername() {
-        return Integer.toString(this.id);
+    public static UserEntity from(User user) {
+        UserEntity userEntity = new UserEntity();
+        userEntity.id = user.getId();
+        userEntity.email = user.getEmail();
+        userEntity.password = user.getPassword();
+        userEntity.nickname = user.getNickname();
+        userEntity.picture = user.getPicture();
+        userEntity.socialType = user.getSocialType();
+        userEntity.roles = user.getRoles();
+        return userEntity;
     }
 
-    /**
-     * 계정이 만료되었는지 체크하는 로직
-     * 사용하지 않아 true 값 return
-     */
-    @JsonProperty(access = WRITE_ONLY)
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
+    public User toModel() {
+        return User.builder()
+                .id(id)
+                .email(email)
+                .password(password)
+                .nickname(nickname)
+                .picture(picture)
+                .socialType(socialType)
+                .roles(roles)
+                .build();
     }
 
-    /**
-     * 계정이 잠겼는지 체크하는 로직
-     * 사용하지 않아 true 값 return
-     */
-    @JsonProperty(access = WRITE_ONLY)
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
 
-    /**
-     * 계정의 패스워드가 만료되었는지 체크하는 로직
-     * 사용하지 않아 true 값 return
-     */
-    @JsonProperty(access = WRITE_ONLY)
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    /**
-     * 계정이 사용가능한지 체크하는 로직
-     * 사용하지 않아 true 값 return
-     */
-    @JsonProperty(access = WRITE_ONLY)
-    @Override
-    public boolean isEnabled() {
-        return true;
-    }
 
 
 }

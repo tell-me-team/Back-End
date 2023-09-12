@@ -5,6 +5,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.tellme.tellme.common.enums.UserRole;
 import com.tellme.tellme.domains.auth.application.KakaoOauth;
 import com.tellme.tellme.domains.survey.application.SurveyService;
+import com.tellme.tellme.domains.user.domain.User;
 import com.tellme.tellme.domains.user.infrastructure.UserEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -60,7 +61,7 @@ class SurveyControllerV1Test {
 
     @BeforeEach
     void setUp() {
-        UserEntity userEntity = UserEntity.builder()
+        User user = User.builder()
                 .id(3)
                 .email("taeyoung6873@gmail.com")
                 .password("NONE")
@@ -70,7 +71,7 @@ class SurveyControllerV1Test {
                 .roles(List.of(UserRole.USER.toString()))
                 .build();
 
-        UserDetails userDetails = userDetailsService.loadUserByUsername(Integer.toString(userEntity.getId()));
+        UserDetails userDetails = userDetailsService.loadUserByUsername(Integer.toString(user.getId()));
 
         SecurityContext context = SecurityContextHolder.getContext();
         context.setAuthentication(new UsernamePasswordAuthenticationToken(userDetails, userDetails.getPassword(), userDetails.getAuthorities()));

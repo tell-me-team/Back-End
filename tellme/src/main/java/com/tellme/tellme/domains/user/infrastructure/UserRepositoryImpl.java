@@ -3,6 +3,7 @@ package com.tellme.tellme.domains.user.infrastructure;
 import com.tellme.tellme.domains.survey.entity.SurveyCompletion;
 import com.tellme.tellme.domains.survey.persistence.SurveyCompletionRepository;
 import com.tellme.tellme.domains.user.application.port.UserRepository;
+import com.tellme.tellme.domains.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -17,13 +18,13 @@ public class UserRepositoryImpl implements UserRepository {
     private final SurveyCompletionRepository surveyCompletionRepository;
 
     @Override
-    public Optional<UserEntity> findByEmail(String email) {
-        return userJpaRepository.findByEmailAndDeletedIsNull(email);
+    public Optional<User> findByEmail(String email) {
+        return userJpaRepository.findByEmailAndDeletedIsNull(email).map(UserEntity::toModel);
     }
 
     @Override
-    public Optional<UserEntity> findById(int userId) {
-        return userJpaRepository.findByIdAndDeletedIsNull(userId);
+    public Optional<User> findById(int userId) {
+        return userJpaRepository.findByIdAndDeletedIsNull(userId).map(UserEntity::toModel);
     }
 
     @Override

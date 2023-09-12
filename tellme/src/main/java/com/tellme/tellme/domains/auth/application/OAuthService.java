@@ -3,6 +3,7 @@ package com.tellme.tellme.domains.auth.application;
 import com.tellme.tellme.common.auth.JwtTokenProvider;
 import com.tellme.tellme.common.enums.SocialLoginType;
 import com.tellme.tellme.domains.user.application.UserServiceImpl;
+import com.tellme.tellme.domains.user.domain.User;
 import com.tellme.tellme.domains.user.infrastructure.UserEntity;
 import com.tellme.tellme.domains.user.infrastructure.UserJpaRepository;
 import lombok.RequiredArgsConstructor;
@@ -45,11 +46,11 @@ public class OAuthService {
                 // 로그인
                 if(userServiceImpl.checkByEmail(kakaoUser.getKakao_account().getEmail())) {
 
-                    UserEntity userEntity = userServiceImpl.getByEmail(kakaoUser.getKakao_account().getEmail());
-                    String accessToken = jwtTokenProvider.createAccessToken(userEntity.getId(), List.of("ROLE_USER"));
-                    String refreshToken = jwtTokenProvider.createRefreshToken(userEntity.getId(), List.of("ROLE_USER"));
+                    User user = userServiceImpl.getByEmail(kakaoUser.getKakao_account().getEmail());
+                    String accessToken = jwtTokenProvider.createAccessToken(user.getId(), List.of("ROLE_USER"));
+                    String refreshToken = jwtTokenProvider.createRefreshToken(user.getId(), List.of("ROLE_USER"));
 
-                    GetSocialOAuthRes getSocialOAuthRes = new GetSocialOAuthRes(userEntity.getId(), userEntity.getPicture(), accessToken, refreshToken);
+                    GetSocialOAuthRes getSocialOAuthRes = new GetSocialOAuthRes(user.getId(), user.getPicture(), accessToken, refreshToken);
                     return getSocialOAuthRes;
 
                 // 회원가입
