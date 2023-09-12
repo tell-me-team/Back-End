@@ -5,9 +5,8 @@ import com.tellme.tellme.common.exception.ErrorStatus;
 import com.tellme.tellme.domain.survey.entity.*;
 import com.tellme.tellme.domain.survey.persistence.*;
 import com.tellme.tellme.domain.user.entity.User;
-import com.tellme.tellme.domain.user.persistence.UserRepository;
+import com.tellme.tellme.domain.user.infrastructure.UserJpaRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,7 +26,7 @@ public class SurveyService {
     private final SurveyRepository surveyRepository;
     private final QuestionRepository questionRepository;
     private final SurveyQuestionQueryRepository surveyQuestionQueryRepository;
-    private final UserRepository userRepository;
+    private final UserJpaRepository userJpaRepository;
     private final SurveyShortUrlRepository surveyShortUrlRepository;
     private final SurveyResultRepository surveyResultRepository;
 
@@ -35,7 +34,7 @@ public class SurveyService {
     public SurveyResultInfo saveAnswer(int surveyId, int userId, Answer answer, User authenticationUser, String uniqueId) {
         String shortUrl = null;
         Survey survey = surveyRepository.findById(surveyId).get();
-        User createUser = userRepository.findById(userId).get();
+        User createUser = userJpaRepository.findById(userId).get();
 
         if (!isSurveyQuestionCount(survey, answer)) {
             throw new BaseException(ErrorStatus.SURVEY_ANSWER_INSUFFICIENT);
@@ -79,7 +78,7 @@ public class SurveyService {
     @Transactional(readOnly = true)
     public SurveyResultDetail getSurveyResult(int createUserId, int surveyId, User authenticationUser) {
 
-        User createUser = userRepository.findById(createUserId).get();
+        User createUser = userJpaRepository.findById(createUserId).get();
         Survey survey = surveyRepository.findById(surveyId).get();
 
         if(isSurveyCompletionFindCreateUser(createUser, survey, createUser.getId())){
@@ -242,7 +241,7 @@ public class SurveyService {
         int surveyId = surveyShortUrl.getSurveyId();
         int userId = surveyShortUrl.getUserId();
 
-        User user = userRepository.findById(userId).get();
+        User user = userJpaRepository.findById(userId).get();
         int userCount = surveyCompletionRepository.findByUser(user).size();
 
         return SurveyInfo.builder()

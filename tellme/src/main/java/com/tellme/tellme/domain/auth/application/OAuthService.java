@@ -4,7 +4,7 @@ import com.tellme.tellme.common.auth.JwtTokenProvider;
 import com.tellme.tellme.common.enums.SocialLoginType;
 import com.tellme.tellme.domain.user.application.UserService;
 import com.tellme.tellme.domain.user.entity.*;
-import com.tellme.tellme.domain.user.persistence.UserRepository;
+import com.tellme.tellme.domain.user.infrastructure.UserJpaRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +23,7 @@ public class OAuthService {
     private final KakaoOauth kakaoOauth;
     private final UserService userService;
     private final JwtTokenProvider jwtTokenProvider;
-    private final UserRepository userRepository;
+    private final UserJpaRepository userJpaRepository;
 
 
     public GetSocialOAuthRes oAuthLoginOrJoin(SocialLoginType socialLoginType, String code) throws IOException {
@@ -55,7 +55,7 @@ public class OAuthService {
                 // 회원가입
                 }else {
 
-                    User user = userRepository.save(kakaoUser.toEntity());
+                    User user = userJpaRepository.save(kakaoUser.toEntity());
                     String accessToken = jwtTokenProvider.createAccessToken(user.getId(), List.of("ROLE_USER"));
                     String refreshToken = jwtTokenProvider.createRefreshToken(user.getId(), List.of("ROLE_USER"));
 

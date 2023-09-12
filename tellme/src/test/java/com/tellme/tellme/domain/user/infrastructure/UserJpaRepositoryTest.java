@@ -1,7 +1,6 @@
-package com.tellme.tellme.domain.user.persistence;
+package com.tellme.tellme.domain.user.infrastructure;
 
 import com.tellme.tellme.domain.user.entity.User;
-import com.tellme.tellme.domain.user.persistence.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -14,10 +13,10 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @DataJpaTest(showSql = true)
 @Sql("/sql/user-repository-test-data.sql")
-public class UserRepositoryTest {
+public class UserJpaRepositoryTest {
 
     @Autowired
-    private UserRepository userRepository;
+    private UserJpaRepository userJpaRepository;
 
     @Test
     void findByEmailAndDeletedIsNull_로_유저_데이터를_찾아올_수_있다() {
@@ -25,7 +24,7 @@ public class UserRepositoryTest {
         String email = "email1@naver.com";
 
         //when
-        User result = userRepository.findByEmailAndDeletedIsNull(email).get();
+        User result = userJpaRepository.findByEmailAndDeletedIsNull(email).get();
 
         //then
         assertThat(result).isNotNull();
@@ -39,7 +38,7 @@ public class UserRepositoryTest {
         String email = "email2@naver.com";
 
         //when
-        Optional<User> result = userRepository.findByEmailAndDeletedIsNull(email);
+        Optional<User> result = userJpaRepository.findByEmailAndDeletedIsNull(email);
 
         //then
         assertThat(result.isPresent()).isFalse();
@@ -51,7 +50,7 @@ public class UserRepositoryTest {
         int id = 1;
 
         //when
-        User result = userRepository.findByIdAndDeletedIsNull(id).get();
+        User result = userJpaRepository.findByIdAndDeletedIsNull(id).get();
 
         //then
         assertThat(result).isNotNull();
@@ -65,7 +64,7 @@ public class UserRepositoryTest {
         int id = 2;
 
         //when
-        Optional<User> result = userRepository.findByIdAndDeletedIsNull(id);
+        Optional<User> result = userJpaRepository.findByIdAndDeletedIsNull(id);
 
         //then
         assertThat(result.isPresent()).isFalse();
