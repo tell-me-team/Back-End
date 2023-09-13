@@ -7,7 +7,6 @@ import com.tellme.tellme.common.enums.UserRole;
 import com.tellme.tellme.domains.auth.application.KakaoOauth;
 import com.tellme.tellme.domains.survey.application.SurveyService;
 import com.tellme.tellme.domains.user.domain.User;
-import com.tellme.tellme.domains.user.infrastructure.UserEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +39,7 @@ import java.util.List;
         @Sql(value = "/sql/survey-controller-test-data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD),
         @Sql(value = "/sql/delete-all-data.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 })
-public class UserEntitySurveyControllerV1Test {
+public class UserSurveyControllerV1Test {
 
     @Autowired
     private MockMvc mockMvc;

@@ -56,11 +56,11 @@ public class OAuthService {
                 // 회원가입
                 }else {
 
-                    UserEntity userEntity = userJpaRepository.save(kakaoUser.toEntity());
-                    String accessToken = jwtTokenProvider.createAccessToken(userEntity.getId(), List.of("ROLE_USER"));
-                    String refreshToken = jwtTokenProvider.createRefreshToken(userEntity.getId(), List.of("ROLE_USER"));
+                    User user = userJpaRepository.save(kakaoUser.toEntity()).toModel();
+                    String accessToken = jwtTokenProvider.createAccessToken(user.getId(), List.of("ROLE_USER"));
+                    String refreshToken = jwtTokenProvider.createRefreshToken(user.getId(), List.of("ROLE_USER"));
 
-                    GetSocialOAuthRes getSocialOAuthRes = new GetSocialOAuthRes(userEntity.getId(), userEntity.getPicture(), accessToken, refreshToken);
+                    GetSocialOAuthRes getSocialOAuthRes = new GetSocialOAuthRes(user.getId(), user.getPicture(), accessToken, refreshToken);
                     return getSocialOAuthRes;
                 }
 
