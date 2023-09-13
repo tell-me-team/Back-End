@@ -1,7 +1,7 @@
 package com.tellme.tellme.domains.user.infrastructure;
 
 import com.tellme.tellme.domains.survey.entity.SurveyCompletion;
-import com.tellme.tellme.domains.survey.persistence.SurveyCompletionRepository;
+import com.tellme.tellme.domains.survey.infrastructure.SurveyCompletionJpaRepository;
 import com.tellme.tellme.domains.user.application.port.UserRepository;
 import com.tellme.tellme.domains.user.domain.User;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +15,7 @@ import java.util.Optional;
 public class UserRepositoryImpl implements UserRepository {
 
     private final UserJpaRepository userJpaRepository;
-    private final SurveyCompletionRepository surveyCompletionRepository;
+    private final SurveyCompletionJpaRepository surveyCompletionJpaRepository;
 
     @Override
     public Optional<User> findByEmail(String email) {
@@ -29,6 +29,6 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public List<SurveyCompletion> findByUniqueId(String uniqueId) {
-        return surveyCompletionRepository.findByUniqueId(uniqueId);
+        return surveyCompletionJpaRepository.findByUniqueId(uniqueId);
     }
 }

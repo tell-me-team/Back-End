@@ -1,4 +1,4 @@
-package com.tellme.tellme.domains.survey.persistence;
+package com.tellme.tellme.domains.survey.infrastructure;
 
 import com.tellme.tellme.domains.survey.entity.SurveyShortUrl;
 import org.junit.jupiter.api.Test;
@@ -15,17 +15,17 @@ import static org.assertj.core.api.Assertions.*;
 @ExtendWith(SpringExtension.class)
 @DataJpaTest(showSql = true)
 @Sql("/sql/survey-repository-test.sql")
-class SurveyShortUrlRepositoryTest {
+class SurveyShortUrlJpaRepositoryTest {
 
     @Autowired
-    private SurveyShortUrlRepository surveyShortUrlRepository;
+    private SurveyShortUrlJpaRepository surveyShortUrlJpaRepository;
 
     @Test
     void shortUrl로_SurveyShortUrl_데이터_조회(){
         // given
         String shortUrl = "MQ==";
         // when
-        Optional<SurveyShortUrl> result = surveyShortUrlRepository.findByUrl(shortUrl);
+        Optional<SurveyShortUrl> result = surveyShortUrlJpaRepository.findByUrl(shortUrl);
 
         // then
         assertThat(result).isNotEmpty();
@@ -36,7 +36,7 @@ class SurveyShortUrlRepositoryTest {
         // given
         String shortUrl = "MQ===";
         // when
-        Optional<SurveyShortUrl> result = surveyShortUrlRepository.findByUrl(shortUrl);
+        Optional<SurveyShortUrl> result = surveyShortUrlJpaRepository.findByUrl(shortUrl);
         // then
         assertThat(result).isEmpty();
     }
@@ -47,7 +47,7 @@ class SurveyShortUrlRepositoryTest {
         int surveyId = 1;
         int userId = 3;
         // when
-        Optional<SurveyShortUrl> result = surveyShortUrlRepository.findBySurveyIdAndUserId(surveyId , userId);
+        Optional<SurveyShortUrl> result = surveyShortUrlJpaRepository.findBySurveyIdAndUserId(surveyId , userId);
         // then
         assertThat(result.get().getUrl()).isEqualTo("MQ==");
     }
@@ -58,7 +58,7 @@ class SurveyShortUrlRepositoryTest {
         int surveyId = 2;
         int userId = 3;
         // when
-        Optional<SurveyShortUrl> result = surveyShortUrlRepository.findBySurveyIdAndUserId(surveyId , userId);
+        Optional<SurveyShortUrl> result = surveyShortUrlJpaRepository.findBySurveyIdAndUserId(surveyId , userId);
         // then
         assertThat(result.isEmpty()).isTrue();
     }

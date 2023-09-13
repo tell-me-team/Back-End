@@ -1,4 +1,4 @@
-package com.tellme.tellme.domains.survey.persistence;
+package com.tellme.tellme.domains.survey.infrastructure;
 
 
 import com.tellme.tellme.domains.survey.entity.Question;
@@ -14,10 +14,10 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 @ExtendWith(SpringExtension.class)
 @DataJpaTest
 @Sql("/sql/survey-repository-test.sql")
-public class QuestionRepositoryTest {
+public class QuestionJpaRepositoryTest {
 
     @Autowired
-    private QuestionRepository questionRepository;
+    private QuestionJpaRepository questionJpaRepository;
 
     @Test
     void 질문을_통해_Question_객체_데이터를_조회할_수_있다() {
@@ -25,7 +25,7 @@ public class QuestionRepositoryTest {
         String question = "무더운 여름, 휴일을 보내는 모습은?";
 
         // when
-        Question result = questionRepository.findByQuestion(question);
+        Question result = questionJpaRepository.findByQuestion(question);
 
         // then
         assertThat(result.getQuestion()).isEqualTo(question);

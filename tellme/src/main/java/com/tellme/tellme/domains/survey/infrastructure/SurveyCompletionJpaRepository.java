@@ -1,4 +1,4 @@
-package com.tellme.tellme.domains.survey.persistence;
+package com.tellme.tellme.domains.survey.infrastructure;
 
 import com.tellme.tellme.domains.survey.entity.Survey;
 import com.tellme.tellme.domains.survey.entity.SurveyCompletion;
@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface SurveyCompletionRepository extends JpaRepository<SurveyCompletion, Integer> {
+public interface SurveyCompletionJpaRepository extends JpaRepository<SurveyCompletion, Integer> {
     SurveyCompletion findByUniqueIdAndSurveyAndUserEntity(String uniqueId, Survey survey, UserEntity userEntity);
 
     List<SurveyCompletion> findByUserEntity(UserEntity userEntity);

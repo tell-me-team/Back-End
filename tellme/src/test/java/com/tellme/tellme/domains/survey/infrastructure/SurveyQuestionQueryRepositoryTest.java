@@ -1,4 +1,4 @@
-package com.tellme.tellme.domains.survey.persistence;
+package com.tellme.tellme.domains.survey.infrastructure;
 
 import com.tellme.tellme.domains.survey.entity.Question;
 import com.tellme.tellme.domains.survey.entity.Survey;
@@ -24,12 +24,12 @@ class SurveyQuestionQueryRepositoryTest {
     @Autowired
     private SurveyQuestionQueryRepository surveyQuestionQueryRepository;
     @Autowired
-    private SurveyRepository surveyRepository;
+    private SurveyJpaRepository surveyJpaRepository;
 
     @Test
     void 설문의_질문리스트_가져오기(){
         // given
-        Optional<Survey> survey= surveyRepository.findById(1);
+        Optional<Survey> survey= surveyJpaRepository.findById(1);
 
         // when
         List<Question> result = surveyQuestionQueryRepository.getQuestionList(survey.get());

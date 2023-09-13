@@ -1,4 +1,4 @@
-package com.tellme.tellme.domains.survey.persistence;
+package com.tellme.tellme.domains.survey.infrastructure;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.tellme.tellme.domains.survey.entity.Question;

@@ -2,10 +2,11 @@ package com.tellme.tellme.domains.survey.application;
 
 import com.tellme.tellme.common.exception.BaseException;
 import com.tellme.tellme.common.exception.ErrorStatus;
+import com.tellme.tellme.domains.survey.application.port.SurveyRepository;
 import com.tellme.tellme.domains.survey.entity.*;
-import com.tellme.tellme.domains.survey.persistence.*;
+import com.tellme.tellme.domains.user.application.port.UserRepository;
+import com.tellme.tellme.domains.user.domain.User;
 import com.tellme.tellme.domains.user.infrastructure.UserEntity;
-import com.tellme.tellme.domains.user.infrastructure.UserJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,21 +21,14 @@ import static com.tellme.tellme.domains.survey.presentation.SurveyDto.*;
 @Transactional
 public class SurveyService {
 
-    private final SurveyCompletionRepository surveyCompletionRepository;
-    private final SurveyCompletionQueryRepository surveyCompletionQueryRepository;
-    private final SurveyAnswerRepository surveyAnswerRepository;
     private final SurveyRepository surveyRepository;
-    private final QuestionRepository questionRepository;
-    private final SurveyQuestionQueryRepository surveyQuestionQueryRepository;
-    private final UserJpaRepository userJpaRepository;
-    private final SurveyShortUrlRepository surveyShortUrlRepository;
-    private final SurveyResultRepository surveyResultRepository;
+    private final UserRepository userRepository;
 
     @Transactional
     public SurveyResultInfo saveAnswer(int surveyId, int userId, Answer answer, UserEntity authenticationUserEntity, String uniqueId) {
         String shortUrl = null;
-        Survey survey = surveyRepository.findById(surveyId).get();
-        UserEntity createUserEntity = userJpaRepository.findById(userId).get();
+        Survey survey = surveyRepository.findSurveyById(surveyId).get();
+        User createUser = userRepository.findById(userId).get();
 
         if (!isSurveyQuestionCount(survey, answer)) {
             throw new BaseException(ErrorStatus.SURVEY_ANSWER_INSUFFICIENT);
@@ -47,12 +41,12 @@ public class SurveyService {
             }
         }
 
-        SurveyCompletion alreadyExistSurveyCompletion = surveyCompletionRepository.findByUniqueIdAndSurveyAndUserEntity(uniqueId, survey, createUserEntity);
+        SurveyCompletion alreadyExistSurveyCompletion = surveyRepository.findByUniqueIdAndSurveyAndUserEntity(uniqueId, survey, UserEntity.from(createUser));
 
         if (alreadyExistSurveyCompletion == null) {
-            saveSurveyAnswer(survey, createUserEntity, answer, uniqueId);
+            saveSurveyAnswer(survey, createUser, answer, uniqueId);
         }else {
-            if(!isCreateUserSurveyCompletion(createUserEntity, alreadyExistSurveyCompletion)) {
+            if(!isCreateUserSurveyCompletion(createUser, alreadyExistSurveyCompletion)) {
                 throw new BaseException(ErrorStatus.SURVEY_ALREADY_COMPLETED);
             }
             updateSurveyAnswers(answer, alreadyExistSurveyCompletion);
@@ -78,14 +72,14 @@ public class SurveyService {
     @Transactional(readOnly = true)
     public SurveyResultDetail getSurveyResult(int createUserId, int surveyId, UserEntity authenticationUserEntity) {
 
-        UserEntity createUserEntity = userJpaRepository.findById(createUserId).get();
-        Survey survey = surveyRepository.findById(surveyId).get();
+        User createUser = userRepository.findById(createUserId).get();
+        Survey survey = surveyRepository.findSurveyById(surveyId).get();
 
-        if(isSurveyCompletionFindCreateUser(createUserEntity, survey, createUserEntity.getId())){
+        if(isSurveyCompletionFindCreateUser(UserEntity.from(createUser), survey, createUser.getId())){
             throw new BaseException(ErrorStatus.SURVEY_NOT_CREATE);
         }
 
-        SurveyCompletion surveyCompletionToMe = surveyCompletionRepository.findByUserEntityAndUniqueIdAndSurvey(createUserEntity, String.valueOf(createUserId), survey);
+        SurveyCompletion surveyCompletionToMe = surveyRepository.findByUserEntityAndUniqueIdAndSurvey(UserEntity.from(createUser), String.valueOf(createUserId), survey);
         List<AnswerContent> answerContentList = new ArrayList<>();
         List<SurveyCompletionWithAnswers> surveyCompletionWithAnswersList = new ArrayList<>();
         for (SurveyAnswer surveyAnswer : surveyCompletionToMe.getSurveyAnswers()) {
@@ -105,13 +99,13 @@ public class SurveyService {
         SurveyResult surveyResultFromMe = generateCombinedAnswerResult(answerContentList, survey);
 
 
-        List<SurveyCompletion> surveyCompletionOtherToMe = surveyCompletionRepository.findByUserEntityAndUniqueIdNotAndSurvey(createUserEntity, String.valueOf(createUserId), survey);
+        List<SurveyCompletion> surveyCompletionOtherToMe = surveyRepository.findByUserEntityAndUniqueIdNotAndSurvey(UserEntity.from(createUser), String.valueOf(createUserId), survey);
 
         if (surveyCompletionOtherToMe.size() == 0) {
 
             if(authenticationUserEntity == null){
                 return SurveyResultDetail.builder()
-                        .nickname(createUserEntity.getNickname())
+                        .nickname(createUser.getNickname())
                         .type(surveyResultFromMe.getType())
                         .selfKeywords(surveyResultFromMe.getSurveyResultKeywords().stream().map(
                                 surveyResultKeyword -> SurveyResultKeywordInfo.builder()
@@ -123,7 +117,7 @@ public class SurveyService {
 
             if(authenticationUserEntity.getId() != createUserId){
                 return SurveyResultDetail.builder()
-                        .nickname(createUserEntity.getNickname())
+                        .nickname(createUser.getNickname())
                         .type(surveyResultFromMe.getType())
                         .selfKeywords(surveyResultFromMe.getSurveyResultKeywords().stream().map(
                                 surveyResultKeyword -> SurveyResultKeywordInfo.builder()
@@ -135,7 +129,7 @@ public class SurveyService {
 
 
             return SurveyResultDetail.builder()
-                    .nickname(createUserEntity.getNickname())
+                    .nickname(createUser.getNickname())
                     .type(surveyResultFromMe.getType())
                     .surveyCompletionWithAnswers(surveyCompletionWithAnswersList)
                     .selfKeywords(surveyResultFromMe.getSurveyResultKeywords().stream().map(
@@ -158,7 +152,7 @@ public class SurveyService {
             for(SurveyCompletionWithAnswers surveyCompletionWithAnswers : surveyCompletionWithAnswersList){
                 Character answer = mostSelectedAnswers.get(surveyCompletionWithAnswersIndex);
 
-                Question question = questionRepository.findByQuestion(surveyCompletionWithAnswers.getQuestion());
+                Question question = surveyRepository.findByQuestion(surveyCompletionWithAnswers.getQuestion());
 
                 surveyCompletionWithAnswers.setAnswerToOther(answer == 'A' ? question.getAnswerA() : question.getAnswerB());
                 surveyCompletionWithAnswersIndex++;
@@ -180,7 +174,7 @@ public class SurveyService {
 
             if(authenticationUserEntity == null){
                 return SurveyResultDetail.builder()
-                        .nickname(createUserEntity.getNickname())
+                        .nickname(createUser.getNickname())
                         .type(surveyResultFromMe.getType())
                         .feedBackKeywords(surveyResultFromOther.getSurveyResultKeywords().stream().map(
                                 surveyResultKeyword -> SurveyResultKeywordInfo.builder()
@@ -198,7 +192,7 @@ public class SurveyService {
 
             if(authenticationUserEntity.getId() != createUserId){
                 return SurveyResultDetail.builder()
-                        .nickname(createUserEntity.getNickname())
+                        .nickname(createUser.getNickname())
                         .type(surveyResultFromMe.getType())
                         .feedBackKeywords(surveyResultFromOther.getSurveyResultKeywords().stream().map(
                                 surveyResultKeyword -> SurveyResultKeywordInfo.builder()
@@ -215,7 +209,7 @@ public class SurveyService {
 
 
             return SurveyResultDetail.builder()
-                    .nickname(createUserEntity.getNickname())
+                    .nickname(createUser.getNickname())
                     .type(surveyResultFromMe.getType())
                     .surveyCompletionWithAnswers(surveyCompletionWithAnswersList)
                     .feedBackKeywords(surveyResultFromOther.getSurveyResultKeywords().stream().map(
@@ -235,27 +229,27 @@ public class SurveyService {
 
     @Transactional(readOnly = true)
     public SurveyInfo shortUrlDecoding(String shortUrl) {
-        SurveyShortUrl surveyShortUrl = surveyShortUrlRepository.findByUrl(shortUrl).orElseThrow(
+        SurveyShortUrl surveyShortUrl = surveyRepository.findByUrl(shortUrl).orElseThrow(
                 ()-> new RuntimeException("shortUrl이 존재하지 않습니다.")
         );
         int surveyId = surveyShortUrl.getSurveyId();
         int userId = surveyShortUrl.getUserId();
 
-        UserEntity userEntity = userJpaRepository.findById(userId).get();
-        int userCount = surveyCompletionRepository.findByUserEntity(userEntity).size();
+        User user = userRepository.findById(userId).get();
+        int userCount = surveyRepository.findByUserEntity(UserEntity.from(user)).size();
 
         return SurveyInfo.builder()
                 .surveyId(surveyId)
                 .userId(userId)
                 .userCount(userCount)
-                .nickname(userEntity.getNickname())
+                .nickname(user.getNickname())
                 .build();
     }
 
     @Transactional(readOnly = true)
     public List<QuestionInfo> getQuestionInfo(int surveyId) {
-        Survey survey = surveyRepository.findById(surveyId).get();
-        List<Question> questionList = surveyQuestionQueryRepository.getQuestionList(survey);
+        Survey survey = surveyRepository.findSurveyById(surveyId).get();
+        List<Question> questionList = surveyRepository.getQuestionList(survey);
 
         return questionList.stream()
                 .map(question -> QuestionInfo.builder()
@@ -275,49 +269,49 @@ public class SurveyService {
         }
     }
 
-    private static boolean isCreateUserSurveyCompletion(UserEntity createUserEntity, SurveyCompletion alreadyExistSurveyCompletion) {
-        return alreadyExistSurveyCompletion.getUniqueId().equals(Integer.toString(createUserEntity.getId()));
+    private static boolean isCreateUserSurveyCompletion(User createUser, SurveyCompletion alreadyExistSurveyCompletion) {
+        return alreadyExistSurveyCompletion.getUniqueId().equals(Integer.toString(createUser.getId()));
     }
 
     private boolean isSurveyQuestionCount(Survey survey, Answer answer) {
-        long questionCount = surveyQuestionQueryRepository.getQuestionList(survey).stream().count();
+        long questionCount = surveyRepository.getQuestionList(survey).stream().count();
         return questionCount == answer.getAnswerContentList().size();
     }
 
-    private void saveSurveyAnswer(Survey survey, UserEntity createUserEntity, Answer answer, String uniqueId) {
+    private void saveSurveyAnswer(Survey survey, User createUser, Answer answer, String uniqueId) {
 
-        SurveyCompletion surveyCompletion = surveyCompletionRepository.save(answer.toSurveyCompletion(survey, createUserEntity, uniqueId));
+        SurveyCompletion surveyCompletion = surveyRepository.saveSurveyCompletion(answer.toSurveyCompletion(survey, UserEntity.from(createUser), uniqueId));
         for (AnswerContent answerContent : answer.getAnswerContentList()) {
-            Question question = questionRepository.findById(answerContent.getQuestion()).get();
-            surveyAnswerRepository.save(answerContent.toSurveyAnswer(surveyCompletion, question));
+            Question question = surveyRepository.findQuestionById(answerContent.getQuestion()).get();
+            surveyRepository.saveSurveyAnswer(answerContent.toSurveyAnswer(surveyCompletion, question));
         }
     }
 
     private String getShareUrl(Survey survey, UserEntity userEntity) {
-        SurveyShortUrl findShortUrl = surveyShortUrlRepository.findBySurveyIdAndUserId(survey.getId(), userEntity.getId()).orElse(null);
+        SurveyShortUrl findShortUrl = surveyRepository.findBySurveyIdAndUserId(survey.getId(), userEntity.getId()).orElse(null);
         if (findShortUrl != null) {
             return findShortUrl.getUrl();
         }
 
-        long maxCount = surveyShortUrlRepository.count() + 1;
+        long maxCount = surveyRepository.surveyShortUrlCount() + 1;
         String url = Base64.getUrlEncoder().encodeToString(String.valueOf(maxCount).getBytes());
         SurveyShortUrl shortUrl = SurveyShortUrl.builder()
                 .surveyId(survey.getId())
                 .userId(userEntity.getId())
                 .url(url)
                 .build();
-        surveyShortUrlRepository.save(shortUrl);
+        surveyRepository.saveSurveyShortUrl(shortUrl);
 
         return shortUrl.getUrl();
     }
 
 
     private boolean isSurveyCompletionFindCreateUser(UserEntity createUserEntity, Survey survey, int uniqueId){
-        return surveyCompletionRepository.findByUserEntityAndSurveyAndUniqueId(createUserEntity, survey, String.valueOf(uniqueId)).isEmpty();
+        return surveyRepository.findByUserEntityAndSurveyAndUniqueId(createUserEntity, survey, String.valueOf(uniqueId)).isEmpty();
     }
 
     private SurveyResult generateCombinedAnswerResult(List<AnswerContent> answerContentList, Survey survey) {
-        List<Question> questionList = surveyQuestionQueryRepository.getQuestionList(survey);
+        List<Question> questionList = surveyRepository.getQuestionList(survey);
 
         StringBuilder answerResult = new StringBuilder();
         int index = 0;
@@ -353,7 +347,7 @@ public class SurveyService {
                 maxCount = entry.getValue();
             }
         }
-        return surveyResultRepository.findByTypeNumber(mostCommonDigit);
+        return surveyRepository.findByTypeNumber(mostCommonDigit);
     }
 
     private Map<Integer, Map<Character, Integer>> countQuestionAnswer(List<SurveyCompletion> surveyCompletions) {
